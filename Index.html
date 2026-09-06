@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es" :class="modoClaro ? '' : 'dark'">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monify Personal Pro Ultimate</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <meta name="theme-color" content="#18181b">
+</head>
+<body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen font-sans antialiased pb-28 transition-colors duration-300" x-data="finanzasApp()">
+
+    <!-- Cabecera / Resumen General -->
+    <header class="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-4 sticky top-0 z-10 shadow-sm transition-colors">
+        <div class="max-w-md mx-auto flex justify-between items-center mb-3">
+            <div>
+                <h1 class="text-base font-bold tracking-tight">Monify Ultimate</h1>
+                <p class="text-[11px] text-zinc-500 dark:text-zinc-400" x-text="mesActual"></p>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button @click="modoClaro = !modoClaro; localStorage.setItem('monify_modo_claro', modoClaro)" class="text-xs bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 p-1.5 rounded-lg transition" title="Cambiar Tema">
+                    <span x-text="modoClaro ? '🌙' : '☀️'"></span>
+                </button>
+                <button @click="exportarDatos" class="text-xs bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 px-2.5 py-1.5 rounded-lg transition" title="Exportar Respaldo">📥 Respaldar</button>
+            </div>
+        </div>
+        
+        <!-- Tarjetas de Balance -->
+        <div class="max-w-md mx-auto grid grid-cols-3 gap-2">
+            <div class="bg-zinc-100 dark:bg-zinc-950/70 p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800/80">
+                <p class="text-[10px] text-zinc-500 dark:text-zinc-400 mb-0.5">Ingresos</p>
+                <p class="text-xs sm:text-sm font-semibold text-emerald-600 dark:text-emerald-400 truncate" x-text="formatearMoneda(totalIngresos)"></p>
+            </div>
+            <div class="bg-zinc-100 dark:bg-zinc-950/70 p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800/80">
+                <p class="text-[10px] text-zinc-500 dark:text-zinc-400 mb-0.5">Gastos</p>
+                <p class="text-xs sm:text-sm font-semibold text-rose-600 dark:text-rose-400 truncate" x-text="formatearMoneda(totalGastos)"></p>
+            </div>
+            <div class="bg-zinc-100 dark:bg-zinc-950/70 p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800/80">
+                <p class="text-[10px] text-zinc-500 dark:text-zinc-400 mb-0.5">Neto / Balance</p>
+                <p class="text-xs sm:text-sm font-bold truncate" :class="balanceNeto >= 0 ? 'text-zinc-900 dark:text-zinc-100' : 'text-rose-600 dark:text-rose-400'" x-text="formatearMoneda(balanceNeto)"></p>
+            </div>
+        </div>
+
+        <!-- Navegación por pestañas -->
+        <div class="max-w-md mx-auto grid grid-cols-4 gap-1 bg-zinc-200 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-300 dark:border-zinc-800 mt-3">
+            <button @click="pestanaActiva = 'movimientos'" class="py-1.5 rounded-lg text-[11px] font-semibold transition" :class="pestanaActiva === 'movimientos' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400'">Movimientos</button>
+            <button @click="pestanaActiva = 'cuentas'" class="py-1.5 rounded-lg text-[11px] font-semibold transition" :class="pestanaActiva === 'cuentas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400'">Cuentas</button>
+            <button @click="pestanaActiva = 'analisis'" class="py-1.5 rounded-lg text-[11px] font-semibold transition" :class="pestanaActiva === 'analisis' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400'">Análisis</button>
+            <button @click="pestanaActiva = 'cuotas'" class="py-1.5 rounded-lg text-[11px] font-semibold transition" :class="pestanaActiva === 'cuotas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400'">Cuotas</button>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="max-w-md mx-auto p-4 space-y-4">
+        
+        <!-- PESTAÑA: MOVIMIENTOS -->
+        <div x-show="pestanaActiva === 'movimientos'" class="space-y-3">
+            <div class="flex space-x-2">
+                <input type="text" x-model="filtroBusqueda" placeholder="Buscar concepto o categoría..." class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600">
+                <select x-model="filtroMes" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-2.5 py-2 text-xs text-zinc-700 dark:text-zinc-300 focus:outline-none">
+                    <option value="todos">Todos</option>
+                    <template x-for="mes in mesesDisponibles" :key="mes">
+                        <option :value="mes" x-text="mes"></option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="flex justify-between items-center pt-1">
+                <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Historial</h2>
+                <span class="text-[11px] text-zinc-500 dark:text-zinc-500" x-text="transaccionesFiltradas.length + ' registros'"></span>
+            </div>
+
+            <!-- Lista vacía -->
+            <template x-if="transaccionesFiltradas.length === 0">
+                <div class="text-center py-12 bg-white dark:bg-zinc-900/40 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800">
+                    <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-1">No hay movimientos con estos filtros</p>
+                    <p class="text-zinc-400 dark:text-zinc-600 text-xs">Usa el botón '+' para registrar uno nuevo.</p>
+                </div>
+            </template>
+
+            <!-- Listado -->
+            <div class="space-y-2">
+                <template x-for="t in transaccionesFiltradas" :key="t.id">
+                    <div class="bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 p-3 rounded-2xl flex justify-between items-center shadow-sm">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm"
+                                 :class="t.tipo === 'ingreso' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : (t.tipo === 'traspaso' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20')">
+                                <span x-text="t.tipo === 'ingreso' ? '↓' : (t.tipo === 'traspaso' ? '⇄' : '↑')"></span>
+                            </div>
+                            <div>
+                                <p class="text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200" x-text="t.concepto"></p>
+                                <div class="flex items-center space-x-1.5 mt-0.5 flex-wrap gap-y-1">
+                                    <span class="text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 px-1.5 py-0.5 rounded" x-text="t.tipo === 'traspaso' ? 'Traspaso' : t.categoria"></span>
+                                    <span class="text-[10px] bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 px-1.5 py-0.5 rounded" x-text="t.tipo === 'traspaso' ? t.cuentaOrigen + ' → ' + t.cuentaDestino : t.subcategoria"></span>
+                                    <span class="text-[10px] text-zinc-400 dark:text-zinc-500" x-text="t.tipo === 'traspaso' ? '' : t.cuenta"></span>
+                                    <span class="text-[10px] text-zinc-400 dark:text-zinc-600" x-text="t.fechaFormateada"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right flex items-center space-x-1">
+                            <div>
+                                <p class="text-xs sm:text-sm font-semibold" 
+                                   :class="t.tipo === 'ingreso' ? 'text-emerald-600 dark:text-emerald-400' : (t.tipo === 'traspaso' ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-800 dark:text-zinc-100')"
+                                   x-text="(t.tipo === 'ingreso' ? '+ ' : (t.tipo === 'traspaso' ? '' : '- ')) + formatearMoneda(t.monto)">
+                                </p>
+                            </div>
+                            <button @click="abrirEditarTransaccion(t)" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition p-1 text-xs" title="Editar">✏️</button>
+                            <button @click="eliminarTransaccion(t.id)" class="text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 transition p-1 text-xs" title="Eliminar">✕</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- PESTAÑA: CUENTAS Y BILLETERAS -->
+        <div x-show="pestanaActiva === 'cuentas'" class="space-y-3.5" style="display: none;">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Mis Cuentas y Billeteras</h2>
+                <button @click="abrirModalNuevaCuenta()" class="text-xs bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 px-3 py-1.5 rounded-xl font-medium transition">+ Nueva Cuenta</button>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-2.5">
+                <template x-for="cta in cuentasListado" :key="cta.nombre">
+                    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3.5 rounded-2xl flex justify-between items-center shadow-sm">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                                <span x-text="cta.nombre.substring(0, 2).toUpperCase()"></span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-zinc-800 dark:text-zinc-200" x-text="cta.nombre"></p>
+                                <p class="text-[11px]" :class="cta.saldo >= 0 ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-rose-600 dark:text-rose-400 font-medium'" x-text="formatearMoneda(cta.saldo)"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button @click="abrirEditarCuenta(cta.nombre)" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition p-1.5 text-xs" title="Editar cuenta">✏️</button>
+                            <button @click="eliminarCuenta(cta.nombre)" class="text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 transition p-1.5 text-xs" title="Eliminar cuenta">✕</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- PESTAÑA: ANÁLISIS Y GRÁFICOS -->
+        <div x-show="pestanaActiva === 'analisis'" class="space-y-5" style="display: none;">
+            
+            <!-- Bloque de Presupuestos -->
+            <div class="space-y-3 bg-white dark:bg-zinc-900/60 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Presupuestos Mensuales</h2>
+                    <span class="text-[10px] text-zinc-400">Toque para editar límite</span>
+                </div>
+                <div class="space-y-2.5">
+                    <template x-for="cat in categoriasGastosNombres" :key="cat">
+                        <div class="flex justify-between items-center text-xs bg-zinc-50 dark:bg-zinc-950 p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                            <span class="font-medium text-zinc-700 dark:text-zinc-300" x-text="cat"></span>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-zinc-500" x-text="formatearMoneda(gastosPorCatMapa[cat] || 0) + ' / '"></span>
+                                <input type="number" step="0.01" class="w-20 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-2 py-1 text-right text-xs font-semibold"
+                                       :value="presupuestos[cat] || 0" @change="actualizarPresupuesto(cat, $event.target.value)">
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Distribución de Gastos Actuales -->
+            <div class="space-y-3 bg-white dark:bg-zinc-900/60 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm">
+                <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Gastos por Categoría este Mes</h2>
+                <template x-if="totalGastos === 0">
+                    <p class="text-zinc-400 text-xs text-center py-4">Sin gastos registrados en este período.</p>
+                </template>
+                <div class="space-y-3" x-show="totalGastos > 0">
+                    <template x-for="item in gastosPorCategoria" :key="item.categoria">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-zinc-700 dark:text-zinc-300 font-medium" x-text="item.categoria"></span>
+                                <span class="text-zinc-500 dark:text-zinc-400" x-text="formatearMoneda(item.monto) + ' (' + item.porcentaje + '%)'"></span>
+                            </div>
+                            <div class="w-full bg-zinc-200 dark:bg-zinc-950 h-2.5 rounded-full overflow-hidden border border-zinc-300 dark:border-zinc-800">
+                                <div class="h-full rounded-full transition-all duration-500" 
+                                     :class="(presupuestos[item.categoria] && item.monto > presupuestos[item.categoria]) ? 'bg-rose-600 dark:bg-rose-500' : 'bg-zinc-800 dark:bg-zinc-200'"
+                                     :style="'width: ' + Math.min(item.porcentaje, 100) + '%'"></div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Evolución Histórica de Meses -->
+            <div class="space-y-3 bg-white dark:bg-zinc-900/60 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm">
+                <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Evolución Histórica por Mes</h2>
+                <div class="space-y-2">
+                    <template x-for="h in historicoMensual" :key="h.mes">
+                        <div class="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 flex justify-between items-center text-xs">
+                            <span class="font-semibold text-zinc-800 dark:text-zinc-200" x-text="h.mes"></span>
+                            <div class="text-right">
+                                <span class="text-emerald-600 dark:text-emerald-400 font-medium mr-2" x-text="'+ ' + formatearMoneda(h.ingresos)"></span>
+                                <span class="text-rose-600 dark:text-rose-400 font-medium" x-text="'- ' + formatearMoneda(h.gastos)"></span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PESTAÑA: CONTROL DE CUOTAS -->
+        <div x-show="pestanaActiva === 'cuotas'" class="space-y-3" style="display: none;">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Financiaciones y Cuotas</h2>
+                <button @click="abrirModalCuota = true" class="text-xs bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 px-3 py-1.5 rounded-xl font-medium transition">+ Nueva Cuota</button>
+            </div>
+
+            <template x-if="cuotas.length === 0">
+                <div class="text-center py-12 bg-white dark:bg-zinc-900/40 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800">
+                    <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-1">No hay cuotas pendientes</p>
+                    <p class="text-zinc-400 dark:text-zinc-600 text-xs">Controla tus compras en cuotas aquí.</p>
+                </div>
+            </template>
+
+            <div class="space-y-2.5">
+                <template x-for="c in cuotas" :key="c.id">
+                    <div class="bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 p-3.5 rounded-2xl space-y-2 shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-semibold text-zinc-800 dark:text-zinc-100" x-text="c.concepto"></p>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Cuota mensual: <span class="text-zinc-800 dark:text-zinc-200 font-medium" x-text="formatearMoneda(c.valorCuota)"></span></p>
+                            </div>
+                            <button @click="eliminarCuota(c.id)" class="text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 text-xs p-1">✕</button>
+                        </div>
+                        <div class="flex justify-between items-center text-xs pt-2 border-t border-zinc-200 dark:border-zinc-800/60">
+                            <span class="text-zinc-500 dark:text-zinc-400">Progreso: Cuota <strong class="text-zinc-800 dark:text-zinc-200" x-text="c.cuotaActual"></strong> de <strong class="text-zinc-800 dark:text-zinc-200" x-text="c.totalCuotas"></strong> (<span x-text="formatearMoneda(c.valorCuota * (c.totalCuotas - c.cuotaActual + 1))"></span> pendiente)</span>
+                            <button @click="avanzarCuota(c.id)" class="bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 px-2.5 py-1 rounded-lg text-[10px] font-medium transition">Avanzar Mes (+1)</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Botón Flotante para Añadir -->
+    <div class="fixed bottom-6 right-6 z-20" x-show="pestanaActiva !== 'cuotas'">
+        <button @click="abrirNuevaTransaccion()" class="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 w-14 h-14 rounded-full flex items-center justify-center shadow-lg font-bold text-2xl transition transform active:scale-95">
+            +
+        </button>
+    </div>
+
+    <!-- MODAL: NUEVA / EDITAR TRANSACCIÓN -->
+    <div x-show="abrirModalTransaccion" class="fixed inset-0 z-30 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" style="display: none;">
+        <div @click.away="abrirModalTransaccion = false" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                <h3 class="font-bold text-sm text-zinc-800 dark:text-zinc-200" x-text="editandoId ? 'Editar Movimiento' : 'Nuevo Movimiento'"></h3>
+                <button @click="abrirModalTransaccion = false" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-100 text-base">✕</button>
+            </div>
+
+            <form @submit.prevent="guardarTransaccion" class="space-y-3.5">
+                <div class="grid grid-cols-3 gap-1 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                    <button type="button" @click="formT.tipo = 'gasto'; actualizarListas()" class="py-2 rounded-lg text-xs font-semibold transition" :class="formT.tipo === 'gasto' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400'">Gasto</button>
+                    <button type="button" @click="formT.tipo = 'ingreso'; actualizarListas()" class="py-2 rounded-lg text-xs font-semibold transition" :class="formT.tipo === 'ingreso' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400'">Ingreso</button>
+                    <button type="button" @click="formT.tipo = 'traspaso'; actualizarListas()" class="py-2 rounded-lg text-xs font-semibold transition" :class="formT.tipo === 'traspaso' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400'">Traspaso</button>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Monto ($)</label>
+                    <input type="number" step="0.01" x-model.number="formT.monto" placeholder="0.00" required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-500 text-base font-semibold">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Concepto o Descripción</label>
+                    <input type="text" x-model="formT.concepto" placeholder="Ej. Nafta, Supermercado, Alquiler..." required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-500 text-xs">
+                </div>
+
+                <!-- Si es Gasto: Categoría y Subcategoría -->
+                <div class="grid grid-cols-2 gap-3" x-show="formT.tipo === 'gasto'">
+                    <div>
+                        <label class="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Categoría</label>
+                        <select x-model="formT.categoria" @change="cambiarCategoriaPrincipal()" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-2.5 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none text-xs">
+                            <template x-for="cat in categoriasGastosNombres" :key="cat">
+                                <option :value="cat" x-text="cat"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Subcategoría</label>
+                        <select x-model="formT.subcategoria" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-2.5 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none text-xs">
+                            <template x-for="sub in subcategoriasDisponibles" :key="sub">
+                                <option :value="sub" x-text="sub"></option>
+                            </template>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Si es Ingreso -->
+                <div x-show="formT.tipo === 'ingreso'">
+                    <label class="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Categoría de Ingreso</label>
+                    <select x-model="formT.categoria" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-2.5 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none text-xs">
+                        <option value="Sueldo / Trabajo">Sueldo / Trabajo</option>
+                        <option value="Trabajos Extra / Varios">Trabajos Extra / Varios</option>
+                        <option value="Otros Ingresos">Otros Ingresos</option>
+                    </select>
+                </div>
+
+                <!-- Si es Traspaso: Origen y Destino -->
+                <div class="grid grid-cols-2 gap-3" x-show="formT.tipo === 'traspaso'">
+                    <div>
+                        <label class="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Cuenta Origen</label>
+                        <select x-model="formT.cuentaOrigen" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-2.5 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none text-xs">
+                            <template x-for="cta in listaNombresCuentas" :key="cta">
+                                <option :value="cta" x-text="cta"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Cuenta Destino</label>
+                        <select x-model="formT.cuentaDestino" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-2.5 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none text-xs">
+                            <template x-for="cta in listaNombresCuentas" :key="cta">
+                                <option :value="cta" x-text="cta"></option>
+                            </template>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Si no es traspaso, muestra cuenta única -->
+                <div x-show="formT.tipo !== 'traspaso'">
+                    <label class="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Cuenta</label>
+                    <select x-model="formT.cuenta" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-2.5 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none text-xs">
+                        <template x-for="cta in listaNombresCuentas" :key="cta">
+                            <option :value="cta" x-text="cta"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 font-semibold py-2.5 rounded-xl transition text-xs mt-1" x-text="editandoId ? 'Guardar Cambios' : 'Guardar'"></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: GESTIÓN DE CUENTA -->
+    <div x-show="abrirModalCuenta" class="fixed inset-0 z-30 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" style="display: none;">
+        <div @click.away="abrirModalCuenta = false" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                <h3 class="font-bold text-sm text-zinc-800 dark:text-zinc-200" x-text="cuentaEditandoVieja ? 'Editar Cuenta' : 'Nueva Cuenta'"></h3>
+                <button @click="abrirModalCuenta = false" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-100 text-base">✕</button>
+            </div>
+
+            <form @submit.prevent="guardarCuenta()" class="space-y-3.5">
+                <div>
+                    <label class="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Nombre de la Cuenta / Billetera</label>
+                    <input type="text" x-model="nombreNuevaCuenta" placeholder="Ej. Uala, Crypto, Banco..." required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none text-sm font-semibold">
+                </div>
+
+                <button type="submit" class="w-full bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 font-semibold py-2.5 rounded-xl transition text-xs mt-1" x-text="cuentaEditandoVieja ? 'Actualizar Cuenta' : 'Crear Cuenta'"></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: NUEVA CUOTA -->
+    <div x-show="abrirModalCuota" class="fixed inset-0 z-30 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" style="display: none;">
+        <div @click.away="abrirModalCuota = false" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                <h3 class="font-bold text-sm text-zinc-800 dark:text-zinc-200">Añadir Compra en Cuotas</h3>
+                <button @click="abrirModalCuota = false" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-100 text-base">✕</button>
+            </div>
+
+            <form @submit.prevent="guardarCuota" class="space-y-3.5">
+                <div>
+                    <label class="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Concepto / Producto</label>
+                    <input type="text" x-model="formC.concepto" placeholder="Ej. Casco, repuesto moto..." required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none text-xs">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Valor Cuota ($)</label>
+                        <input type="number" step="0.01" x-model.number="formC.valorCuota" placeholder="0.00" required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none text-xs font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Total Cuotas</label>
+                        <input type="number" x-model.number="formC.totalCuotas" placeholder="Ej. 3, 6, 12" required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none text-xs">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 font-semibold py-2.5 rounded-xl transition text-xs mt-1">Guardar Cuota</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lógica de la App -->
+    <script>
+        function finanzasApp() {
+            return {
+                pestanaActiva: 'movimientos',
+                abrirModalTransaccion: false,
+                abrirModalCuota: false,
+                abrirModalCuenta: false,
+                editandoId: null,
+                cuentaEditandoVieja: null,
+                nombreNuevaCuenta: '',
+                filtroBusqueda: '',
+                filtroMes: 'todos',
+                modoClaro: JSON.parse(localStorage.getItem('monify_modo_claro')) || false,
+                
+                transacciones: JSON.parse(localStorage.getItem('monify_transacciones_v9')) || [],
+                cuotas: JSON.parse(localStorage.getItem('monify_cuotas_v9')) || [],
+                presupuestos: JSON.parse(localStorage.getItem('monify_presupuestos_v9')) || {},
+                listaNombresCuentas: JSON.parse(localStorage.getItem('monify_cuentas_v9')) || [
+                    'Efectivo', 'Astropay', 'BBVA', 'Brubank', 'Carrefour', 'ClaroPay', 'Cocos', 'IOL', 'Lemon', 'Mercado Pago', 'Naranja X', 'Personal Pay'
+                ],
+                
+                estructuraGastos: {
+                    "Vivienda y Hogar": ["Alquiler o cuota hipotecaria", "Impuestos y tasas", "Expensas / Mantenimiento", "Equipamiento"],
+                    "Alimentación y Compras": ["Supermercado y almacén", "Verdulería y carnicería", "Comidas fuera y delivery"],
+                    "Servicios Básicos y Conectividad": ["Energía eléctrica", "Gas", "Agua", "Telecomunicaciones"],
+                    "Movilidad y Transporte": ["Vehículo particular", "Transporte público", "Transporte alternativo", "Moto o bicicleta"],
+                    "Salud y Bienestar": ["Cobertura médica", "Farmacia y medicamentos", "Atención profesional", "Cuidado personal", "Gimnasio y deportes"],
+                    "Ocio y Entretenimiento": ["Salidas y cultura", "Viajes y turismo", "Hobbies", "Mascotas"],
+                    "Educación y Desarrollo": ["Estudio", "Materiales"],
+                    "Finanzas, Impuestos y Varios": ["Servicios financieros", "Seguros adicionales", "Indumentaria y calzado", "Imprevistos y regalos"]
+                },
+
+                formT: { 
+                    tipo: 'gasto', 
+                    monto: '', 
+                    concepto: '', 
+                    categoria: 'Vivienda y Hogar', 
+                    subcategoria: 'Alquiler o cuota hipotecaria', 
+                    cuenta: 'Mercado Pago',
+                    cuentaOrigen: 'Mercado Pago',
+                    cuentaDestino: 'Efectivo'
+                },
+                formC: { concepto: '', valorCuota: '', totalCuotas: 3, cuotaActual: 1 },
+
+                get categoriasGastosNombres() {
+                    return Object.keys(this.estructuraGastos);
+                },
+
+                get subcategoriasDisponibles() {
+                    return this.estructuraGastos[this.formT.categoria] || [];
+                },
+
+                get mesActual() {
+                    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                    const fecha = new Date();
+                    return `${meses[fecha.getMonth()]} ${fecha.getFullYear()}`;
+                },
+
+                get mesesDisponibles() {
+                    const setMeses = new Set();
+                    this.transacciones.forEach(t => { if (t.mesAnio) setMeses.add(t.mesAnio); });
+                    return Array.from(setMeses);
+                },
+
+                get transaccionesFiltradas() {
+                    return this.transacciones.filter(t => {
+                        const coincideBusqueda = t.concepto.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) || 
+                                               t.categoria.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
+                                               (t.subcategoria && t.subcategoria.toLowerCase().includes(this.filtroBusqueda.toLowerCase()));
+                        const coincideMes = this.filtroMes === 'todos' || t.mesAnio === this.filtroMes;
+                        return coincideBusqueda && coincideMes;
+                    });
+                },
+
+                get totalIngresos() {
+                    return this.transaccionesFiltradas.filter(t => t.tipo === 'ingreso').reduce((acc, t) => acc + t.monto, 0);
+                },
+
+                get totalGastos() {
+                    return this.transaccionesFiltradas.filter(t => t.tipo === 'gasto').reduce((acc, t) => acc + t.monto, 0);
+                },
+
+                get balanceNeto() {
+                    return this.totalIngresos - this.totalGastos;
+                },
+
+                get cuentasListado() {
+                    const saldos = {};
+                    this.listaNombresCuentas.forEach(c => saldos[c] = 0);
+
+                    this.transacciones.forEach(t => {
+                        if (t.tipo === 'ingreso') {
+                            if (saldos[t.cuenta] !== undefined) saldos[t.cuenta] += t.monto;
+                        } else if (t.tipo === 'gasto') {
+                            if (saldos[t.cuenta] !== undefined) saldos[t.cuenta] -= t.monto;
+                        } else if (t.tipo === 'traspaso') {
+                            if (saldos[t.cuentaOrigen] !== undefined) saldos[t.cuentaOrigen] -= t.monto;
+                            if (saldos[t.cuentaDestino] !== undefined) saldos[t.cuentaDestino] += t.monto;
+                        }
+                    });
+
+                    return this.listaNombresCuentas.map(nombre => ({
+                        nombre: nombre,
+                        saldo: saldos[nombre] !== undefined ? saldos[nombre] : 0
+                    }));
+                },
+
+                get gastosPorCatMapa() {
+                    const agrupados = {};
+                    this.transaccionesFiltradas.filter(t => t.tipo === 'gasto').forEach(t => {
+                        agrupados[t.categoria] = (agrupados[t.categoria] || 0) + t.monto;
+                    });
+                    return agrupados;
+                },
+
+                get gastosPorCategoria() {
+                    const total = this.totalGastos;
+                    if (total === 0) return [];
+                    const agrupados = this.gastosPorCatMapa;
+
+                    return Object.keys(agrupados).map(cat => {
+                        const monto = agrupados[cat];
+                        const porcentaje = Math.round((monto / total) * 100);
+                        return { categoria: cat, monto, porcentaje };
+                    }).sort((a, b) => b.monto - a.monto);
+                },
+
+                get historicoMensual() {
+                    const mapaMeses = {};
+                    this.transacciones.forEach(t => {
+                        if (!t.mesAnio) return;
+                        if (!mapaMeses[t.mesAnio]) mapaMeses[t.mesAnio] = { ingresos: 0, gastos: 0 };
+                        if (t.tipo === 'ingreso') mapaMeses[t.mesAnio].ingresos += t.monto;
+                        if (t.tipo === 'gasto') mapaMeses[t.mesAnio].gastos += t.monto;
+                    });
+                    return Object.keys(mapaMeses).map(mes => ({
+                        mes,
+                        ingresos: mapaMeses[mes].ingresos,
+                        gastos: mapaMeses[mes].gastos
+                    }));
+                },
+
+                cambiarCategoriaPrincipal() {
+                    const subs = this.subcategoriasDisponibles;
+                    if (subs.length > 0) this.formT.subcategoria = subs[0];
+                },
+
+                actualizarListas() {
+                    if (this.editandoId) return;
+                    if (this.formT.tipo === 'gasto') {
+                        this.formT.categoria = 'Vivienda y Hogar';
+                        this.cambiarCategoriaPrincipal();
+                    } else if (this.formT.tipo === 'ingreso') {
+                        this.formT.categoria = 'Sueldo / Trabajo';
+                        this.formT.subcategoria = 'Principal';
+                    }
+                },
+
+                actualizarPresupuesto(cat, valor) {
+                    this.presupuestos[cat] = Number(Number(valor).toFixed(2));
+                    localStorage.setItem('monify_presupuestos_v9', JSON.stringify(this.presupuestos));
+                },
+
+                abrirNuevaTransaccion() {
+                    this.editandoId = null;
+                    this.formT = { tipo: 'gasto', monto: '', concepto: '', categoria: 'Vivienda y Hogar', subcategoria: 'Alquiler o cuota hipotecaria', cuenta: this.listaNombresCuentas[0] || 'Efectivo', cuentaOrigen: this.listaNombresCuentas[0], cuentaDestino: this.listaNombresCuentas[1] || 'Efectivo' };
+                    this.actualizarListas();
+                    this.abrirModalTransaccion = true;
+                },
+
+                abrirEditarTransaccion(t) {
+                    this.editandoId = t.id;
+                    this.formT = {
+                        tipo: t.tipo,
+                        monto: t.monto,
+                        concepto: t.concepto,
+                        categoria: t.categoria || 'Vivienda y Hogar',
+                        subcategoria: t.subcategoria || '',
+                        cuenta: t.cuenta || 'Mercado Pago',
+                        cuentaOrigen: t.cuentaOrigen || 'Mercado Pago',
+                        cuentaDestino: t.cuentaDestino || 'Efectivo'
+                    };
+                    this.abrirModalTransaccion = true;
+                },
+
+                abrirModalNuevaCuenta() {
+                    this.cuentaEditandoVieja = null;
+                    this.nombreNuevaCuenta = '';
+                    this.abrirModalCuenta = true;
+                },
+
+                abrirEditarCuenta(nombreActual) {
+                    this.cuentaEditandoVieja = nombreActual;
+                    this.nombreNuevaCuenta = nombreActual;
+                    this.abrirModalCuenta = true;
+                },
+
+                guardarCuenta() {
+                    const nombreLimpio = this.nombreNuevaCuenta.trim();
+                    if (!nombreLimpio) return;
+
+                    if (this.cuentaEditandoVieja) {
+                        if (this.listaNombresCuentas.includes(nombreLimpio) && nombreLimpio !== this.cuentaEditandoVieja) {
+                            alert('Ya existe una cuenta con ese nombre.');
+                            return;
+                        }
+                        this.listaNombresCuentas = this.listaNombresCuentas.map(c => c === this.cuentaEditandoVieja ? nombreLimpio : c);
+                        this.transacciones = this.transacciones.map(t => {
+                            if (t.cuenta === this.cuentaEditandoVieja) t.cuenta = nombreLimpio;
+                            if (t.cuentaOrigen === this.cuentaEditandoVieja) t.cuentaOrigen = nombreLimpio;
+                            if (t.cuentaDestino === this.cuentaEditandoVieja) t.cuentaDestino = nombreLimpio;
+                            return t;
+                        });
+                        this.sincronizarStorage();
+                    } else {
+                        if (this.listaNombresCuentas.includes(nombreLimpio)) {
+                            alert('Esta cuenta ya existe.');
+                            return;
+                        }
+                        this.listaNombresCuentas.push(nombreLimpio);
+                    }
+
+                    this.sincronizarStorageCuentas();
+                    this.abrirModalCuenta = false;
+                },
+
+                eliminarCuenta(nombreCuenta) {
+                    if (this.listaNombresCuentas.length <= 1) {
+                        alert('Debes conservar al menos una cuenta.');
+                        return;
+                    }
+                    if (confirm(`¿Eliminar la cuenta "${nombreCuenta}"? Los movimientos asociados también se eliminarán.`)) {
+                        this.listaNombresCuentas = this.listaNombresCuentas.filter(c => c !== nombreCuenta);
+                        this.transacciones = this.transacciones.filter(t => t.cuenta !== nombreCuenta && t.cuentaOrigen !== nombreCuenta && t.cuentaDestino !== nombreCuenta);
+                        this.sincronizarStorageCuentas();
+                        this.sincronizarStorage();
+                    }
+                },
+
+                guardarTransaccion() {
+                    if (!this.formT.monto || !this.formT.concepto) return;
+                    
+                    if (this.editandoId) {
+                        this.transacciones = this.transacciones.map(t => {
+                            if (t.id === this.editandoId) {
+                                return {
+                                    ...t,
+                                    tipo: this.formT.tipo,
+                                    monto: Number(Number(this.formT.monto).toFixed(2)),
+                                    concepto: this.formT.concepto,
+                                    categoria: this.formT.tipo === 'traspaso' ? 'Traspaso' : this.formT.categoria,
+                                    subcategoria: this.formT.tipo === 'gasto' ? this.formT.subcategoria : (this.formT.tipo === 'traspaso' ? 'Movimiento interno' : 'Ingresos'),
+                                    cuenta: this.formT.tipo === 'traspaso' ? '' : this.formT.cuenta,
+                                    cuentaOrigen: this.formT.tipo === 'traspaso' ? this.formT.cuentaOrigen : '',
+                                    cuentaDestino: this.formT.tipo === 'traspaso' ? this.formT.cuentaDestino : ''
+                                };
+                            }
+                            return t;
+                        });
+                    } else {
+                        const d = new Date();
+                        const mesesNombres = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                        const mesAnioStr = `${mesesNombres[d.getMonth()]} ${d.getFullYear()}`;
+
+                        const nueva = {
+                            id: Date.now(),
+                            tipo: this.formT.tipo,
+                            monto: Number(Number(this.formT.monto).toFixed(2)),
+                            concepto: this.formT.concepto,
+                            categoria: this.formT.tipo === 'traspaso' ? 'Traspaso' : this.formT.categoria,
+                            subcategoria: this.formT.tipo === 'gasto' ? this.formT.subcategoria : (this.formT.tipo === 'traspaso' ? 'Movimiento interno' : 'Ingresos'),
+                            cuenta: this.formT.tipo === 'traspaso' ? '' : this.formT.cuenta,
+                            cuentaOrigen: this.formT.tipo === 'traspaso' ? this.formT.cuentaOrigen : '',
+                            cuentaDestino: this.formT.tipo === 'traspaso' ? this.formT.cuentaDestino : '',
+                            fechaFormateada: d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: '2-digit' }),
+                            mesAnio: mesAnioStr
+                        };
+                        this.transacciones.unshift(nueva);
+                    }
+
+                    this.sincronizarStorage();
+                    this.abrirModalTransaccion = false;
+                },
+
+                eliminarTransaccion(id) {
+                    if (confirm('¿Eliminar este movimiento?')) {
+                        this.transacciones = this.transacciones.filter(t => t.id !== id);
+                        this.sincronizarStorage();
+                    }
+                },
+
+                guardarCuota() {
+                    if (!this.formC.concepto || !this.formC.valorCuota) return;
+                    const nueva = {
+                        id: Date.now(),
+                        concepto: this.formC.concepto,
+                        valorCuota: Number(Number(this.formC.valorCuota).toFixed(2)),
+                        totalCuotas: Number(this.formC.totalCuotas),
+                        cuotaActual: 1
+                    };
+                    this.cuotas.unshift(nueva);
+                    this.sincronizarStorageCuotas();
+                    this.formC.concepto = '';
+                    this.formC.valorCuota = '';
+                    this.abrirModalCuota = false;
+                },
+
+                avanzarCuota(id) {
+                    this.cuotas = this.cuotas.map(c => {
+                        if (c.id === id) {
+                            if (c.cuotaActual < c.totalCuotas) c.cuotaActual++;
+                            else alert('¡Esta cuota ya ha finalizado por completo!');
+                        }
+                        return c;
+                    });
+                    this.sincronizarStorageCuotas();
+                },
+
+                eliminarCuota(id) {
+                    if (confirm('¿Eliminar esta financiación?')) {
+                        this.cuotas = this.cuotas.filter(c => c.id !== id);
+                        this.sincronizarStorageCuotas();
+                    }
+                },
+
+                exportarDatos() {
+                    const datos = { transacciones: this.transacciones, cuotas: this.cuotas, cuentas: this.listaNombresCuentas, presupuestos: this.presupuestos };
+                    const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'respaldo_finanzas_ultimate.json';
+                    a.click();
+                },
+
+                sincronizarStorage() { localStorage.setItem('monify_transacciones_v9', JSON.stringify(this.transacciones)); },
+                sincronizarStorageCuotas() { localStorage.setItem('monify_cuotas_v9', JSON.stringify(this.cuotas)); },
+                sincronizarStorageCuentas() { localStorage.setItem('monify_cuentas_v9', JSON.stringify(this.listaNombresCuentas)); },
+
+                formatearMoneda(valor) {
+                    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valor);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
