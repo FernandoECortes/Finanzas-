@@ -31,7 +31,7 @@
                         M
                     </div>
                     <div>
-                        <h1 class="text-sm font-bold tracking-tight">Monify</h1>
+                        <h1 class="text-sm font-bold tracking-tight">Monify Pro</h1>
                         <p class="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold" x-text="mesActual"></p>
                     </div>
                 </div>
@@ -62,12 +62,13 @@
                 </div>
             </div>
 
-            <!-- Navegación por pestañas -->
-            <div class="max-w-md mx-auto grid grid-cols-4 gap-1 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 mt-3.5">
-                <button @click="pestanaActiva = 'movimientos'" class="py-2 rounded-xl text-[11px] font-bold tracking-tight transition" :class="pestanaActiva === 'movimientos' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Movimientos</button>
-                <button @click="pestanaActiva = 'cuentas'" class="py-2 rounded-xl text-[11px] font-bold tracking-tight transition" :class="pestanaActiva === 'cuentas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Cuentas</button>
-                <button @click="pestanaActiva = 'analisis'" class="py-2 rounded-xl text-[11px] font-bold tracking-tight transition" :class="pestanaActiva === 'analisis' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Análisis</button>
-                <button @click="pestanaActiva = 'cuotas'" class="py-2 rounded-xl text-[11px] font-bold tracking-tight transition" :class="pestanaActiva === 'cuotas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Cuotas</button>
+            <!-- Navegación por pestañas (5 pestañas) -->
+            <div class="max-w-md mx-auto grid grid-cols-5 gap-1 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 mt-3.5">
+                <button @click="pestanaActiva = 'movimientos'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'movimientos' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Movs</button>
+                <button @click="pestanaActiva = 'cuentas'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'cuentas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Cuentas</button>
+                <button @click="pestanaActiva = 'analisis'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'analisis' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Análisis</button>
+                <button @click="pestanaActiva = 'ahorros'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'ahorros' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Ahorros</button>
+                <button @click="pestanaActiva = 'cuotas'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'cuotas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Cuotas</button>
             </div>
         </header>
 
@@ -165,25 +166,54 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA: ANÁLISIS Y GRÁFICOS AVANZADOS -->
+            <!-- PESTAÑA: ANÁLISIS E INTELIGENCIA FINANCIERA -->
             <div x-show="pestanaActiva === 'analisis'" class="space-y-4" style="display: none;" x-cloak>
                 
-                <!-- Selector de Periodo de Análisis -->
+                <!-- Selector de Periodo -->
                 <div class="grid grid-cols-3 gap-1 bg-white dark:bg-zinc-900 p-1.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
                     <button @click="periodoAnalisis = 'semana'" class="py-2 rounded-xl text-xs font-bold transition" :class="periodoAnalisis === 'semana' ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 shadow-sm' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'">Semana</button>
                     <button @click="periodoAnalisis = 'mes'" class="py-2 rounded-xl text-xs font-bold transition" :class="periodoAnalisis === 'mes' ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 shadow-sm' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'">Mes</button>
                     <button @click="periodoAnalisis = 'anio'" class="py-2 rounded-xl text-xs font-bold transition" :class="periodoAnalisis === 'anio' ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 shadow-sm' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'">Año</button>
                 </div>
 
-                <!-- Tarjetas de Métricas Clave del Periodo -->
+                <!-- Métricas Clave Avanzadas -->
                 <div class="grid grid-cols-2 gap-2.5">
                     <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
-                        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mb-1">Gasto Promedio Diario</p>
+                        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mb-1">Gasto Prom. Diario</p>
                         <p class="text-sm font-black text-zinc-900 dark:text-zinc-100" x-text="formatearMoneda(metricasAnalisis.promedioDiario)"></p>
                     </div>
                     <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
                         <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mb-1">Tasa de Ahorro</p>
                         <p class="text-sm font-black" :class="metricasAnalisis.tasaAhorro >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'" x-text="metricasAnalisis.tasaAhorro + '%'"></p>
+                    </div>
+                </div>
+
+                <!-- Nuevos Parámetros de Decisión: Proyección y Supervivencia -->
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
+                        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mb-1">Proyección Fin de Mes</p>
+                        <p class="text-sm font-bold text-amber-600 dark:text-amber-400" x-text="formatearMoneda(metricasAnalisis.proyeccionFinMes)"></p>
+                    </div>
+                    <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
+                        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mb-1">Días de Supervivencia</p>
+                        <p class="text-sm font-bold text-blue-600 dark:text-blue-400" x-text="metricasAnalisis.diasSupervivencia + ' días'"></p>
+                    </div>
+                </div>
+
+                <!-- Fijos vs Variables -->
+                <div class="bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm space-y-2">
+                    <div class="flex justify-between items-center px-1">
+                        <h2 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Fijos vs. Variables (Esenciales vs. Ocio)</h2>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                        <div class="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60">
+                            <p class="text-[10px] uppercase font-bold text-zinc-400">Gastos Fijos</p>
+                            <p class="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-0.5" x-text="formatearMoneda(metricasAnalisis.gastosFijos)"></p>
+                        </div>
+                        <div class="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60">
+                            <p class="text-[10px] uppercase font-bold text-zinc-400">Gastos Variables</p>
+                            <p class="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-0.5" x-text="formatearMoneda(metricasAnalisis.gastosVariables)"></p>
+                        </div>
                     </div>
                 </div>
 
@@ -256,6 +286,54 @@
 
             </div>
 
+            <!-- PESTAÑA: PLANIFICADOR DE AHORROS -->
+            <div x-show="pestanaActiva === 'ahorros'" class="space-y-3.5" style="display: none;">
+                <div class="flex justify-between items-center px-1">
+                    <h2 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Metas y Tipos de Ahorro</h2>
+                    <button @click="abrirModalMetaAhorro = true" class="text-xs bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 px-3.5 py-2 rounded-xl font-semibold shadow-sm transition">+ Nueva Meta</button>
+                </div>
+
+                <template x-if="metasAhorro.length === 0">
+                    <div class="text-center py-16 bg-white dark:bg-zinc-900/40 rounded-3xl border border-dashed border-zinc-200 dark:border-zinc-800 shadow-sm">
+                        <div class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800/60 flex items-center justify-center mx-auto mb-3 text-lg">🎯</div>
+                        <p class="text-zinc-600 dark:text-zinc-400 text-sm font-semibold mb-1">No hay metas de ahorro creadas</p>
+                        <p class="text-zinc-400 dark:text-zinc-600 text-xs">Planifica un fondo de emergencia, viaje o compra aquí.</p>
+                    </div>
+                </template>
+
+                <div class="space-y-3">
+                    <template x-for="meta in metasAhorro" :key="meta.id">
+                        <div class="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 p-4 rounded-3xl space-y-3 shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="text-[10px] font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 px-2 py-0.5 rounded-lg uppercase tracking-wider" x-text="meta.tipo"></span>
+                                    <p class="text-sm font-bold text-zinc-900 dark:text-zinc-100 mt-1.5" x-text="meta.titulo"></p>
+                                </div>
+                                <button @click="eliminarMetaAhorro(meta.id)" class="text-zinc-400 hover:text-rose-600 p-1.5 text-xs transition">✕</button>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-zinc-500 font-medium">Acumulado: <strong class="text-zinc-900 dark:text-zinc-100" x-text="formatearMoneda(meta.acumulado)"></strong></span>
+                                    <span class="text-zinc-500 font-medium">Meta: <strong class="text-zinc-900 dark:text-zinc-100" x-text="formatearMoneda(meta.montoMeta)"></strong></span>
+                                </div>
+                                <div class="w-full bg-zinc-200 dark:bg-zinc-950 h-2.5 rounded-full overflow-hidden">
+                                    <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" :style="'width: ' + Math.min(Math.round((meta.acumulado / meta.montoMeta) * 100), 100) + '%'"></div>
+                                </div>
+                                <div class="flex justify-between text-[11px] text-zinc-400 pt-0.5">
+                                    <span x-text="Math.round((meta.acumulado / meta.montoMeta) * 100) + '% completado'"></span>
+                                    <span x-text="'Plazo: ' + meta.plazo"></span>
+                                </div>
+                            </div>
+
+                            <div class="flex space-x-2 pt-1 border-t border-zinc-100 dark:border-zinc-800">
+                                <button @click="abonarAhorro(meta.id)" class="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 py-2 rounded-xl text-xs font-bold transition">Abonar Dinero (+)</button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
             <!-- PESTAÑA: CONTROL DE CUOTAS -->
             <div x-show="pestanaActiva === 'cuotas'" class="space-y-3.5" style="display: none;">
                 <div class="flex justify-between items-center px-1">
@@ -293,7 +371,7 @@
         </main>
 
         <!-- Botón Flotante Principal -->
-        <div class="fixed bottom-6 right-6 z-20" x-show="pestanaActiva !== 'cuotas'">
+        <div class="fixed bottom-6 right-6 z-20" x-show="pestanaActiva !== 'cuotas' && pestanaActiva !== 'ahorros'">
             <button @click="abrirNuevaTransaccion()" class="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl font-bold text-2xl transition transform active:scale-95">
                 +
             </button>
@@ -335,7 +413,7 @@
                         </div>
                         <div>
                             <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Subcategoría</label>
-                            <select x-model="formT.subcategoria" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-medium shadow-sm focus:outline-none">
+                            <select x-model="formT.subcategoria" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3 py-2.5 text-xs font-medium shadow-sm focus:outline-none">
                                 <template x-for="sub in subcategoriasDisponibles" :key="sub">
                                     <option :value="sub" x-text="sub"></option>
                                 </template>
@@ -402,6 +480,42 @@
             </div>
         </div>
 
+        <!-- MODAL: META DE AHORRO -->
+        <div x-show="abrirModalMetaAhorro" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" style="display: none;" x-cloak>
+            <div @click.away="abrirModalMetaAhorro = false" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
+                <div class="flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800 pb-3">
+                    <h3 class="font-bold text-sm text-zinc-900 dark:text-zinc-100">Nueva Meta de Ahorro</h3>
+                    <button @click="abrirModalMetaAhorro = false" class="text-zinc-400 hover:text-zinc-600">✕</button>
+                </div>
+                <form @submit.prevent="guardarMetaAhorro" class="space-y-3.5">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Título del Objetivo</label>
+                        <input type="text" x-model="formA.titulo" placeholder="Ej. Fondo de Emergencia, Viaje, Moto..." required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-medium shadow-sm focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Tipo de Ahorro</label>
+                        <select x-model="formA.tipo" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-medium shadow-sm focus:outline-none">
+                            <option value="Fondo de Emergencia">Fondo de Emergencia</option>
+                            <option value="Objetivo / Compra">Objetivo / Compra</option>
+                            <option value="Inversión / Capital">Inversión / Capital</option>
+                            <option value="Ahorro General">Ahorro General</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Monto Meta ($)</label>
+                            <input type="number" step="0.01" x-model.number="formA.montoMeta" placeholder="0.00" required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-bold shadow-sm focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Plazo Estimado</label>
+                            <input type="text" x-model="formA.plazo" placeholder="Ej. 6 meses, Dic 2026" required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-medium shadow-sm focus:outline-none">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 font-bold py-3 rounded-2xl text-xs shadow-md transition">Guardar Meta</button>
+                </form>
+            </div>
+        </div>
+
         <!-- MODAL: CUOTA -->
         <div x-show="abrirModalCuota" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" style="display: none;" x-cloak>
             <div @click.away="abrirModalCuota = false" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
@@ -435,10 +549,11 @@
         function finanzasApp() {
             return {
                 pestanaActiva: 'movimientos',
-                periodoAnalisis: 'mes', // 'semana', 'mes', 'anio'
+                periodoAnalisis: 'mes',
                 abrirModalTransaccion: false,
                 abrirModalCuota: false,
                 abrirModalCuenta: false,
+                abrirModalMetaAhorro: false,
                 editandoId: null,
                 cuentaEditandoVieja: null,
                 nombreNuevaCuenta: '',
@@ -446,10 +561,11 @@
                 filtroMes: 'todos',
                 modoClaro: localStorage.getItem('monify_modo_claro') === 'true',
                 
-                transacciones: JSON.parse(localStorage.getItem('monify_transacciones_v10')) || [],
-                cuotas: JSON.parse(localStorage.getItem('monify_cuotas_v10')) || [],
-                presupuestos: JSON.parse(localStorage.getItem('monify_presupuestos_v10')) || {},
-                listaNombresCuentas: JSON.parse(localStorage.getItem('monify_cuentas_v10')) || [
+                transacciones: JSON.parse(localStorage.getItem('monify_transacciones_v11')) || [],
+                cuotas: JSON.parse(localStorage.getItem('monify_cuotas_v11')) || [],
+                presupuestos: JSON.parse(localStorage.getItem('monify_presupuestos_v11')) || {},
+                metasAhorro: JSON.parse(localStorage.getItem('monify_metas_v11')) || [],
+                listaNombresCuentas: JSON.parse(localStorage.getItem('monify_cuentas_v11')) || [
                     'Efectivo', 'Astropay', 'BBVA', 'Brubank', 'Carrefour', 'ClaroPay', 'Cocos', 'IOL', 'Lemon', 'Mercado Pago', 'Naranja X', 'Personal Pay'
                 ],
                 
@@ -468,6 +584,7 @@
                     tipo: 'gasto', monto: '', concepto: '', categoria: 'Vivienda y Hogar', subcategoria: 'Alquiler o cuota hipotecaria', cuenta: 'Mercado Pago', cuentaOrigen: 'Mercado Pago', cuentaDestino: 'Efectivo'
                 },
                 formC: { concepto: '', valorCuota: '', totalCuotas: 3, cuotaActual: 1 },
+                formA: { titulo: '', tipo: 'Fondo de Emergencia', montoMeta: '', plazo: '' },
 
                 get categoriasGastosNombres() { return Object.keys(this.estructuraGastos); },
                 get subcategoriasDisponibles() { return this.estructuraGastos[this.formT.categoria] || []; },
@@ -494,20 +611,16 @@
                 get totalGastos() { return this.transaccionesFiltradas.filter(t => t.tipo === 'gasto').reduce((acc, t) => acc + t.monto, 0); },
                 get balanceNeto() { return this.totalIngresos - this.totalGastos; },
                 
-                // Lógica avanzada para Análisis por Semana / Mes / Año
                 get gastosFiltradosPeriodo() {
                     const ahora = new Date();
                     return this.transacciones.filter(t => {
                         if (t.tipo !== 'gasto') return false;
-                        // Si el formato de fecha es DD/MM/YY
                         const partes = t.fechaFormateada.split('/');
                         if (partes.length !== 3) return true;
                         const fechaT = new Date(`20${partes[2]}`, partes[1] - 1, partes[0]);
 
                         if (this.periodoAnalisis === 'semana') {
-                            const unDiaMs = 24 * 60 * 60 * 1000;
-                            const diffDias = Math.abs((ahora - fechaT) / unDiaMs);
-                            return diffDias <= 7;
+                            return Math.abs((ahora - fechaT) / (24 * 60 * 60 * 1000)) <= 7;
                         } else if (this.periodoAnalisis === 'mes') {
                             return fechaT.getMonth() === ahora.getMonth() && fechaT.getFullYear() === ahora.getFullYear();
                         } else if (this.periodoAnalisis === 'anio') {
@@ -564,12 +677,40 @@
                     const promedioDiario = totalG / divisorDias;
                     const tasaAhorro = totalI > 0 ? Math.round(((totalI - totalG) / totalI) * 100) : 0;
 
+                    // Proyección de fin de mes (Run-Rate)
+                    const ahora = new Date();
+                    const diaActual = ahora.getDate();
+                    const diasEnMes = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0).getDate();
+                    let proyeccionFinMes = totalG;
+                    if (this.periodoAnalisis === 'mes' && diaActual > 0) {
+                        proyeccionFinMes = (totalG / diaActual) * diasEnMes;
+                    }
+
+                    // Días de Supervivencia basados en saldo total actual / gasto promedio diario
+                    const saldoTotalCuentas = this.cuentasListado.reduce((acc, c) => acc + c.saldo, 0);
+                    const diasSupervivencia = promedioDiario > 0 ? Math.round(saldoTotalCuentas / promedioDiario) : 999;
+
+                    // Fijos vs Variables
+                    let gastosFijos = 0;
+                    let gastosVariables = 0;
+                    this.gastosFiltradosPeriodo.forEach(t => {
+                        if (["Vivienda y Hogar", "Alimentación y Compras", "Servicios Básicos y Conectividad", "Salud y Bienestar"].includes(t.categoria)) {
+                            gastosFijos += t.monto;
+                        } else {
+                            gastosVariables += t.monto;
+                        }
+                    });
+
                     const desglose = this.desgloseCategoriasPeriodo;
                     const mayor = desglose.length > 0 ? desglose[0] : { categoria: 'Sin datos', monto: 0, porcentaje: 0 };
 
                     return {
                         promedioDiario,
                         tasaAhorro,
+                        proyeccionFinMes,
+                        diasSupervivencia,
+                        gastosFijos,
+                        gastosVariables,
                         mayorCategoria: { nombre: mayor.categoria, monto: mayor.monto, porcentaje: mayor.porcentaje }
                     };
                 },
@@ -642,7 +783,7 @@
                 },
                 actualizarPresupuesto(cat, valor) {
                     this.presupuestos[cat] = Number(Number(valor).toFixed(2));
-                    localStorage.setItem('monify_presupuestos_v10', JSON.stringify(this.presupuestos));
+                    localStorage.setItem('monify_presupuestos_v11', JSON.stringify(this.presupuestos));
                 },
                 abrirNuevaTransaccion() {
                     this.editandoId = null;
@@ -741,6 +882,40 @@
                         this.sincronizarStorage();
                     }
                 },
+                guardarMetaAhorro() {
+                    if (!this.formA.titulo || !this.formA.montoMeta) return;
+                    this.metasAhorro.unshift({
+                        id: Date.now(),
+                        titulo: this.formA.titulo,
+                        tipo: this.formA.tipo,
+                        montoMeta: Number(Number(this.formA.montoMeta).toFixed(2)),
+                        acumulado: 0,
+                        plazo: this.formA.plazo
+                    });
+                    this.sincronizarStorageMetas();
+                    this.formA.titulo = ''; this.formA.montoMeta = ''; this.formA.plazo = '';
+                    this.abrirModalMetaAhorro = false;
+                },
+                abonarAhorro(id) {
+                    const montoStr = prompt('¿Cuánto deseas abonar a esta meta de ahorro? ($):');
+                    if (!montoStr) return;
+                    const monto = Number(montoStr);
+                    if (isNaN(monto) || monto <= 0) return alert('Monto inválido.');
+
+                    this.metasAhorro = this.metasAhorro.map(m => {
+                        if (m.id === id) {
+                            m.acumulado += monto;
+                        }
+                        return m;
+                    });
+                    this.sincronizarStorageMetas();
+                },
+                eliminarMetaAhorro(id) {
+                    if (confirm('¿Eliminar esta meta de ahorro?')) {
+                        this.metasAhorro = this.metasAhorro.filter(m => m.id !== id);
+                        this.sincronizarStorageMetas();
+                    }
+                },
                 guardarCuota() {
                     if (!this.formC.concepto || !this.formC.valorCuota) return;
                     this.cuotas.unshift({
@@ -769,15 +944,16 @@
                     }
                 },
                 exportarDatos() {
-                    const datos = { transacciones: this.transacciones, cuotas: this.cuotas, cuentas: this.listaNombresCuentas, presupuestos: this.presupuestos };
+                    const datos = { transacciones: this.transacciones, cuotas: this.cuotas, cuentas: this.listaNombresCuentas, presupuestos: this.presupuestos, metas: this.metasAhorro };
                     const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url; a.download = 'respaldo_finanzas_ultimate.json'; a.click();
                 },
-                sincronizarStorage() { localStorage.setItem('monify_transacciones_v10', JSON.stringify(this.transacciones)); },
-                sincronizarStorageCuotas() { localStorage.setItem('monify_cuotas_v10', JSON.stringify(this.cuotas)); },
-                sincronizarStorageCuentas() { localStorage.setItem('monify_cuentas_v10', JSON.stringify(this.listaNombresCuentas)); },
+                sincronizarStorage() { localStorage.setItem('monify_transacciones_v11', JSON.stringify(this.transacciones)); },
+                sincronizarStorageCuotas() { localStorage.setItem('monify_cuotas_v11', JSON.stringify(this.cuotas)); },
+                sincronizarStorageCuentas() { localStorage.setItem('monify_cuentas_v11', JSON.stringify(this.listaNombresCuentas)); },
+                sincronizarStorageMetas() { localStorage.setItem('monify_metas_v11', JSON.stringify(this.metasAhorro)); },
                 formatearMoneda(valor) {
                     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valor);
                 }
