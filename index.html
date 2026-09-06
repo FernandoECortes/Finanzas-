@@ -62,7 +62,7 @@
                 </div>
             </div>
 
-            <!-- Navegación por pestañas (5 pestañas) -->
+            <!-- Navegación por pestañas -->
             <div class="max-w-md mx-auto grid grid-cols-5 gap-1 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 mt-3.5">
                 <button @click="pestanaActiva = 'movimientos'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'movimientos' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Movs</button>
                 <button @click="pestanaActiva = 'cuentas'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'cuentas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Cuentas</button>
@@ -188,7 +188,7 @@
                     </div>
                 </div>
 
-                <!-- Nuevos Parámetros de Decisión: Proyección y Supervivencia -->
+                <!-- Proyección y Supervivencia -->
                 <div class="grid grid-cols-2 gap-2.5">
                     <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
                         <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mb-1">Proyección Fin de Mes</p>
@@ -245,7 +245,7 @@
                     </div>
                 </div>
 
-                <!-- Distribución Detallada por Categoría -->
+                <!-- Desglose de Gastos -->
                 <div class="space-y-3 bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
                     <h2 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 px-1">Desglose de Gastos</h2>
                     <template x-if="gastosFiltradosPeriodo.length === 0">
@@ -327,7 +327,7 @@
                             </div>
 
                             <div class="flex space-x-2 pt-1 border-t border-zinc-100 dark:border-zinc-800">
-                                <button @click="abonarAhorro(meta.id)" class="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 py-2 rounded-xl text-xs font-bold transition">Abonar Dinero (+)</button>
+                                <button @click="abrirAbonarAhorro(meta)" class="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 py-2 rounded-xl text-xs font-bold transition">Abonar Dinero (Desde Cuenta) (+)</button>
                             </div>
                         </div>
                     </template>
@@ -413,7 +413,7 @@
                         </div>
                         <div>
                             <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Subcategoría</label>
-                            <select x-model="formT.subcategoria" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3 py-2.5 text-xs font-medium shadow-sm focus:outline-none">
+                            <select x-model="formT.subcategoria" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-medium shadow-sm focus:outline-none">
                                 <template x-for="sub in subcategoriasDisponibles" :key="sub">
                                     <option :value="sub" x-text="sub"></option>
                                 </template>
@@ -516,6 +516,31 @@
             </div>
         </div>
 
+        <!-- MODAL: ABONAR AHORRO DESDE CUENTA -->
+        <div x-show="abrirModalAbonar" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" style="display: none;" x-cloak>
+            <div @click.away="abrirModalAbonar = false" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
+                <div class="flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800 pb-3">
+                    <h3 class="font-bold text-sm text-zinc-900 dark:text-zinc-100" x-text="'Abonar a: ' + (metaSeleccionada ? metaSeleccionada.titulo : '')"></h3>
+                    <button @click="abrirModalAbonar = false" class="text-zinc-400 hover:text-zinc-600">✕</button>
+                </div>
+                <form @submit.prevent="confirmarAbonoAhorro" class="space-y-3.5">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Monto a Ahorrar ($)</label>
+                        <input type="number" step="0.01" x-model.number="formAbono.monto" placeholder="0.00" required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-bold shadow-sm focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-zinc-400 mb-1">¿De qué cuenta sale el dinero?</label>
+                        <select x-model="formAbono.cuenta" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-medium shadow-sm focus:outline-none">
+                            <template x-for="cta in listaNombresCuentas" :key="cta">
+                                <option :value="cta" x-text="cta"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs shadow-md transition">Confirmar Aporte y Registrar</button>
+                </form>
+            </div>
+        </div>
+
         <!-- MODAL: CUOTA -->
         <div x-show="abrirModalCuota" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" style="display: none;" x-cloak>
             <div @click.away="abrirModalCuota = false" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
@@ -554,6 +579,7 @@
                 abrirModalCuota: false,
                 abrirModalCuenta: false,
                 abrirModalMetaAhorro: false,
+                abrirModalAbonar: false,
                 editandoId: null,
                 cuentaEditandoVieja: null,
                 nombreNuevaCuenta: '',
@@ -561,11 +587,11 @@
                 filtroMes: 'todos',
                 modoClaro: localStorage.getItem('monify_modo_claro') === 'true',
                 
-                transacciones: JSON.parse(localStorage.getItem('monify_transacciones_v11')) || [],
-                cuotas: JSON.parse(localStorage.getItem('monify_cuotas_v11')) || [],
-                presupuestos: JSON.parse(localStorage.getItem('monify_presupuestos_v11')) || {},
-                metasAhorro: JSON.parse(localStorage.getItem('monify_metas_v11')) || [],
-                listaNombresCuentas: JSON.parse(localStorage.getItem('monify_cuentas_v11')) || [
+                transacciones: JSON.parse(localStorage.getItem('monify_transacciones_v12')) || [],
+                cuotas: JSON.parse(localStorage.getItem('monify_cuotas_v12')) || [],
+                presupuestos: JSON.parse(localStorage.getItem('monify_presupuestos_v12')) || {},
+                metasAhorro: JSON.parse(localStorage.getItem('monify_metas_v12')) || [],
+                listaNombresCuentas: JSON.parse(localStorage.getItem('monify_cuentas_v12')) || [
                     'Efectivo', 'Astropay', 'BBVA', 'Brubank', 'Carrefour', 'ClaroPay', 'Cocos', 'IOL', 'Lemon', 'Mercado Pago', 'Naranja X', 'Personal Pay'
                 ],
                 
@@ -585,6 +611,8 @@
                 },
                 formC: { concepto: '', valorCuota: '', totalCuotas: 3, cuotaActual: 1 },
                 formA: { titulo: '', tipo: 'Fondo de Emergencia', montoMeta: '', plazo: '' },
+                formAbono: { monto: '', cuenta: 'Mercado Pago' },
+                metaSeleccionada: null,
 
                 get categoriasGastosNombres() { return Object.keys(this.estructuraGastos); },
                 get subcategoriasDisponibles() { return this.estructuraGastos[this.formT.categoria] || []; },
@@ -677,7 +705,6 @@
                     const promedioDiario = totalG / divisorDias;
                     const tasaAhorro = totalI > 0 ? Math.round(((totalI - totalG) / totalI) * 100) : 0;
 
-                    // Proyección de fin de mes (Run-Rate)
                     const ahora = new Date();
                     const diaActual = ahora.getDate();
                     const diasEnMes = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0).getDate();
@@ -686,11 +713,9 @@
                         proyeccionFinMes = (totalG / diaActual) * diasEnMes;
                     }
 
-                    // Días de Supervivencia basados en saldo total actual / gasto promedio diario
                     const saldoTotalCuentas = this.cuentasListado.reduce((acc, c) => acc + c.saldo, 0);
                     const diasSupervivencia = promedioDiario > 0 ? Math.round(saldoTotalCuentas / promedioDiario) : 999;
 
-                    // Fijos vs Variables
                     let gastosFijos = 0;
                     let gastosVariables = 0;
                     this.gastosFiltradosPeriodo.forEach(t => {
@@ -783,7 +808,7 @@
                 },
                 actualizarPresupuesto(cat, valor) {
                     this.presupuestos[cat] = Number(Number(valor).toFixed(2));
-                    localStorage.setItem('monify_presupuestos_v11', JSON.stringify(this.presupuestos));
+                    localStorage.setItem('monify_presupuestos_v12', JSON.stringify(this.presupuestos));
                 },
                 abrirNuevaTransaccion() {
                     this.editandoId = null;
@@ -896,19 +921,49 @@
                     this.formA.titulo = ''; this.formA.montoMeta = ''; this.formA.plazo = '';
                     this.abrirModalMetaAhorro = false;
                 },
-                abonarAhorro(id) {
-                    const montoStr = prompt('¿Cuánto deseas abonar a esta meta de ahorro? ($):');
-                    if (!montoStr) return;
-                    const monto = Number(montoStr);
-                    if (isNaN(monto) || monto <= 0) return alert('Monto inválido.');
+                abrirAbonarAhorro(meta) {
+                    this.metaSeleccionada = meta;
+                    this.formAbono.monto = '';
+                    this.formAbono.cuenta = this.listaNombresCuentas[0] || 'Mercado Pago';
+                    this.abrirModalAbonar = true;
+                },
+                confirmarAbonoAhorro() {
+                    if (!this.formAbono.monto || this.formAbono.monto <= 0 || !this.metaSeleccionada) return;
+                    const montoNum = Number(Number(this.formAbono.monto).toFixed(2));
+                    const cuentaOrigen = this.formAbono.cuenta;
 
+                    // 1. Actualizar acumulado de la meta de ahorro
                     this.metasAhorro = this.metasAhorro.map(m => {
-                        if (m.id === id) {
-                            m.acumulado += monto;
+                        if (m.id === this.metaSeleccionada.id) {
+                            m.acumulado += montoNum;
                         }
                         return m;
                     });
                     this.sincronizarStorageMetas();
+
+                    // 2. Registrar automáticamente como un movimiento tipo "gasto" (o retiro para ahorro) descontando de la cuenta
+                    const d = new Date();
+                    const mesesNombres = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                    const mesAnioStr = `${mesesNombres[d.getMonth()]} ${d.getFullYear()}`;
+                    
+                    const nuevaTransaccionAhorro = {
+                        id: Date.now(),
+                        tipo: 'gasto',
+                        monto: montoNum,
+                        concepto: `Ahorro: ${this.metaSeleccionada.titulo}`,
+                        categoria: 'Finanzas, Impuestos y Varios',
+                        subcategoria: 'Servicios financieros',
+                        cuenta: cuentaOrigen,
+                        cuentaOrigen: '',
+                        cuentaDestino: '',
+                        fechaFormateada: d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: '2-digit' }),
+                        mesAnio: mesAnioStr
+                    };
+                    this.transacciones.unshift(nuevaTransaccionAhorro);
+                    this.sincronizarStorage();
+
+                    this.abrirModalAbonar = false;
+                    this.metaSeleccionada = null;
                 },
                 eliminarMetaAhorro(id) {
                     if (confirm('¿Eliminar esta meta de ahorro?')) {
@@ -950,10 +1005,10 @@
                     const a = document.createElement('a');
                     a.href = url; a.download = 'respaldo_finanzas_ultimate.json'; a.click();
                 },
-                sincronizarStorage() { localStorage.setItem('monify_transacciones_v11', JSON.stringify(this.transacciones)); },
-                sincronizarStorageCuotas() { localStorage.setItem('monify_cuotas_v11', JSON.stringify(this.cuotas)); },
-                sincronizarStorageCuentas() { localStorage.setItem('monify_cuentas_v11', JSON.stringify(this.listaNombresCuentas)); },
-                sincronizarStorageMetas() { localStorage.setItem('monify_metas_v11', JSON.stringify(this.metasAhorro)); },
+                sincronizarStorage() { localStorage.setItem('monify_transacciones_v12', JSON.stringify(this.transacciones)); },
+                sincronizarStorageCuotas() { localStorage.setItem('monify_cuotas_v12', JSON.stringify(this.cuotas)); },
+                sincronizarStorageCuentas() { localStorage.setItem('monify_cuentas_v12', JSON.stringify(this.listaNombresCuentas)); },
+                sincronizarStorageMetas() { localStorage.setItem('monify_metas_v12', JSON.stringify(this.metasAhorro)); },
                 formatearMoneda(valor) {
                     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valor);
                 }
