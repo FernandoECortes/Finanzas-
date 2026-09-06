@@ -63,12 +63,16 @@
             </div>
 
             <!-- Navegación por pestañas -->
-            <div class="max-w-md mx-auto grid grid-cols-5 gap-1 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-2xl border border-zinc-200 dark:border-zinc-800/80">
-                <button @click="pestanaActiva = 'movimientos'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'movimientos' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Movs</button>
-                <button @click="pestanaActiva = 'cuentas'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'cuentas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Cuentas</button>
-                <button @click="pestanaActiva = 'analisis'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'analisis' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Análisis</button>
-                <button @click="pestanaActiva = 'deudas'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'deudas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Deudas</button>
-                <button @click="pestanaActiva = 'cuotas'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'cuotas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Cuotas</button>
+            <div class="max-w-md mx-auto grid grid-cols-6 gap-1 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-2xl border border-zinc-200 dark:border-zinc-800/80">
+                <button @click="pestanaActiva = 'movimientos'" class="py-2 rounded-xl text-[9px] font-bold tracking-tight transition" :class="pestanaActiva === 'movimientos' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Movs</button>
+                <button @click="pestanaActiva = 'cuentas'" class="py-2 rounded-xl text-[9px] font-bold tracking-tight transition" :class="pestanaActiva === 'cuentas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Cuentas</button>
+                <button @click="pestanaActiva = 'analisis'" class="py-2 rounded-xl text-[9px] font-bold tracking-tight transition" :class="pestanaActiva === 'analisis' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Análisis</button>
+                <button @click="pestanaActiva = 'vencimientos'" class="py-2 rounded-xl text-[9px] font-bold tracking-tight transition relative" :class="pestanaActiva === 'vencimientos' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">
+                    Pagos
+                    <span class="absolute -top-1 -right-1 bg-rose-500 text-white text-[8px] px-1.5 rounded-full font-bold" x-show="vencimientosPendientesCount > 0" x-text="vencimientosPendientesCount"></span>
+                </button>
+                <button @click="pestanaActiva = 'deudas'" class="py-2 rounded-xl text-[9px] font-bold tracking-tight transition" :class="pestanaActiva === 'deudas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Deudas</button>
+                <button @click="pestanaActiva = 'cuotas'" class="py-2 rounded-xl text-[9px] font-bold tracking-tight transition" :class="pestanaActiva === 'cuotas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Cuotas</button>
             </div>
         </header>
 
@@ -245,30 +249,52 @@
                         </template>
                     </div>
                 </div>
+            </div>
 
-                <!-- Desglose de Gastos -->
-                <div class="space-y-3 bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
-                    <h2 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 px-1">Desglose de Gastos</h2>
-                    <template x-if="gastosFiltradosPeriodo.length === 0">
-                        <p class="text-zinc-400 text-xs text-center py-6">Sin gastos registrados en este período.</p>
-                    </template>
-                    <div class="space-y-3" x-show="gastosFiltradosPeriodo.length > 0">
-                        <template x-for="item in desgloseCategoriasPeriodo" :key="item.categoria">
-                            <div class="space-y-1.5 bg-zinc-50 dark:bg-zinc-950 p-3 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60">
-                                <div class="flex justify-between text-xs">
-                                    <span class="text-zinc-800 dark:text-zinc-200 font-semibold" x-text="item.categoria"></span>
-                                    <span class="text-zinc-500 font-medium" x-text="formatearMoneda(item.monto) + ' (' + item.porcentaje + '%)'"></span>
-                                </div>
-                                <div class="w-full bg-zinc-200 dark:bg-zinc-900 h-2 rounded-full overflow-hidden">
-                                    <div class="h-full rounded-full transition-all duration-500" 
-                                         :class="verificarPresupuestoExcedido(item.categoria, item.monto) ? 'bg-rose-600' : 'bg-zinc-900 dark:bg-zinc-100'"
-                                         :style="'width: ' + Math.min(item.porcentaje, 100) + '%'"></div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
+            <!-- PESTAÑA: CALENDARIO DE VENCIMIENTOS Y PAGOS -->
+            <div x-show="pestanaActiva === 'vencimientos'" class="space-y-3.5" style="display: none;">
+                <div class="flex justify-between items-center px-1">
+                    <h2 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Próximos Vencimientos y Prioridades</h2>
+                    <button @click="abrirModalVencimiento = true" class="text-xs bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 px-3.5 py-2 rounded-xl font-semibold shadow-sm transition">+ Nuevo Vencimiento</button>
                 </div>
 
+                <template x-if="vencimientos.length === 0">
+                    <div class="text-center py-16 bg-white dark:bg-zinc-900/40 rounded-3xl border border-dashed border-zinc-200 dark:border-zinc-800 shadow-sm">
+                        <div class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800/60 flex items-center justify-center mx-auto mb-3 text-lg">📅</div>
+                        <p class="text-zinc-600 dark:text-zinc-400 text-sm font-semibold mb-1">Sin vencimientos agendados</p>
+                        <p class="text-zinc-400 dark:text-zinc-600 text-xs">Agrega servicios, impuestos o cuotas con fecha límite aquí.</p>
+                    </div>
+                </template>
+
+                <div class="space-y-3">
+                    <template x-for="v in vencimientosOrdenados" :key="v.id">
+                        <div class="bg-white dark:bg-zinc-900 border p-4 rounded-3xl space-y-3 shadow-sm transition"
+                             :class="v.pagado ? 'border-zinc-200/50 dark:border-zinc-800/50 opacity-60' : (v.diasRestantes < 0 ? 'border-rose-500/50 bg-rose-500/5' : (v.diasRestantes <= 3 ? 'border-amber-500/50 bg-amber-500/5' : 'border-zinc-200/80 dark:border-zinc-800/80'))">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg uppercase tracking-wider"
+                                              :class="v.pagado ? 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400' : (v.diasRestantes < 0 ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300')"
+                                              x-text="v.pagado ? 'Pagado' : (v.diasRestantes < 0 ? '¡Vencido!' : (v.diasRestantes === 0 ? 'Vence Hoy' : 'Vence en ' + v.diasRestantes + ' días'))"></span>
+                                        <span class="text-[10px] text-zinc-400" x-text="'Fecha: ' + v.fechaVencimiento"></span>
+                                    </div>
+                                    <p class="text-sm font-bold text-zinc-900 dark:text-zinc-100 mt-1.5" x-text="v.concepto"></p>
+                                </div>
+                                <button @click="eliminarVencimiento(v.id)" class="text-zinc-400 hover:text-rose-600 p-1.5 text-xs transition">✕</button>
+                            </div>
+
+                            <div class="flex justify-between items-center text-xs pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                                <span class="font-bold text-zinc-900 dark:text-zinc-100 text-sm" x-text="formatearMoneda(v.monto)"></span>
+                                <template x-if="!v.pagado">
+                                    <button @click="abrirPagarVencimiento(v)" class="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 px-3.5 py-2 rounded-xl font-bold text-xs transition shadow-sm">Pagar (De Cuenta) ➔</button>
+                                </template>
+                                <template x-if="v.pagado">
+                                    <span class="text-emerald-600 dark:text-emerald-400 font-semibold text-xs">✓ Sastifactorio</span>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
             </div>
 
             <!-- PESTAÑA: CONTROL DE DEUDAS -->
@@ -356,7 +382,7 @@
         </main>
 
         <!-- Botón Flotante Principal -->
-        <div class="fixed bottom-6 right-6 z-20" x-show="pestanaActiva !== 'cuotas' && pestanaActiva !== 'deudas'">
+        <div class="fixed bottom-6 right-6 z-20" x-show="pestanaActiva !== 'cuotas' && pestanaActiva !== 'deudas' && pestanaActiva !== 'vencimientos'">
             <button @click="abrirNuevaTransaccion()" class="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl font-bold text-2xl transition transform active:scale-95">
                 +
             </button>
@@ -465,6 +491,54 @@
             </div>
         </div>
 
+        <!-- MODAL: NUEVO VENCIMIENTO -->
+        <div x-show="abrirModalVencimiento" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" style="display: none;" x-cloak>
+            <div @click.away="abrirModalVencimiento = false" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
+                <div class="flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800 pb-3">
+                    <h3 class="font-bold text-sm text-zinc-900 dark:text-zinc-100">Agendar Vencimiento</h3>
+                    <button @click="abrirModalVencimiento = false" class="text-zinc-400 hover:text-zinc-600">✕</button>
+                </div>
+                <form @submit.prevent="guardarVencimiento" class="space-y-3.5">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Concepto o Factura</label>
+                        <input type="text" x-model="formV.concepto" placeholder="Ej. Luz, Internet, Seguro moto..." required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-medium shadow-sm focus:outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Monto ($)</label>
+                            <input type="number" step="0.01" x-model.number="formV.monto" placeholder="0.00" required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-bold shadow-sm focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Fecha de Vencimiento</label>
+                            <input type="date" x-model="formV.fechaVencimiento" required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3 py-2 text-xs font-medium shadow-sm focus:outline-none">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 font-bold py-3 rounded-2xl text-xs shadow-md transition">Guardar Vencimiento</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODAL: PAGAR VENCIMIENTO DESDE CUENTA -->
+        <div x-show="abrirModalPagarV" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" style="display: none;" x-cloak>
+            <div @click.away="abrirModalPagarV = false" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
+                <div class="flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800 pb-3">
+                    <h3 class="font-bold text-sm text-zinc-900 dark:text-zinc-100" x-text="'Pagar: ' + (vencimientoSeleccionado ? vencimientoSeleccionado.concepto : '')"></h3>
+                    <button @click="abrirModalPagarV = false" class="text-zinc-400 hover:text-zinc-600">✕</button>
+                </div>
+                <form @submit.prevent="confirmarPagoVencimiento" class="space-y-3.5">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-zinc-400 mb-1">¿De qué cuenta sale el dinero?</label>
+                        <select x-model="formPagarV.cuenta" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-medium shadow-sm focus:outline-none">
+                            <template x-for="cta in listaNombresCuentas" :key="cta">
+                                <option :value="cta" x-text="cta"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs shadow-md transition">Confirmar y Descontar de Cuenta</button>
+                </form>
+            </div>
+        </div>
+
         <!-- MODAL: NUEVA DEUDA -->
         <div x-show="abrirModalDeuda" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" style="display: none;" x-cloak>
             <div @click.away="abrirModalDeuda = false" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
@@ -564,6 +638,8 @@
                 abrirModalCuenta: false,
                 abrirModalDeuda: false,
                 abrirModalAbonarDeuda: false,
+                abrirModalVencimiento: false,
+                abrirModalPagarV: false,
                 editandoId: null,
                 cuentaEditandoVieja: null,
                 nombreNuevaCuenta: '',
@@ -571,11 +647,12 @@
                 filtroMes: 'todos',
                 modoClaro: localStorage.getItem('monify_modo_claro') === 'true',
                 
-                transacciones: JSON.parse(localStorage.getItem('monify_transacciones_v14')) || [],
-                cuotas: JSON.parse(localStorage.getItem('monify_cuotas_v14')) || [],
-                presupuestos: JSON.parse(localStorage.getItem('monify_presupuestos_v14')) || {},
-                deudas: JSON.parse(localStorage.getItem('monify_deudas_v14')) || [],
-                listaNombresCuentas: JSON.parse(localStorage.getItem('monify_cuentas_v14')) || [
+                transacciones: JSON.parse(localStorage.getItem('monify_transacciones_v15')) || [],
+                cuotas: JSON.parse(localStorage.getItem('monify_cuotas_v15')) || [],
+                presupuestos: JSON.parse(localStorage.getItem('monify_presupuestos_v15')) || {},
+                deudas: JSON.parse(localStorage.getItem('monify_deudas_v15')) || [],
+                vencimientos: JSON.parse(localStorage.getItem('monify_vencimientos_v15')) || [],
+                listaNombresCuentas: JSON.parse(localStorage.getItem('monify_cuentas_v15')) || [
                     'Efectivo', 'Astropay', 'BBVA', 'Brubank', 'Carrefour', 'ClaroPay', 'Cocos', 'IOL', 'Lemon', 'Mercado Pago', 'Naranja X', 'Personal Pay'
                 ],
                 
@@ -596,7 +673,10 @@
                 formC: { concepto: '', valorCuota: '', totalCuotas: 3, cuotaActual: 1 },
                 formD: { titulo: '', tipo: 'Préstamo / Personal', montoTotal: '', pagado: 0 },
                 formAbonoD: { monto: '', cuenta: 'Mercado Pago' },
+                formV: { concepto: '', monto: '', fechaVencimiento: '' },
+                formPagarV: { cuenta: 'Mercado Pago' },
                 deudaSeleccionada: null,
+                vencimientoSeleccionado: null,
 
                 get categoriasGastosNombres() { return Object.keys(this.estructuraGastos); },
                 get subcategoriasDisponibles() { return this.estructuraGastos[this.formT.categoria] || []; },
@@ -623,6 +703,24 @@
                 get totalGastos() { return this.transaccionesFiltradas.filter(t => t.tipo === 'gasto').reduce((acc, t) => acc + t.monto, 0); },
                 get balanceNeto() { return this.totalIngresos - this.totalGastos; },
                 
+                get vencimientosPendientesCount() {
+                    return this.vencimientos.filter(v => !v.pagado).length;
+                },
+
+                get vencimientosOrdenados() {
+                    const hoy = new Date();
+                    hoy.setHours(0,0,0,0);
+                    return this.vencimientos.map(v => {
+                        const fechaV = new Date(v.fechaVencimiento + 'T00:00:00');
+                        const diffTime = fechaV - hoy;
+                        const diasRestantes = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        return { ...v, diasRestantes };
+                    }).sort((a, b) => {
+                        if (a.pagado !== b.pagado) return a.pagado ? 1 : -1;
+                        return a.diasRestantes - b.diasRestantes;
+                    });
+                },
+
                 get gastosFiltradosPeriodo() {
                     const ahora = new Date();
                     return this.transacciones.filter(t => {
@@ -689,8 +787,6 @@
                     const promedioDiario = totalG / divisorDias;
                     const ingresoPromedioDiario = totalI / divisorDias;
                     const tasaAhorro = totalI > 0 ? Math.round(((totalI - totalG) / totalI) * 100) : 0;
-
-                    // Punto de Equilibrio Diario (Break-even): Gastos del período / divisor de días
                     const puntoEquilibrioDiario = promedioDiario;
 
                     const saldoTotalCuentas = this.cuentasListado.reduce((acc, c) => acc + c.saldo, 0);
@@ -778,7 +874,7 @@
                 },
                 actualizarPresupuesto(cat, valor) {
                     this.presupuestos[cat] = Number(Number(valor).toFixed(2));
-                    localStorage.setItem('monify_presupuestos_v14', JSON.stringify(this.presupuestos));
+                    localStorage.setItem('monify_presupuestos_v15', JSON.stringify(this.presupuestos));
                 },
                 abrirNuevaTransaccion() {
                     this.editandoId = null;
@@ -938,6 +1034,66 @@
                         this.sincronizarStorageDeudas();
                     }
                 },
+                guardarVencimiento() {
+                    if (!this.formV.concepto || !this.formV.monto || !this.formV.fechaVencimiento) return;
+                    this.vencimientos.unshift({
+                        id: Date.now(),
+                        concepto: this.formV.concepto,
+                        monto: Number(Number(this.formV.monto).toFixed(2)),
+                        fechaVencimiento: this.formV.fechaVencimiento,
+                        pagado: false
+                    });
+                    this.sincronizarStorageVencimientos();
+                    this.formV.concepto = ''; this.formV.monto = ''; this.formV.fechaVencimiento = '';
+                    this.abrirModalVencimiento = false;
+                },
+                abrirPagarVencimiento(vencimiento) {
+                    this.vencimientoSeleccionado = vencimiento;
+                    this.formPagarV.cuenta = this.listaNombresCuentas[0] || 'Mercado Pago';
+                    this.abrirModalPagarV = true;
+                },
+                confirmarPagoVencimiento() {
+                    if (!this.vencimientoSeleccionado) return;
+                    const v = this.vencimientoSeleccionado;
+                    const cuentaOrigen = this.formPagarV.cuenta;
+
+                    // Marcar como pagado
+                    this.vencimientos = this.vencimientos.map(item => {
+                        if (item.id === v.id) item.pagado = true;
+                        return item;
+                    });
+                    this.sincronizarStorageVencimientos();
+
+                    // Registrar como gasto operativo en la cuenta seleccionada
+                    const d = new Date();
+                    const mesesNombres = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                    const mesAnioStr = `${mesesNombres[d.getMonth()]} ${d.getFullYear()}`;
+                    
+                    const gastoVencimiento = {
+                        id: Date.now(),
+                        tipo: 'gasto',
+                        monto: v.monto,
+                        concepto: `Pago Vencimiento: ${v.concepto}`,
+                        categoria: 'Servicios Básicos y Conectividad',
+                        subcategoria: 'Telecomunicaciones',
+                        cuenta: cuentaOrigen,
+                        cuentaOrigen: '',
+                        cuentaDestino: '',
+                        fechaFormateada: d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: '2-digit' }),
+                        mesAnio: mesAnioStr
+                    };
+                    this.transacciones.unshift(gastoVencimiento);
+                    this.sincronizarStorage();
+
+                    this.abrirModalPagarV = false;
+                    this.vencimientoSeleccionado = null;
+                },
+                eliminarVencimiento(id) {
+                    if (confirm('¿Eliminar este vencimiento?')) {
+                        this.vencimientos = this.vencimientos.filter(v => v.id !== id);
+                        this.sincronizarStorageVencimientos();
+                    }
+                },
                 guardarCuota() {
                     if (!this.formC.concepto || !this.formC.valorCuota) return;
                     this.cuotas.unshift({
@@ -966,16 +1122,17 @@
                     }
                 },
                 exportarDatos() {
-                    const datos = { transacciones: this.transacciones, cuotas: this.cuotas, cuentas: this.listaNombresCuentas, presupuestos: this.presupuestos, deudas: this.deudas };
+                    const datos = { transacciones: this.transacciones, cuotas: this.cuotas, cuentas: this.listaNombresCuentas, presupuestos: this.presupuestos, deudas: this.deudas, vencimientos: this.vencimientos };
                     const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url; a.download = 'respaldo_finanzas_ultimate.json'; a.click();
                 },
-                sincronizarStorage() { localStorage.setItem('monify_transacciones_v14', JSON.stringify(this.transacciones)); },
-                sincronizarStorageCuotas() { localStorage.setItem('monify_cuotas_v14', JSON.stringify(this.cuotas)); },
-                sincronizarStorageCuentas() { localStorage.setItem('monify_cuentas_v14', JSON.stringify(this.listaNombresCuentas)); },
-                sincronizarStorageDeudas() { localStorage.setItem('monify_deudas_v14', JSON.stringify(this.deudas)); },
+                sincronizarStorage() { localStorage.setItem('monify_transacciones_v15', JSON.stringify(this.transacciones)); },
+                sincronizarStorageCuotas() { localStorage.setItem('monify_cuotas_v15', JSON.stringify(this.cuotas)); },
+                sincronizarStorageCuentas() { localStorage.setItem('monify_cuentas_v15', JSON.stringify(this.listaNombresCuentas)); },
+                sincronizarStorageDeudas() { localStorage.setItem('monify_deudas_v15', JSON.stringify(this.deudas)); },
+                sincronizarStorageVencimientos() { localStorage.setItem('monify_vencimientos_v15', JSON.stringify(this.vencimientos)); },
                 formatearMoneda(valor) {
                     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valor);
                 }
