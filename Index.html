@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Finanzas</title>
+    <!-- Tailwind CSS para el diseño -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js para la reactividad simple sin complicaciones -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <meta name="theme-color" content="#18181b">
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen font-sans antialiased pb-24" x-data="finanzasApp()">
+
+    <!-- Cabecera / Resumen del Mes -->
+    <header class="bg-zinc-900 border-b border-zinc-800 p-5 sticky top-0 z-10 shadow-md">
+        <div class="max-w-md mx-auto flex justify-between items-center mb-4">
+            <h1 class="text-xl font-bold tracking-tight">Finanzas Personales</h1>
+            <span class="text-xs bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full uppercase tracking-wider" x-text="mesActual"></span>
+        </div>
+        
+        <!-- Tarjetas de Balance -->
+        <div class="max-w-md mx-auto grid grid-cols-3 gap-3">
+            <div class="bg-zinc-950/50 p-3 rounded-xl border border-zinc-800/80">
+                <p class="text-xs text-zinc-400 mb-1">Ingresos</p>
+                <p class="text-sm sm:text-base font-semibold text-emerald-400" x-text="formatearMoneda(totalIngresos)"></p>
+            </div>
+            <div class="bg-zinc-950/50 p-3 rounded-xl border border-zinc-800/80">
+                <p class="text-xs text-zinc-400 mb-1">Gastos</p>
+                <p class="text-sm sm:text-base font-semibold text-rose-400" x-text="formatearMoneda(totalGastos)"></p>
+            </div>
+            <div class="bg-zinc-950/50 p-3 rounded-xl border border-zinc-800/80">
+                <p class="text-xs text-zinc-400 mb-1">Balance</p>
+                <p class="text-sm sm:text-base font-bold" :class="balanceNeto >= 0 ? 'text-zinc-100' : 'text-rose-400'" x-text="formatearMoneda(balanceNeto)"></p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal: Listado de Movimientos -->
+    <main class="max-w-md mx-auto p-4 space-y-4">
+        
+        <div class="flex justify-between items-center mt-2">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">Últimos Movimientos</h2>
+            <span class="text-xs text-zinc-500" x-text="transacciones.length + ' registros'"></span>
+        </div>
+
+        <!-- Lista vacía -->
+        <template x-if="transacciones.length === 0">
+            <div class="text-center py-16 bg-zinc-900/40 rounded-2xl border border-dashed border-zinc-800">
+                <p class="text-zinc-400 text-sm mb-1">Aún no hay movimientos registrados</p>
+                <p class="text-zinc-600 text-xs">Toca el botón '+' para añadir tu primer gasto o ingreso.</p>
+            </div>
+        </template>
+
+        <!-- Listado -->
+        <div class="space-y-2.5">
+            <template x-for="t in transacciones" :key="t.id">
+                <div class="bg-zinc-900/80 border border-zinc-800/80 p-3.5 rounded-2xl flex justify-between items-center shadow-sm">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm"
+                             :class="t.tipo === 'ingreso' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'">
+                            <span x-text="t.tipo === 'ingreso' ? '↓' : '↑'"></span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-zinc-200" x-text="t.concepto"></p>
+                            <div class="flex items-center space-x-2 mt-0.5">
+                                <span class="text-xs bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-md" x-text="t.categoria"></span>
+                                <span class="text-xs text-zinc-500" x-text="t.fecha"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right flex items-center space-x-3">
+                        <div>
+                            <p class="text-sm font-semibold" 
+                               :class="t.tipo === 'ingreso' ? 'text-emerald-400' : 'text-zinc-100'"
+                               x-text="(t.tipo === 'ingreso' ? '+ ' : '- ') + formatearMoneda(t.monto)">
+                            </p>
+                            <p class="text-[10px] text-zinc-500 uppercase" x-text="t.cuenta"></p>
+                        </div>
+                        <button @click="eliminarTransaccion(t.id)" class="text-zinc-600 hover:text-rose-400 transition p-1">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </main>
+
+    <!-- Botón Flotante para Añadir -->
+    <div class="fixed bottom-6 right-6 z-20">
+        <button @click="abrirModal = true" class="bg-zinc-100 hover:bg-white text-zinc-950 w-14 h-14 rounded-full flex items-center justify-center shadow-lg font-bold text-2xl transition transform active:scale-95">
+            +
+        </button>
+    </div>
+
+    <!-- Modal para Añadir Transacción -->
+    <div x-show="abrirModal" class="fixed inset-0 z-30 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" style="display: none;">
+        <div @click.away="abrirModal = false" class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
+                <h3 class="font-bold text-base">Nuevo Movimiento</h3>
+                <button @click="abrirModal = false" class="text-zinc-400 hover:text-zinc-100 text-lg">✕</button>
+            </div>
+
+            <form @submit.prevent="guardarTransaccion" class="space-y-4">
+                <!-- Selector Tipo -->
+                <div class="grid grid-cols-2 gap-2 bg-zinc-950 p-1 rounded-xl border border-zinc-800">
+                    <button type="button" @click="form.tipo = 'gasto'; actualizarCategoriasDefault()" 
+                            class="py-2 rounded-lg text-xs font-semibold transition"
+                            :class="form.tipo === 'gasto' ? 'bg-zinc-800 text-zinc-100 shadow' : 'text-zinc-400'">
+                        Gasto
+                    </button>
+                    <button type="button" @click="form.tipo = 'ingreso'; actualizarCategoriasDefault()" 
+                            class="py-2 rounded-lg text-xs font-semibold transition"
+                            :class="form.tipo === 'ingreso' ? 'bg-zinc-800 text-zinc-100 shadow' : 'text-zinc-400'">
+                        Ingreso
+                    </button>
+                </div>
+
+                <!-- Monto -->
+                <div>
+                    <label class="block text-xs text-zinc-400 mb-1">Monto ($)</label>
+                    <input type="number" step="any" x-model.number="form.monto" placeholder="0.00" required
+                           class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-zinc-100 focus:outline-none focus:border-zinc-600 text-lg font-semibold">
+                </div>
+
+                <!-- Concepto / Descripción -->
+                <div>
+                    <label class="block text-xs text-zinc-400 mb-1">Concepto / Descripción</label>
+                    <input type="text" x-model="form.concepto" placeholder="Ej. Supermercado, Nafta, Uber..." required
+                           class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-zinc-100 focus:outline-none focus:border-zinc-600 text-sm">
+                </div>
+
+                <!-- Categoría y Cuenta -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-zinc-400 mb-1">Categoría</label>
+                        <select x-model="form.categoria" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-zinc-100 focus:outline-none focus:border-zinc-600 text-sm">
+                            <template x-for="cat in categoriasDisponibles">
+                                <option :value="cat" x-text="cat"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-zinc-400 mb-1">Cuenta / Método</label>
+                        <select x-model="form.cuenta" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-zinc-100 focus:outline-none focus:border-zinc-600 text-sm">
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Billetera Virtual">Billetera Virtual</option>
+                            <option value="Banco / Tarjeta">Banco / Tarjeta</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Botón Guardar -->
+                <button type="submit" class="w-full bg-zinc-100 hover:bg-white text-zinc-950 font-semibold py-3 rounded-xl transition shadow-md text-sm mt-2">
+                    Guardar Movimiento
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lógica de la Aplicación con Alpine.js -->
+    <script>
+        function finanzasApp() {
+            return {
+                abrirModal: false,
+                transacciones: JSON.parse(localStorage.getItem('mis_finanzas')) || [],
+                
+                form: {
+                    tipo: 'gasto',
+                    monto: '',
+                    concepto: '',
+                    categoria: 'Comida / Super',
+                    cuenta: 'Billetera Virtual'
+                },
+
+                categoriasGasto: ['Comida / Super', 'Movilidad / Nafta', 'Salidas / Ocio', 'Servicios / Cuentas', 'Gastos Varios'],
+                categoriasIngreso: ['Sueldo / Trabajos', 'Ventas', 'Otros Ingresos'],
+
+                get categoriasDisponibles() {
+                    return this.form.tipo === 'gasto' ? this.categoriasGasto : this.categoriasIngreso;
+                },
+
+                get mesActual() {
+                    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                    const fecha = new Date();
+                    return `${meses[fecha.getMonth()]} ${fecha.getFullYear()}`;
+                },
+
+                get totalIngresos() {
+                    return this.transacciones
+                        .filter(t => t.tipo === 'ingreso')
+                        .reduce((acc, t) => acc + t.monto, 0);
+                },
+
+                get totalGastos() {
+                    return this.transacciones
+                        .filter(t => t.tipo === 'gasto')
+                        .reduce((acc, t) => acc + t.monto, 0);
+                },
+
+                get balanceNeto() {
+                    return this.totalIngresos - this.totalGastos;
+                },
+
+                actualizarCategoriasDefault() {
+                    this.form.categoria = this.categoriasDisponibles[0];
+                },
+
+                guardarTransaccion() {
+                    if (!this.form.monto || !this.form.concepto) return;
+
+                    const nueva = {
+                        id: Date.now(),
+                        tipo: this.form.tipo,
+                        monto: Number(this.form.monto),
+                        concepto: this.form.concepto,
+                        categoria: this.form.categoria,
+                        cuenta: this.form.cuenta,
+                        fecha: new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' })
+                    };
+
+                    this.transacciones.unshift(nueva);
+                    this.sincronizarStorage();
+                    
+                    // Resetear formulario
+                    this.form.monto = '';
+                    this.form.concepto = '';
+                    this.abrirModal = false;
+                },
+
+                eliminarTransaccion(id) {
+                    if (confirm('¿Eliminar este movimiento?')) {
+                        this.transacciones = this.transacciones.filter(t => t.id !== id);
+                        this.sincronizarStorage();
+                    }
+                },
+
+                sincronizarStorage() {
+                    localStorage.setItem('mis_finanzas', JSON.stringify(this.transacciones));
+                },
+
+                formatearMoneda(valor) {
+                    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(valor);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
