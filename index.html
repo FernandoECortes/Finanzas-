@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monify Personal Pro Ultimate</title>
+    <title>Monify Pro - Control Diario para Moto & Finanzas</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -25,13 +25,13 @@
     <div x-data="finanzasApp()">
         <!-- Cabecera / Tarjeta de Resumen Financiero -->
         <header class="bg-white dark:bg-zinc-900 border-b border-zinc-200/80 dark:border-zinc-800/80 px-4 pt-4 pb-3 sticky top-0 z-10 shadow-sm transition-colors">
-            <div class="max-w-md mx-auto flex justify-between items-center mb-4">
+            <div class="max-w-md mx-auto flex justify-between items-center mb-3">
                 <div class="flex items-center space-x-2.5">
                     <div class="w-8 h-8 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 flex items-center justify-center font-black text-xs tracking-wider shadow-sm">
                         M
                     </div>
                     <div>
-                        <h1 class="text-sm font-bold tracking-tight">Monify Pro</h1>
+                        <h1 class="text-sm font-bold tracking-tight">Monify Moto & Pro</h1>
                         <p class="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold" x-text="mesActual"></p>
                     </div>
                 </div>
@@ -47,23 +47,23 @@
             </div>
             
             <!-- Tarjetas de Balance -->
-            <div class="max-w-md mx-auto grid grid-cols-3 gap-2.5">
-                <div class="bg-zinc-50 dark:bg-zinc-950/60 p-3 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60">
-                    <p class="text-[10px] uppercase font-semibold tracking-wider text-zinc-400 mb-1">Ingresos</p>
+            <div class="max-w-md mx-auto grid grid-cols-3 gap-2 mb-2">
+                <div class="bg-zinc-50 dark:bg-zinc-950/60 p-2.5 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60">
+                    <p class="text-[9px] uppercase font-semibold tracking-wider text-zinc-400 mb-0.5">Ingresos</p>
                     <p class="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 truncate" x-text="formatearMoneda(totalIngresos)"></p>
                 </div>
-                <div class="bg-zinc-50 dark:bg-zinc-950/60 p-3 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60">
-                    <p class="text-[10px] uppercase font-semibold tracking-wider text-zinc-400 mb-1">Gastos</p>
+                <div class="bg-zinc-50 dark:bg-zinc-950/60 p-2.5 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60">
+                    <p class="text-[9px] uppercase font-semibold tracking-wider text-zinc-400 mb-0.5">Gastos</p>
                     <p class="text-xs sm:text-sm font-bold text-rose-600 dark:text-rose-400 truncate" x-text="formatearMoneda(totalGastos)"></p>
                 </div>
-                <div class="bg-zinc-50 dark:bg-zinc-950/60 p-3 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60">
-                    <p class="text-[10px] uppercase font-semibold tracking-wider text-zinc-400 mb-1">Neto</p>
+                <div class="bg-zinc-50 dark:bg-zinc-950/60 p-2.5 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60">
+                    <p class="text-[9px] uppercase font-semibold tracking-wider text-zinc-400 mb-0.5">Neto</p>
                     <p class="text-xs sm:text-sm font-black truncate" :class="balanceNeto >= 0 ? 'text-zinc-900 dark:text-zinc-100' : 'text-rose-600 dark:text-rose-400'" x-text="formatearMoneda(balanceNeto)"></p>
                 </div>
             </div>
 
             <!-- Navegación por pestañas -->
-            <div class="max-w-md mx-auto grid grid-cols-5 gap-1 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 mt-3.5">
+            <div class="max-w-md mx-auto grid grid-cols-5 gap-1 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-2xl border border-zinc-200 dark:border-zinc-800/80">
                 <button @click="pestanaActiva = 'movimientos'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'movimientos' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Movs</button>
                 <button @click="pestanaActiva = 'cuentas'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'cuentas' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Cuentas</button>
                 <button @click="pestanaActiva = 'analisis'" class="py-2 rounded-xl text-[10px] font-bold tracking-tight transition" :class="pestanaActiva === 'analisis' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">Análisis</button>
@@ -99,7 +99,7 @@
                     <div class="text-center py-16 bg-white dark:bg-zinc-900/40 rounded-3xl border border-dashed border-zinc-200 dark:border-zinc-800 shadow-sm">
                         <div class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800/60 flex items-center justify-center mx-auto mb-3 text-lg">📂</div>
                         <p class="text-zinc-600 dark:text-zinc-400 text-sm font-semibold mb-1">No hay movimientos</p>
-                        <p class="text-zinc-400 dark:text-zinc-600 text-xs">Usa el botón flotante '+' para registrar uno.</p>
+                        <p class="text-zinc-400 dark:text-zinc-600 text-xs">Usa el botón flotante '+' para registrar tus ingresos diarios.</p>
                     </div>
                 </template>
 
@@ -166,7 +166,7 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA: ANÁLISIS E INTELIGENCIA FINANCIERA -->
+            <!-- PESTAÑA: ANÁLISIS E INTELIGENCIA PARA INGRESOS DIARIOS -->
             <div x-show="pestanaActiva === 'analisis'" class="space-y-4" style="display: none;" x-cloak>
                 
                 <!-- Selector de Periodo -->
@@ -176,23 +176,24 @@
                     <button @click="periodoAnalisis = 'anio'" class="py-2 rounded-xl text-xs font-bold transition" :class="periodoAnalisis === 'anio' ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 shadow-sm' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'">Año</button>
                 </div>
 
-                <!-- Métricas Clave Avanzadas -->
+                <!-- Métricas Clave Específicas para Laburo Diario -->
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
+                        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mb-1">Punto de Equilibrio Diario</p>
+                        <p class="text-sm font-black text-amber-600 dark:text-amber-400" x-text="formatearMoneda(metricasAnalisis.puntoEquilibrioDiario)"></p>
+                        <p class="text-[9px] text-zinc-400 mt-0.5">Meta diaria para cubrir gastos</p>
+                    </div>
+                    <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
+                        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mb-1">Ingreso Prom. Diario</p>
+                        <p class="text-sm font-black text-emerald-600 dark:text-emerald-400" x-text="formatearMoneda(metricasAnalisis.ingresoPromedioDiario)"></p>
+                        <p class="text-[9px] text-zinc-400 mt-0.5">Lo que generás en promedio</p>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-2 gap-2.5">
                     <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
                         <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mb-1">Gasto Prom. Diario</p>
                         <p class="text-sm font-black text-zinc-900 dark:text-zinc-100" x-text="formatearMoneda(metricasAnalisis.promedioDiario)"></p>
-                    </div>
-                    <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
-                        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mb-1">Tasa de Ahorro</p>
-                        <p class="text-sm font-black" :class="metricasAnalisis.tasaAhorro >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'" x-text="metricasAnalisis.tasaAhorro + '%'"></p>
-                    </div>
-                </div>
-
-                <!-- Proyección y Supervivencia -->
-                <div class="grid grid-cols-2 gap-2.5">
-                    <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
-                        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mb-1">Proyección Fin de Mes</p>
-                        <p class="text-sm font-bold text-amber-600 dark:text-amber-400" x-text="formatearMoneda(metricasAnalisis.proyeccionFinMes)"></p>
                     </div>
                     <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
                         <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mb-1">Días de Supervivencia</p>
@@ -203,7 +204,7 @@
                 <!-- Fijos vs Variables -->
                 <div class="bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm space-y-2">
                     <div class="flex justify-between items-center px-1">
-                        <h2 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Fijos vs. Variables (Esenciales vs. Ocio)</h2>
+                        <h2 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Fijos vs. Variables</h2>
                     </div>
                     <div class="grid grid-cols-2 gap-3 pt-1">
                         <div class="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60">
@@ -268,22 +269,6 @@
                     </div>
                 </div>
 
-                <!-- Evolución Histórica General -->
-                <div class="space-y-3 bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
-                    <h2 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 px-1">Evolución Histórica por Mes</h2>
-                    <div class="space-y-2">
-                        <template x-for="h in historicoMensual" :key="h.mes">
-                            <div class="bg-zinc-50 dark:bg-zinc-950 p-3.5 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60 flex justify-between items-center text-xs">
-                                <span class="font-bold text-zinc-900 dark:text-zinc-100" x-text="h.mes"></span>
-                                <div class="text-right">
-                                    <span class="text-emerald-600 dark:text-emerald-400 font-semibold mr-2" x-text="'+ ' + formatearMoneda(h.ingresos)"></span>
-                                    <span class="text-rose-600 dark:text-rose-400 font-semibold" x-text="'- ' + formatearMoneda(h.gastos)"></span>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-
             </div>
 
             <!-- PESTAÑA: CONTROL DE DEUDAS -->
@@ -297,7 +282,7 @@
                     <div class="text-center py-16 bg-white dark:bg-zinc-900/40 rounded-3xl border border-dashed border-zinc-200 dark:border-zinc-800 shadow-sm">
                         <div class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800/60 flex items-center justify-center mx-auto mb-3 text-lg">🛡️</div>
                         <p class="text-zinc-600 dark:text-zinc-400 text-sm font-semibold mb-1">No hay deudas registradas</p>
-                        <p class="text-zinc-400 dark:text-zinc-600 text-xs">Lleva el control de tus saldos pendientes sin alterar tus gastos.</p>
+                        <p class="text-zinc-400 dark:text-zinc-600 text-xs">Lleva el control de tus saldos pendientes de forma aislada.</p>
                     </div>
                 </template>
 
@@ -399,7 +384,7 @@
 
                     <div>
                         <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Concepto</label>
-                        <input type="text" x-model="formT.concepto" placeholder="Ej. Supermercado, Nafta..." required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-zinc-900 dark:text-zinc-100 text-xs font-medium shadow-sm focus:outline-none">
+                        <input type="text" x-model="formT.concepto" placeholder="Ej. Viaje Uber Moto, Nafta, Comida..." required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-zinc-900 dark:text-zinc-100 text-xs font-medium shadow-sm focus:outline-none">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3" x-show="formT.tipo === 'gasto'">
@@ -490,7 +475,7 @@
                 <form @submit.prevent="guardarDeuda" class="space-y-3.5">
                     <div>
                         <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Concepto o Destino</label>
-                        <input type="text" x-model="formD.titulo" placeholder="Ej. Préstamo personal, Tarjeta, etc." required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-medium shadow-sm focus:outline-none">
+                        <input type="text" x-model="formD.titulo" placeholder="Ej. Préstamo, Tarjeta, etc." required class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-3.5 py-2.5 text-xs font-medium shadow-sm focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Tipo</label>
@@ -586,11 +571,11 @@
                 filtroMes: 'todos',
                 modoClaro: localStorage.getItem('monify_modo_claro') === 'true',
                 
-                transacciones: JSON.parse(localStorage.getItem('monify_transacciones_v13')) || [],
-                cuotas: JSON.parse(localStorage.getItem('monify_cuotas_v13')) || [],
-                presupuestos: JSON.parse(localStorage.getItem('monify_presupuestos_v13')) || {},
-                deudas: JSON.parse(localStorage.getItem('monify_deudas_v13')) || [],
-                listaNombresCuentas: JSON.parse(localStorage.getItem('monify_cuentas_v13')) || [
+                transacciones: JSON.parse(localStorage.getItem('monify_transacciones_v14')) || [],
+                cuotas: JSON.parse(localStorage.getItem('monify_cuotas_v14')) || [],
+                presupuestos: JSON.parse(localStorage.getItem('monify_presupuestos_v14')) || {},
+                deudas: JSON.parse(localStorage.getItem('monify_deudas_v14')) || [],
+                listaNombresCuentas: JSON.parse(localStorage.getItem('monify_cuentas_v14')) || [
                     'Efectivo', 'Astropay', 'BBVA', 'Brubank', 'Carrefour', 'ClaroPay', 'Cocos', 'IOL', 'Lemon', 'Mercado Pago', 'Naranja X', 'Personal Pay'
                 ],
                 
@@ -702,15 +687,11 @@
                     if (this.periodoAnalisis === 'anio') divisorDias = 365;
 
                     const promedioDiario = totalG / divisorDias;
+                    const ingresoPromedioDiario = totalI / divisorDias;
                     const tasaAhorro = totalI > 0 ? Math.round(((totalI - totalG) / totalI) * 100) : 0;
 
-                    const ahora = new Date();
-                    const diaActual = ahora.getDate();
-                    const diasEnMes = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0).getDate();
-                    let proyeccionFinMes = totalG;
-                    if (this.periodoAnalisis === 'mes' && diaActual > 0) {
-                        proyeccionFinMes = (totalG / diaActual) * diasEnMes;
-                    }
+                    // Punto de Equilibrio Diario (Break-even): Gastos del período / divisor de días
+                    const puntoEquilibrioDiario = promedioDiario;
 
                     const saldoTotalCuentas = this.cuentasListado.reduce((acc, c) => acc + c.saldo, 0);
                     const diasSupervivencia = promedioDiario > 0 ? Math.round(saldoTotalCuentas / promedioDiario) : 999;
@@ -730,8 +711,9 @@
 
                     return {
                         promedioDiario,
+                        ingresoPromedioDiario,
+                        puntoEquilibrioDiario,
                         tasaAhorro,
-                        proyeccionFinMes,
                         diasSupervivencia,
                         gastosFijos,
                         gastosVariables,
@@ -753,17 +735,6 @@
                     return this.listaNombresCuentas.map(nombre => ({ nombre, saldo: saldos[nombre] !== undefined ? saldos[nombre] : 0 }));
                 },
                 
-                get historicoMensual() {
-                    const mapaMeses = {};
-                    this.transacciones.forEach(t => {
-                        if (!t.mesAnio) return;
-                        if (!mapaMeses[t.mesAnio]) mapaMeses[t.mesAnio] = { ingresos: 0, gastos: 0 };
-                        if (t.tipo === 'ingreso') mapaMeses[t.mesAnio].ingresos += t.monto;
-                        if (t.tipo === 'gasto') mapaMeses[t.mesAnio].gastos += t.monto;
-                    });
-                    return Object.keys(mapaMeses).map(mes => ({ mes, ingresos: mapaMeses[mes].ingresos, gastos: mapaMeses[mes].gastos }));
-                },
-
                 alternarTema() {
                     this.modoClaro = !this.modoClaro;
                     localStorage.setItem('monify_modo_claro', this.modoClaro);
@@ -807,7 +778,7 @@
                 },
                 actualizarPresupuesto(cat, valor) {
                     this.presupuestos[cat] = Number(Number(valor).toFixed(2));
-                    localStorage.setItem('monify_presupuestos_v13', JSON.stringify(this.presupuestos));
+                    localStorage.setItem('monify_presupuestos_v14', JSON.stringify(this.presupuestos));
                 },
                 abrirNuevaTransaccion() {
                     this.editandoId = null;
@@ -930,7 +901,6 @@
                     const montoNum = Number(Number(this.formAbonoD.monto).toFixed(2));
                     const cuentaOrigen = this.formAbonoD.cuenta;
 
-                    // 1. Actualizar monto pagado de la deuda
                     this.deudas = this.deudas.map(d => {
                         if (d.id === this.deudaSeleccionada.id) {
                             d.pagado = Math.min(d.montoTotal, d.pagado + montoNum);
@@ -939,9 +909,6 @@
                     });
                     this.sincronizarStorageDeudas();
 
-                    // 2. Descontar el dinero de la cuenta seleccionada creando un movimiento de traspaso interno (o gasto de pasivo aislado)
-                    // Para que afecte la cuenta sin ensuciar los gastos operativos del mes, lo registramos como una transferencia o ajuste de cuenta, 
-                    // o creamos un movimiento con categoría de pasivo. Lo manejamos descontando de la cuenta creando un egreso especial que el usuario eligió.
                     const d = new Date();
                     const mesesNombres = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
                     const mesAnioStr = `${mesesNombres[d.getMonth()]} ${d.getFullYear()}`;
@@ -1005,10 +972,10 @@
                     const a = document.createElement('a');
                     a.href = url; a.download = 'respaldo_finanzas_ultimate.json'; a.click();
                 },
-                sincronizarStorage() { localStorage.setItem('monify_transacciones_v13', JSON.stringify(this.transacciones)); },
-                sincronizarStorageCuotas() { localStorage.setItem('monify_cuotas_v13', JSON.stringify(this.cuotas)); },
-                sincronizarStorageCuentas() { localStorage.setItem('monify_cuentas_v13', JSON.stringify(this.listaNombresCuentas)); },
-                sincronizarStorageDeudas() { localStorage.setItem('monify_deudas_v13', JSON.stringify(this.deudas)); },
+                sincronizarStorage() { localStorage.setItem('monify_transacciones_v14', JSON.stringify(this.transacciones)); },
+                sincronizarStorageCuotas() { localStorage.setItem('monify_cuotas_v14', JSON.stringify(this.cuotas)); },
+                sincronizarStorageCuentas() { localStorage.setItem('monify_cuentas_v14', JSON.stringify(this.listaNombresCuentas)); },
+                sincronizarStorageDeudas() { localStorage.setItem('monify_deudas_v14', JSON.stringify(this.deudas)); },
                 formatearMoneda(valor) {
                     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valor);
                 }
