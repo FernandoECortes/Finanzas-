@@ -811,8 +811,7 @@
                 <h3>Detalle del Movimiento</h3>
                 <button class="icon-btn" onclick="closeTxDetail()"><i class="fa-solid fa-xmark" style="font-size: 1.2rem;"></i></button>
             </div>
-            <div class="modal-details-list" id="modal-content">
-                </div>
+            <div class="modal-details-list" id="modal-content"></div>
             <button type="button" class="btn-secondary" onclick="closeTxDetail()">Cerrar</button>
         </div>
     </div>
@@ -1370,23 +1369,19 @@
 
             list.innerHTML = '';
 
-            // Agrupamos los fondos disponibles por cada cuenta (o global) para distribuir secuencialmente
-            // Creamos un mapa temporal con el dinero total disponible por selector de cuenta
             let availablePools = {};
             if (window.accountBalances) {
                 availablePools = { ...window.accountBalances };
                 let globalTotal = Object.values(window.accountBalances).reduce((a, b) => a + b, 0);
-                availablePools[""] = globalTotal; // Clave vacía representa el patrimonio general
+                availablePools[""] = globalTotal; 
             }
 
             goals.forEach(g => {
                 let poolKey = g.account || "";
                 let totalPool = availablePools[poolKey] !== undefined ? availablePools[poolKey] : 0;
 
-                // Calculamos cuánto de este fondo va destinado exclusivamente a este objetivo en orden secuencial
                 let assignedToThisGoal = Math.min(Math.max(totalPool, 0), g.amount);
 
-                // Restamos lo asignado al fondo de esta cuenta para que el siguiente objetivo use solo el sobrante
                 if (availablePools[poolKey] !== undefined) {
                     availablePools[poolKey] -= assignedToThisGoal;
                 }
@@ -1456,21 +1451,21 @@
                     recContainer.innerHTML += `
                         <div class="recommendation-card alert">
                             <i class="fa-solid fa-triangle-exclamation"></i>
-                            <div><strong>Alerta de déficit:</strong> Tus gastos mensuales superan a tus ingresos. Necesitas aumentar tus horas en apps de transporte o recortar gastos prescindibles.</div>
+                            <div><strong>Alerta de déficit:</strong> Tus gastos mensuales superan a tus ingresos. Necesitas aumentar tus fuentes de ingresos o recortar gastos prescindibles.</div>
                         </div>
                     `;
                 } else if (savingRate >= 20) {
                     recContainer.innerHTML += `
                         <div class="recommendation-card">
                             <i class="fa-solid fa-circle-check"></i>
-                            <div><strong>Excelente capacidad de ahorro:</strong> Estás guardando más del 20% de ingresos. Es un buen momento para evaluar destinar parte de este excedente a CEDEARs u otros instrumentos de inversión.</div>
+                            <div><strong>Excelente capacidad de ahorro:</strong> Estás guardando más del 20% de tus ingresos. Es un buen momento para evaluar destinar parte de este excedente a instrumentos de inversión.</div>
                         </div>
                     `;
                 } else {
                     recContainer.innerHTML += `
                         <div class="recommendation-card">
                             <i class="fa-solid fa-lightbulb"></i>
-                            <div><strong>Margen ajustado:</strong> Tus ingresos cubren tus gastos, pero tu tasa de ahorro es menor al 20%. Intentá optimizar tus costos de movilidad diarios para acumular más colchón financiero.</div>
+                            <div><strong>Margen ajustado:</strong> Tus ingresos cubren tus gastos, pero tu tasa de ahorro es menor al 20%. Intentá optimizar tus costos diarios para acumular mayor colchón financiero.</div>
                         </div>
                     `;
                 }
