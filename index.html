@@ -4,46 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Financiero Personal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
             --success: #10b981;
-            --danger: #ef4444;
+            --danger: #f43f5e;
             --warning: #f59e0b;
-            --purple: #8b5cf6;
-            --bg-color: #f8fafc;
+            --bg-color: #f1f5f9;
             --card-bg: #ffffff;
-            --text-main: #1e293b;
+            --text-main: #0f172a;
             --text-muted: #64748b;
             --border: #e2e8f0;
-            --radius: 12px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --radius: 16px;
+            --shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.04), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            padding-bottom: 90px;
+            padding-bottom: 100px;
         }
 
         header {
-            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            background: linear-gradient(135deg, #312e81, #4f46e5);
             color: white;
-            padding: 20px 16px;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+            padding: 24px 20px;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);
         }
 
         .header-top {
@@ -54,90 +54,104 @@
         }
 
         .header-top h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.35rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            letter-spacing: -0.5px;
         }
 
         .balance-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 16px;
+            padding: 18px;
             border-radius: var(--radius);
             text-align: center;
         }
 
         .balance-card p {
-            font-size: 0.85rem;
-            opacity: 0.9;
+            font-size: 0.8rem;
+            opacity: 0.85;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-weight: 600;
         }
 
         .balance-card h2 {
-            font-size: 1.8rem;
+            font-size: 2.1rem;
             font-weight: 700;
+            letter-spacing: -1px;
         }
 
         .summary-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-top: 12px;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .stat-item {
             background: rgba(255, 255, 255, 0.08);
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 10px;
             text-align: center;
         }
 
         .stat-item span {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             display: block;
-            opacity: 0.9;
+            opacity: 0.85;
+            margin-bottom: 2px;
         }
 
         .stat-item strong {
-            font-size: 0.95rem;
+            font-size: 1rem;
+            font-weight: 600;
         }
 
         .container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 16px;
+            padding: 20px 16px;
         }
 
         .section-title {
             font-size: 1.1rem;
-            font-weight: 600;
-            margin: 20px 0 12px 0;
+            font-weight: 700;
+            margin: 24px 0 14px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            color: var(--text-main);
+            letter-spacing: -0.3px;
         }
 
         /* Accounts Grid */
         .accounts-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            gap: 12px;
         }
 
         .account-chip {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            padding: 12px;
+            padding: 16px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .account-chip:active {
+            transform: scale(0.98);
         }
 
         .account-header-row {
@@ -146,72 +160,92 @@
             align-items: center;
         }
 
+        .account-info-flex {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .account-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #ede9fe;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
         .account-name {
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             color: var(--text-muted);
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .account-balance {
-            font-size: 1rem;
+            font-size: 1.15rem;
             font-weight: 700;
-            color: var(--text-main);
+            letter-spacing: -0.5px;
         }
 
         /* Forms & Cards */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            padding: 16px;
+            padding: 20px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
 
         label {
             display: block;
             font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 6px;
+            font-weight: 600;
+            margin-bottom: 8px;
             color: var(--text-main);
         }
 
         input, select {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 0.95rem;
-            background: #fff;
+            background: #f8fafc;
             color: var(--text-main);
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, background 0.2s;
         }
 
         input:focus, select:focus {
             border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
         .type-selector {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 14px;
+            gap: 10px;
+            margin-bottom: 16px;
         }
 
         .type-btn {
-            padding: 12px;
+            padding: 14px;
             border: 1px solid var(--border);
-            background: #fff;
-            border-radius: 8px;
+            background: #f8fafc;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-muted);
             transition: all 0.2s;
         }
@@ -220,75 +254,99 @@
             background: var(--success);
             color: white;
             border-color: var(--success);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
         }
 
         .type-btn.active.expense {
             background: var(--danger);
             color: white;
             border-color: var(--danger);
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25);
         }
 
         .btn-primary {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-            transition: background 0.2s;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+            transition: background 0.2s, transform 0.1s;
         }
 
         .btn-primary:active {
             background: var(--primary-dark);
+            transform: scale(0.99);
         }
 
         .btn-secondary {
-            background: #e2e8f0;
+            background: #f1f5f9;
             color: var(--text-main);
-            border: none;
-            padding: 10px;
-            border-radius: 8px;
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
-            margin-top: 6px;
+            margin-top: 8px;
         }
 
-        /* Lists & Cards */
+        /* Lists & Items */
         .list-container {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
         .item-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            padding: 12px;
-            border-radius: 10px;
+            padding: 16px;
+            border-radius: var(--radius);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
         }
 
         .item-info {
             display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .item-icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #f1f5f9;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .item-details-flex {
+            display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 3px;
         }
 
         .item-title {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.95rem;
+            color: var(--text-main);
         }
 
-        .item-details {
-            font-size: 0.75rem;
+        .item-meta {
+            font-size: 0.78rem;
             color: var(--text-muted);
             display: flex;
             flex-wrap: wrap;
@@ -296,9 +354,16 @@
             align-items: center;
         }
 
+        .item-amount-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .item-amount {
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 1.05rem;
+            letter-spacing: -0.3px;
         }
 
         .item-amount.income { color: var(--success); }
@@ -308,13 +373,13 @@
         .action-btns {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .icon-btn {
             background: none;
             border: none;
-            color: #94a3b8;
+            color: #cbd5e1;
             cursor: pointer;
             padding: 6px;
             font-size: 0.9rem;
@@ -328,9 +393,9 @@
         .goal-progress-box {
             width: 100%;
             background: #e2e8f0;
-            border-radius: 4px;
-            height: 6px;
-            margin-top: 6px;
+            border-radius: 6px;
+            height: 8px;
+            margin-top: 10px;
             overflow: hidden;
         }
 
@@ -338,21 +403,22 @@
             background: var(--warning);
             height: 100%;
             width: 0%;
-            transition: width 0.3s;
+            transition: width 0.4s ease;
+            border-radius: 6px;
         }
 
-        /* Analytics Specific Styles */
+        /* Analytics Grid */
         .analytics-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .analytics-box {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            padding: 14px;
+            padding: 16px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             text-align: center;
@@ -364,25 +430,28 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            font-weight: 600;
         }
 
         .analytics-box strong {
-            font-size: 1.25rem;
+            font-size: 1.35rem;
             font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
         .recommendation-card {
             background: linear-gradient(135deg, #f0fdf4, #dcfce7);
             border: 1px solid #bbf7d0;
             color: #166534;
-            padding: 14px;
+            padding: 16px;
             border-radius: var(--radius);
             font-size: 0.9rem;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: flex-start;
+            box-shadow: var(--shadow);
         }
 
         .recommendation-card.alert {
@@ -392,7 +461,7 @@
         }
 
         .recommendation-card i {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             margin-top: 2px;
         }
 
@@ -402,12 +471,13 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
-            box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05);
+            box-shadow: 0 -10px 25px -5px rgba(15, 23, 42, 0.05);
             z-index: 1000;
         }
 
@@ -419,19 +489,20 @@
             align-items: center;
             gap: 4px;
             color: var(--text-muted);
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             cursor: pointer;
             flex: 1;
             padding: 4px;
+            font-weight: 600;
+            transition: color 0.2s;
         }
 
         .nav-item i {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
         }
 
         .nav-item.active {
             color: var(--primary);
-            font-weight: 600;
         }
 
         .view-section {
@@ -444,16 +515,23 @@
 
         .empty-state {
             text-align: center;
-            padding: 30px;
+            padding: 40px 20px;
             color: var(--text-muted);
             font-size: 0.9rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
         }
 
         .badge {
-            background: #e2e8f0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
+            background: #f1f5f9;
+            color: var(--text-main);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
         }
     </style>
 </head>
@@ -462,7 +540,7 @@
     <header>
         <div class="header-top">
             <h1 id="app-main-title"><i class="fa-solid fa-wallet"></i> Mis Finanzas</h1>
-            <button id="reset-btn" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+            <button id="reset-btn" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:8px; font-size:0.75rem; font-weight:600; cursor:pointer;"><i class="fa-solid fa-rotate-right"></i> Reset</button>
         </div>
         <div class="balance-card">
             <p>Patrimonio Total</p>
@@ -489,8 +567,8 @@
                 <form id="tx-form">
                     <input type="hidden" id="tx-edit-id" value="">
                     <div class="type-selector" id="type-selector-container">
-                        <button type="button" class="type-btn expense active" id="btn-expense">Gasto</button>
-                        <button type="button" class="type-btn income" id="btn-income">Ingreso</button>
+                        <button type="button" class="type-btn expense active" id="btn-expense"><i class="fa-solid fa-arrow-trend-down"></i> Gasto</button>
+                        <button type="button" class="type-btn income" id="btn-income"><i class="fa-solid fa-arrow-trend-up"></i> Ingreso</button>
                     </div>
 
                     <div class="form-group">
@@ -536,7 +614,7 @@
                         <label for="new-account-name">Nombre de la cuenta o billetera</label>
                         <input type="text" id="new-account-name" placeholder="Ej: Cuenta DNI, Binance..." required>
                     </div>
-                    <button type="submit" class="btn-primary">Añadir Cuenta</button>
+                    <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Añadir Cuenta</button>
                 </form>
             </div>
 
@@ -577,7 +655,7 @@
             <div class="analytics-grid">
                 <div class="analytics-box">
                     <span>Tasa de Ahorro</span>
-                    <strong id="analytics-saving-rate" style="color: var(--success);">0%</strong>
+                    <strong id="analytics-saving-rate" style="color: var(--success);">0.00%</strong>
                 </div>
                 <div class="analytics-box">
                     <span>Flujo Neto Mensual</span>
@@ -586,14 +664,10 @@
             </div>
 
             <div class="section-title">Recomendaciones para Decisiones</div>
-            <div id="analytics-recommendations">
-                <!-- Se llena dinámicamente -->
-            </div>
+            <div id="analytics-recommendations"></div>
 
             <div class="section-title">Gastos por Categoría Principal</div>
-            <div id="analytics-categories" class="list-container">
-                <!-- Se llena dinámicamente -->
-            </div>
+            <div id="analytics-categories" class="list-container"></div>
         </div>
 
     </div>
@@ -601,7 +675,7 @@
     <!-- Barra de Navegación Inferior -->
     <nav class="nav-bar">
         <button class="nav-item active" data-target="home">
-            <i class="fa-solid fa-house"></i>
+            <i class="fa-solid fa-arrow-right-arrow-left"></i>
             <span>Movimientos</span>
         </button>
         <button class="nav-item" data-target="accounts">
@@ -619,6 +693,40 @@
     </nav>
 
     <script>
+        const accountIcons = {
+            "Efectivo": "fa-money-bill-wave",
+            "Astropay": "fa-globe",
+            "BBVA": "fa-building-columns",
+            "Brubank": "fa-credit-card",
+            "Carrefour": "fa-cart-shopping",
+            "Claro Pay": "fa-mobile-screen",
+            "Cocos": "fa-seedling",
+            "IOL": "fa-chart-line",
+            "Lemon Cash": "fa-lemon",
+            "Mercado Pago": "fa-handshake",
+            "Naranja X": "fa-orange",
+            "Personal Pay": "fa-bolt"
+        };
+
+        const expenseCategoryIcons = {
+            "Vivienda": "fa-house",
+            "Alimentación": "fa-utensils",
+            "Transporte y Movilidad": "fa-motorcycle",
+            "Salud y Bienestar": "fa-heart-pulse",
+            "Entretenimiento y Ocio": "fa-film",
+            "Educación y Desarrollo": "fa-graduation-cap",
+            "Gastos Personales y Ropa": "fa-shirt",
+            "Finanzas y Obligaciones": "fa-file-invoice-dollar"
+        };
+
+        const incomeCategoryIcons = {
+            "Sueldo y Empleo Formal": "fa-briefcase",
+            "Trabajos Independientes y Freelance": "fa-laptop-code",
+            "Rendimientos Financieros e Inversiones": "fa-chart-pie",
+            "Actividades de Transporte y Reparto": "fa-motorcycle",
+            "Ayudas, Subsidios y Transferencias": "fa-hand-holding-dollar"
+        };
+
         const expenseData = {
             "Vivienda": ["Alquiler o hipoteca", "Impuestos inmobiliarios y tasas municipales", "Servicios públicos (luz, gas, agua)", "Expensas o mantenimiento de edificio", "Mantenimiento y reparaciones del hogar", "Internet, telefonía fija y televisión"],
             "Alimentación": ["Supermercado y almacén", "Verdulería y carnicería", "Comidas fuera de casa (restaurantes, bares)", "Delivery y aplicaciones de pedidos"],
@@ -719,7 +827,6 @@
             });
         }
 
-        /* CRUD TRANSACCIONES */
         function handleTransactionSubmit(e) {
             e.preventDefault();
             const editId = document.getElementById('tx-edit-id').value;
@@ -763,7 +870,7 @@
 
             setTxType(t.type);
             document.getElementById('tx-edit-id').value = t.id;
-            document.getElementById('tx-amount').value = t.amount;
+            document.getElementById('tx-amount').value = t.amount.toFixed(2);
             document.getElementById('tx-description').value = t.description;
             document.getElementById('tx-category').value = t.category;
             updateSubcategories();
@@ -792,7 +899,6 @@
             }
         }
 
-        /* CRUD CUENTAS */
         function addAccount(e) {
             e.preventDefault();
             const nameInput = document.getElementById('new-account-name');
@@ -830,7 +936,6 @@
             renderAll();
         }
 
-        /* CRUD OBJETIVOS Y COMPROMISOS */
         function handleGoalSubmit(e) {
             e.preventDefault();
             const editId = document.getElementById('goal-edit-id').value;
@@ -857,7 +962,7 @@
 
             document.getElementById('goal-edit-id').value = g.id;
             document.getElementById('goal-title').value = g.title;
-            document.getElementById('goal-amount').value = g.amount;
+            document.getElementById('goal-amount').value = g.amount.toFixed(2);
             document.getElementById('goal-account').value = g.account;
 
             document.getElementById('goal-form-title').textContent = "Editar Compromiso";
@@ -885,7 +990,6 @@
             renderGoals();
         }
 
-        /* GUARDAR GENERAL Y RENDERIZADO */
         function saveAndRender() {
             localStorage.setItem('fin_transactions', JSON.stringify(transactions));
             renderAll();
@@ -939,10 +1043,14 @@
             grid.innerHTML = '';
             accountsList.forEach(acc => {
                 const bal = window.accountBalances ? window.accountBalances[acc] || 0 : 0;
+                const iconClass = accountIcons[acc] || "fa-wallet";
                 grid.innerHTML += `
                     <div class="account-chip">
                         <div class="account-header-row">
-                            <span class="account-name">${acc}</span>
+                            <div class="account-info-flex">
+                                <div class="account-icon"><i class="fa-solid ${iconClass}"></i></div>
+                                <span class="account-name">${acc}</span>
+                            </div>
                             <div class="action-btns">
                                 <button class="icon-btn" onclick="editAccount('${acc}')" title="Editar cuenta"><i class="fa-solid fa-pen"></i></button>
                                 <button class="icon-btn delete" onclick="deleteAccount('${acc}')" title="Eliminar cuenta"><i class="fa-solid fa-trash-can"></i></button>
@@ -964,17 +1072,25 @@
             list.innerHTML = '';
             transactions.forEach(t => {
                 const isInc = t.type === 'income';
+                const iconMap = isInc ? incomeCategoryIcons : expenseCategoryIcons;
+                const iconClass = iconMap[t.category] || "fa-tag";
+
                 list.innerHTML += `
                     <div class="item-card">
                         <div class="item-info">
-                            <span class="item-title">${t.description}</span>
-                            <div class="item-details">
-                                <span class="badge">${t.account}</span>
-                                <span>• ${t.category} (${t.subcategory})</span>
-                                <span>• ${t.date}</span>
+                            <div class="item-icon-box" style="color: ${isInc ? 'var(--success)' : 'var(--danger)'}; background: ${isInc ? '#dcfce7' : '#fee2e2'};">
+                                <i class="fa-solid ${iconClass}"></i>
+                            </div>
+                            <div class="item-details-flex">
+                                <span class="item-title">${t.description}</span>
+                                <div class="item-meta">
+                                    <span class="badge">${t.account}</span>
+                                    <span>• ${t.category}</span>
+                                    <span>• ${t.date}</span>
+                                </div>
                             </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 4px;">
+                        <div class="item-amount-box">
                             <span class="item-amount ${t.type}">${isInc ? '+' : '-'}${formatMoney(t.amount)}</span>
                             <div class="action-btns">
                                 <button class="icon-btn" onclick="editTransaction(${t.id})" title="Editar"><i class="fa-solid fa-pen"></i></button>
@@ -1009,10 +1125,15 @@
                     <div class="item-card" style="flex-direction: column; align-items: stretch; gap: 8px;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <div class="item-info">
-                                <span class="item-title">${g.title}</span>
-                                <div class="item-details">
-                                    <span class="badge">${g.account ? g.account : 'Patrimonio General'}</span>
-                                    <span>• Objetivo: <strong>${formatMoney(g.amount)}</strong></span>
+                                <div class="item-icon-box" style="color: var(--warning); background: #fef3c7;">
+                                    <i class="fa-solid fa-bullseye"></i>
+                                </div>
+                                <div class="item-details-flex">
+                                    <span class="item-title">${g.title}</span>
+                                    <div class="item-meta">
+                                        <span class="badge">${g.account ? g.account : 'Patrimonio General'}</span>
+                                        <span>• Objetivo: <strong>${formatMoney(g.amount)}</strong></span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="action-btns">
@@ -1041,18 +1162,16 @@
             const exp = window.currentMonthExpense || 0;
             const netFlow = inc - exp;
             
-            // Tasa de ahorro
             let savingRate = 0;
             if (inc > 0) {
                 savingRate = Math.max(((inc - exp) / inc) * 100, 0);
             }
 
-            document.getElementById('analytics-saving-rate').textContent = savingRate.toFixed(1) + '%';
+            document.getElementById('analytics-saving-rate').textContent = savingRate.toFixed(2) + '%';
             const netFlowEl = document.getElementById('analytics-net-flow');
             netFlowEl.textContent = formatMoney(netFlow);
             netFlowEl.style.color = netFlow >= 0 ? 'var(--success)' : 'var(--danger)';
 
-            // Generar recomendaciones automáticas para toma de decisiones
             const recContainer = document.getElementById('analytics-recommendations');
             recContainer.innerHTML = '';
 
@@ -1070,7 +1189,7 @@
                     recContainer.innerHTML += `
                         <div class="recommendation-card">
                             <i class="fa-solid fa-circle-check"></i>
-                            <div><strong>Excelente capacidad de ahorro:</strong> Estás guardando más del 20% de tus ingresos. Es un buen momento para evaluar destinar parte de este excedente a CEDEARs o instrumentos de inversión.</div>
+                            <div><strong>Excelente capacidad de ahorro:</strong> Estás guardando más del 20% de tus ingresos. Es un buen momento para evaluar destinar parte de este excedente a CEDEARs u otros instrumentos de inversión.</div>
                         </div>
                     `;
                 } else {
@@ -1083,7 +1202,6 @@
                 }
             }
 
-            // Gastos por categoría principal (mes actual)
             const catContainer = document.getElementById('analytics-categories');
             catContainer.innerHTML = '';
 
@@ -1109,13 +1227,19 @@
                 catContainer.innerHTML = `<div class="empty-state">No hay gastos registrados en este mes.</div>`;
             } else {
                 sortedCategories.forEach(([cat, amount]) => {
-                    const percentage = exp > 0 ? ((amount / exp) * 100).toFixed(1) : 0;
+                    const percentage = exp > 0 ? ((amount / exp) * 100).toFixed(2) : 0;
+                    const iconClass = expenseCategoryIcons[cat] || "fa-tag";
                     catContainer.innerHTML += `
                         <div class="item-card">
                             <div class="item-info">
-                                <span class="item-title">${cat}</span>
-                                <div class="item-details">
-                                    <span>Representa el <strong>${percentage}%</strong> de tus gastos</span>
+                                <div class="item-icon-box" style="color: var(--danger); background: #fee2e2;">
+                                    <i class="fa-solid ${iconClass}"></i>
+                                </div>
+                                <div class="item-details-flex">
+                                    <span class="item-title">${cat}</span>
+                                    <div class="item-meta">
+                                        <span>Representa el <strong>${percentage}%</strong> de tus gastos</span>
+                                    </div>
                                 </div>
                             </div>
                             <span class="item-amount expense">${formatMoney(amount)}</span>
