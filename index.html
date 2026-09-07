@@ -3,554 +3,400 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MotoFinanzas Pro 🏍️</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-</head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between pb-24">
+    <title>Control Financiero Personal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
 
-    <!-- HEADER -->
-    <header class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center sticky top-0 z-50">
-        <div>
-            <h1 class="text-base font-bold text-amber-400">MotoFinanzas Pro 🏍️</h1>
-            <p class="text-[10px] text-slate-400">Control total financiero y multicuenta</p>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 80px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: white;
+            padding: 20px 16px;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .header-top h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .balance-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 16px;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .balance-card p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .balance-card h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-item span {
+            font-size: 0.75rem;
+            display: block;
+            opacity: 0.9;
+        }
+
+        .stat-item strong {
+            font-size: 0.95rem;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 20px 0 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Accounts Grid */
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .account-chip {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .account-name {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .account-balance {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Forms & Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: #fff;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+        }
+
+        .type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .type-btn {
+            padding: 10px;
+            border: 1px solid var(--border);
+            background: #fff;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .type-btn.active.income {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .type-btn.active.expense {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+            transition: background 0.2s;
+        }
+
+        .btn-primary:active {
+            background: var(--primary-dark);
+        }
+
+        /* Transactions List */
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .transaction-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .tx-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .tx-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .tx-details {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .tx-amount {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .tx-amount.income {
+            color: var(--success);
+        }
+
+        .tx-amount.expense {
+            color: var(--danger);
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .delete-btn:hover {
+            color: var(--danger);
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.03);
+            z-index: 100;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-top">
+            <h1><i class="fa-solid fa-wallet"></i> Mis Finanzas</h1>
+            <button onclick="resetData()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-rotate-right"></i> Reset</button>
         </div>
-        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-full text-slate-300 border border-slate-700">Córdoba</span>
+        <div class="balance-card">
+            <p>Patrimonio Total</p>
+            <h2 id="total-balance">$0.00</h2>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <span>Ingresos del Mes</span>
+                    <strong id="monthly-income">$0.00</strong>
+                </div>
+                <div class="stat-item">
+                    <span>Gastos del Mes</span>
+                    <strong id="monthly-expense">$0.00</strong>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <!-- CONTENEDOR DE PANTALLAS -->
-    <main class="p-4 flex-1 max-w-md mx-auto w-full space-y-4">
-        
-        <!-- PANTALLA 1: INICIO -->
-        <section id="view-home" class="space-y-4">
-            <div class="bg-gradient-to-br from-amber-500 to-amber-700 p-5 rounded-2xl shadow-lg text-slate-950">
-                <p class="text-xs font-semibold uppercase tracking-wider opacity-80">Libre Neto de Hoy</p>
-                <h2 id="neto-hoy" class="text-3xl font-extrabold mt-1">$0</h2>
-                <div class="mt-4 pt-3 border-t border-amber-600/40 grid grid-cols-2 gap-2 text-xs font-medium">
-                    <div>
-                        <span class="opacity-80 block">Ingresos:</span>
-                        <span id="ingresos-hoy" class="font-bold text-slate-950">$0</span>
+    <div class="container">
+
+        <div id="view-home" class="view-section active">
+            <div class="section-title">Nuevo Movimiento</div>
+            <div class="card">
+                <form id="tx-form" onsubmit="addTransaction(event)">
+                    <div class="type-selector">
+                        <button type="button" class="type-btn expense active" id="btn-expense" onclick="setTxType('expense')">Gasto</button>
+                        <button type="button" class="type-btn income" id="btn-income" onclick="setTxType('income')">Ingreso</button>
                     </div>
-                    <div>
-                        <span class="opacity-80 block">Gastos Totales:</span>
-                        <span id="gastos-hoy" class="font-bold text-rose-950">$0</span>
-                    </div>
-                </div>
-            </div>
 
-            <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex justify-between items-center">
-                <div>
-                    <p class="text-xs text-slate-400">Compromisos pendientes del mes</p>
-                    <p id="total-pendientes" class="text-lg font-bold text-rose-400">$0</p>
-                </div>
-                <button onclick="cambiarVista('compromisos')" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 px-3 py-2 rounded-xl border border-slate-700 cursor-pointer font-medium">Ver pagos</button>
-            </div>
-
-            <div>
-                <h3 class="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wide">Movimientos de Hoy</h3>
-                <div id="lista-movimientos" class="space-y-2">
-                    <!-- Dinámico -->
-                </div>
-            </div>
-        </section>
-
-        <!-- PANTALLA 2: CARGAR / EDITAR MOVIMIENTO -->
-        <section id="view-add" class="space-y-4 hidden">
-            <div class="flex justify-between items-center">
-                <h2 id="form-titulo" class="text-lg font-bold text-white">Registrar Movimiento</h2>
-                <button type="button" onclick="cancelarEdicionMov()" id="btn-cancelar-edicion" class="text-xs text-slate-400 hover:text-white hidden cursor-pointer">Cancelar</button>
-            </div>
-            
-            <!-- Selector de tipo -->
-            <div id="selector-tipo-container" class="grid grid-cols-3 gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
-                <button type="button" onclick="setTipoRegistro('ingreso')" id="tab-ingreso" class="py-2 text-xs font-bold rounded-lg bg-amber-400 text-slate-950 cursor-pointer">Ingreso</button>
-                <button type="button" onclick="setTipoRegistro('gastomoto')" id="tab-gastomoto" class="py-2 text-xs font-bold rounded-lg text-slate-400 cursor-pointer">Gasto Moto</button>
-                <button type="button" onclick="setTipoRegistro('gastopersonal')" id="tab-gastopersonal" class="py-2 text-xs font-bold rounded-lg text-slate-400 cursor-pointer">Personal</button>
-            </div>
-
-            <form id="form-movimiento" class="space-y-4 bg-slate-900 p-4 rounded-2xl border border-slate-800">
-                <input type="hidden" id="edit-id" value="">
-                
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Monto ($)</label>
-                    <input type="number" id="reg-monto" placeholder="Ej: 15000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-lg focus:outline-none focus:border-amber-400" required>
-                </div>
-
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Cuenta / Billetera / Efectivo</label>
-                    <select id="reg-cuenta" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
-                        <option value="Efectivo">💵 Efectivo</option>
-                        <option value="Mercado Pago">📱 Mercado Pago</option>
-                        <option value="Brubank">🟣 Brubank</option>
-                        <option value="BBVA">🔵 BBVA</option>
-                        <option value="Lemon Cash">🍋 Lemon Cash</option>
-                        <option value="Naranja X">🟠 Naranja X</option>
-                        <option value="Personal Pay">🟢 Personal Pay</option>
-                        <option value="Astropay">🔵 Astropay</option>
-                        <option value="Carrefour">🛒 Carrefour</option>
-                        <option value="Cocos">🥥 Cocos</option>
-                        <option value="IOL">📈 IOL</option>
-                        <option value="Claro Pay">🔴 Claro Pay</option>
-                    </select>
-                </div>
-
-                <div id="container-origen">
-                    <label class="block text-xs text-slate-400 mb-1">Categoría y Subcategoría de Ingreso</label>
-                    <select id="reg-origen" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
-                        <optgroup label="Transporte y Logística">
-                            <option value="Uber Moto">Uber Moto (Viajes app)</option>
-                            <option value="Viajes Particulares">Viajes Particulares / Directos</option>
-                            <option value="Mandados y Envíos">Mandados y Envíos</option>
-                        </optgroup>
-                        <optgroup label="Música y Arte">
-                            <option value="Shows y Conciertos">Shows y Conciertos en vivo</option>
-                            <option value="Producción Musical">Producción Musical / Ableton</option>
-                            <option value="Clases de Guitarra">Clases de Guitarra</option>
-                        </optgroup>
-                        <optgroup label="Inversiones y Finanzas">
-                            <option value="Rendimientos / CEDEARs">Rendimientos / CEDEARs / Dividendos</option>
-                            <option value="Venta de Activos">Venta de Activos</option>
-                        </optgroup>
-                        <optgroup label="Otros">
-                            <option value="Changas / Trabajos Extra">Changas / Trabajos Extra</option>
-                            <option value="Otro Ingreso">Otro Ingreso General</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <div id="container-categoria-gasto" class="hidden">
-                    <label class="block text-xs text-slate-400 mb-1">Categoría y Subcategoría de Gasto</label>
-                    <select id="reg-categoria-gasto" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
-                        <optgroup label="Movilidad y Moto">
-                            <option value="Nafta (Puma / YPF)">Combustible: Nafta (Puma / YPF)</option>
-                            <option value="Service / Mantenimiento">Moto: Service / Mantenimiento</option>
-                            <option value="Gomería / Cubiertas">Moto: Gomería / Cubiertas / Cámaras</option>
-                            <option value="Repuestos / Accesorios">Moto: Repuestos / Accesorios / Casco</option>
-                            <option value="Seguro / Patente Moto">Obligatorio: Seguro / Patente Moto</option>
-                        </optgroup>
-                        <optgroup label="Financiero y Deudas (NUEVO)">
-                            <option value="Resumen Tarjeta de Crédito">Finanzas: Resumen Tarjeta de Crédito</option>
-                            <option value="Préstamos / Cuotas">Finanzas: Préstamos / Cuotas (Moto, etc.)</option>
-                            <option value="Inversión / Compra CEDEARs">Finanzas: Compra de CEDEARs / Inversión</option>
-                        </optgroup>
-                        <optgroup label="Alimentación y Consumo">
-                            <option value="Supermercado / Almacén">Comida: Supermercado / Almacén</option>
-                            <option value="Verdulería / Carnicería">Comida: Verdulería / Carnicería / Omelettes</option>
-                            <option value="Fast Food / PedidosYa">Comida: Fast Food / PedidosYa / Burgers</option>
-                        </optgroup>
-                        <optgroup label="Hogar y Servicios">
-                            <option value="Alquiler / Expensas">Casa: Alquiler / Expensas</option>
-                            <option value="Servicios (Luz, Internet)">Casa: Servicios (Luz, Internet, Agua)</option>
-                            <option value="Mantenimiento Hogar">Casa: Mantenimiento general</option>
-                        </optgroup>
-                        <optgroup label="Bienestar y Ocio">
-                            <option value="Gimnasio / Suplementos">Salud: Gimnasio / Creatina / Proteína</option>
-                            <option value="Salidas / Entretenimiento">Ocio: Salidas / Recitales / Birra</option>
-                            <option value="Ropa / Cuidado Personal">Personal: Ropa / Cuidado Personal</option>
-                            <option value="Mascotas (Veterinaria/Comida)">Mascotas: Perros / Gatos (Comida/Vet)</option>
-                        </optgroup>
-                        <optgroup label="Tecnología y Suscripciones">
-                            <option value="Suscripciones (Apps/Streaming)">Tecnología: Suscripciones (ChatGPT, CapCut, etc.)</option>
-                            <option value="Hardware / Celular / PC">Tecnología: Hardware / Celular / Accesorios</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <!-- Selector opcional para vincular gasto a un compromiso -->
-                <div id="container-vincular-compromiso">
-                    <label class="block text-xs text-slate-400 mb-1">¿Destinado a pagar un compromiso? (Opcional)</label>
-                    <select id="reg-compromiso-vinculado" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
-                        <option value="">-- Ninguno / Gasto común --</option>
-                        <!-- Dinámico -->
-                    </select>
-                </div>
-
-                <button type="submit" id="btn-submit-mov" class="w-full bg-amber-400 text-slate-950 font-bold p-3 rounded-xl cursor-pointer">Guardar Registro</button>
-            </form>
-        </section>
-
-        <!-- PANTALLA 3: COMPROMISOS DE PAGOS -->
-        <section id="view-compromisos" class="space-y-4 hidden">
-            <div class="flex justify-between items-center">
-                <h2 id="titulo-compromisos" class="text-lg font-bold text-white">Compromisos de Pago</h2>
-                <button onclick="toggleFormCompromiso()" id="btn-nuevo-comp" class="text-xs bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded-xl cursor-pointer">+ Nuevo Pago</button>
-            </div>
-
-            <!-- Formulario para agregar o editar compromiso -->
-            <form id="form-compromiso" class="space-y-3 bg-slate-900 p-4 rounded-2xl border border-slate-800 hidden">
-                <div class="flex justify-between items-center">
-                    <h3 id="form-comp-titulo" class="text-sm font-semibold text-amber-400">Agregar Obligación</h3>
-                    <button type="button" onclick="toggleFormCompromiso()" class="text-xs text-slate-400 hover:text-white">Cancelar</button>
-                </div>
-                <input type="hidden" id="edit-comp-id" value="">
-                <input type="text" id="comp-nombre" placeholder="Nombre (Ej: Cuota Moto, Tarjeta BBVA)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs" required>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="number" id="comp-monto" placeholder="Monto ($)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs" required>
-                    <input type="text" id="comp-vto" placeholder="Vencimiento (Ej: 10/09)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs" required>
-                </div>
-                <select id="comp-cat" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs">
-                    <option value="Movilidad / Moto">Movilidad / Moto (Cuota, Seguro)</option>
-                    <option value="Financiero / Tarjetas">Financiero / Tarjetas / Préstamos</option>
-                    <option value="Esencial">Esencial (Alquiler, Luz, Internet)</option>
-                    <option value="Suscripciones / Varios">Suscripciones / Varios</option>
-                </select>
-                <button type="submit" id="btn-submit-comp" class="w-full bg-amber-400 text-slate-950 font-bold p-2.5 rounded-xl text-xs cursor-pointer">Guardar Compromiso</button>
-            </form>
-
-            <div id="lista-compromisos" class="space-y-2">
-                <!-- Dinámico -->
-            </div>
-        </section>
-
-        <!-- PANTALLA 4: CUENTAS Y BILLETERAS -->
-        <section id="view-cuentas" class="space-y-4 hidden">
-            <h2 class="text-lg font-bold text-white">Estado de Cuentas</h2>
-            <p class="text-xs text-slate-400">Dinero acumulado en cada billetera según tus ingresos y gastos registrados:</p>
-            <div id="lista-saldos-cuentas" class="grid grid-cols-2 gap-2">
-                <!-- Dinámico -->
-            </div>
-        </section>
-
-        <!-- PANTALLA 5: ANÁLISIS -->
-        <section id="view-analisis" class="space-y-4 hidden">
-            <h2 class="text-lg font-bold text-white">Análisis Financiero</h2>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
-                    <p class="text-[10px] text-slate-400 uppercase">Total Ingresos Mes</p>
-                    <p id="Analisismes-ingresos" class="text-lg font-bold text-emerald-400 mt-1">$0</p>
-                </div>
-                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
-                    <p class="text-[10px] text-slate-400 uppercase">Total Gastos Mes</p>
-                    <p id="Analisismes-gastos" class="text-lg font-bold text-rose-400 mt-1">$0</p>
-                </div>
-            </div>
-
-            <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-2">
-                <h3 class="text-xs font-semibold text-amber-400 uppercase">Fondo Diario Necesario</h3>
-                <p class="text-xs text-slate-300">Para cubrir todos tus compromisos pendientes, deberías separar por día:</p>
-                <p id="fondo-diario" class="text-2xl font-extrabold text-white">$0 <span class="text-xs font-normal text-slate-400">/ día</span></p>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- BARRA DE NAVEGACIÓN INFERIOR -->
-    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 flex justify-around p-3 z-50">
-        <button id="nav-home" class="text-xs font-medium text-amber-400 cursor-pointer flex flex-col items-center">🏠 <span>Inicio</span></button>
-        <button id="nav-add" onclick="prepararNuevoMovimiento()" class="bg-amber-400 text-slate-950 px-3 py-1 rounded-full font-bold text-xs shadow-md cursor-pointer flex items-center gap-1">➕ <span>Cargar</span></button>
-        <button id="nav-compromisos" class="text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center">📅 <span>Pagos</span></button>
-        <button id="nav-cuentas" class="text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center">💳 <span>Cuentas</span></button>
-        <button id="nav-analisis" class="text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center">📊 <span>Análisis</span></button>
-    </nav>
-
-    <!-- JAVASCRIPT -->
-    <script>
-        let tipoRegistroActual = 'ingreso';
-
-        const LISTA_CUENTAS = [
-            'Efectivo', 'Mercado Pago', 'Brubank', 'BBVA', 
-            'Lemon Cash', 'Naranja X', 'Personal Pay', 'Astropay', 
-            'Carrefour', 'Cocos', 'IOL', 'Claro Pay'
-        ];
-
-        let movimientos = JSON.parse(localStorage.getItem('moto_movimientos')) || [
-            { id: 1, tipo: 'ingreso', monto: 22000, detalle: 'Uber Moto', cuenta: 'Mercado Pago', fecha: 'Hoy', vinculadoId: null },
-            { id: 2, tipo: 'gastomoto', monto: 4500, detalle: 'Nafta (Puma / YPF)', cuenta: 'Efectivo', fecha: 'Hoy', vinculadoId: null }
-        ];
-
-        let compromisos = JSON.parse(localStorage.getItem('moto_compromisos')) || [
-            { id: 1, nombre: 'Seguro Moto', monto: 25000, categoria: 'Movilidad / Moto', vto: '10/09', pagado: false },
-            { id: 2, nombre: 'Alquiler', monto: 180000, categoria: 'Esencial', vto: '15/09', pagado: false }
-        ];
-
-        function cambiarVista(vista) {
-            ['home', 'add', 'compromisos', 'cuentas', 'analisis'].forEach(v => {
-                document.getElementById('view-' + v).classList.add('hidden');
-                const nav = document.getElementById('nav-' + v);
-                if(nav && v !== 'add') nav.className = "text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center";
-            });
-
-            document.getElementById('view-' + vista).classList.remove('hidden');
-            const activeNav = document.getElementById('nav-' + vista);
-            if(activeNav && vista !== 'add') {
-                activeNav.className = "text-xs font-medium text-amber-400 cursor-pointer flex flex-col items-center";
-            }
-            actualizarUI();
-        }
-
-        ['home', 'compromisos', 'cuentas', 'analisis'].forEach(v => {
-            document.getElementById('nav-' + v).addEventListener('click', () => cambiarVista(v));
-        });
-
-        function actualizarSelectCompromisosVinculados(seleccionado = null) {
-            const select = document.getElementById('reg-compromiso-vinculado');
-            let opciones = '<option value="">-- Ninguno / Gasto común --</option>';
-            compromisos.forEach(c => {
-                opciones += `<option value="${c.id}" ${seleccionado == c.id ? 'selected' : ''}>Destinado a: ${c.nombre} ($${c.monto.toLocaleString()})</option>`;
-            });
-            select.innerHTML = opciones;
-        }
-
-        function prepararNuevoMovimiento() {
-            document.getElementById('edit-id').value = '';
-            document.getElementById('form-titulo').innerText = 'Registrar Movimiento';
-            document.getElementById('btn-submit-mov').innerText = 'Guardar Registro';
-            document.getElementById('btn-cancelar-edicion').classList.add('hidden');
-            document.getElementById('reg-monto').value = '';
-            setTipoRegistro('ingreso');
-            actualizarSelectCompromisosVinculados();
-            cambiarVista('add');
-        }
-
-        function cancelarEdicionMov() {
-            prepararNuevoMovimiento();
-            cambiarVista('home');
-        }
-
-        function setTipoRegistro(tipo) {
-            tipoRegistroActual = tipo;
-            ['ingreso', 'gastomoto', 'gastopersonal'].forEach(t => {
-                const btn = document.getElementById('tab-' + t);
-                btn.className = "py-2 text-xs font-bold rounded-lg text-slate-400 cursor-pointer";
-            });
-            document.getElementById('tab-' + tipo).className = "py-2 text-xs font-bold rounded-lg bg-amber-400 text-slate-950 cursor-pointer";
-
-            if(tipo === 'ingreso') {
-                document.getElementById('container-origen').classList.remove('hidden');
-                document.getElementById('container-categoria-gasto').classList.add('hidden');
-                document.getElementById('container-vincular-compromiso').classList.add('hidden');
-            } else {
-                document.getElementById('container-origen').classList.add('hidden');
-                document.getElementById('container-categoria-gasto').classList.remove('hidden');
-                document.getElementById('container-vincular-compromiso').classList.remove('hidden');
-            }
-        }
-
-        function editarMovimiento(id) {
-            const m = movimientos.find(item => item.id === id);
-            if(!m) return;
-
-            document.getElementById('edit-id').value = m.id;
-            document.getElementById('form-titulo').innerText = 'Editar Movimiento';
-            document.getElementById('btn-submit-mov').innerText = 'Actualizar Registro';
-            document.getElementById('btn-cancelar-edicion').classList.remove('hidden');
-            document.getElementById('reg-monto').value = m.monto;
-            document.getElementById('reg-cuenta').value = m.cuenta || 'Efectivo';
-
-            setTipoRegistro(m.tipo);
-
-            if(m.tipo === 'ingreso') {
-                document.getElementById('reg-origen').value = m.detalle;
-            } else {
-                document.getElementById('reg-categoria-gasto').value = m.detalle;
-                actualizarSelectCompromisosVinculados(m.vinculadoId);
-            }
-
-            cambiarVista('add');
-        }
-
-        function eliminarMovimiento(id) {
-            if(confirm('¿Seguro querés eliminar este movimiento?')) {
-                movimientos = movimientos.filter(m => m.id !== id);
-                localStorage.setItem('moto_movimientos', JSON.stringify(movimientos));
-                actualizarUI();
-            }
-        }
-
-        function toggleFormCompromiso() {
-            const form = document.getElementById('form-compromiso');
-            if(form.classList.contains('hidden')) {
-                document.getElementById('edit-comp-id').value = '';
-                document.getElementById('form-comp-titulo').innerText = 'Agregar Obligación';
-                document.getElementById('btn-submit-comp').innerText = 'Guardar Compromiso';
-                document.getElementById('comp-nombre').value = '';
-                document.getElementById('comp-monto').value = '';
-                document.getElementById('comp-vto').value = '';
-                form.classList.remove('hidden');
-            } else {
-                form.classList.add('hidden');
-            }
-        }
-
-        function editarCompromiso(id) {
-            const c = compromisos.find(item => item.id === id);
-            if(!c) return;
-
-            document.getElementById('edit-comp-id').value = c.id;
-            document.getElementById('form-comp-titulo').innerText = 'Editar Obligación';
-            document.getElementById('btn-submit-comp').innerText = 'Actualizar Compromiso';
-            document.getElementById('comp-nombre').value = c.nombre;
-            document.getElementById('comp-monto').value = c.monto;
-            document.getElementById('comp-vto').value = c.vto;
-            document.getElementById('comp-cat').value = c.categoria;
-
-            document.getElementById('form-compromiso').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function eliminarCompromiso(id) {
-            if(confirm('¿Seguro querés eliminar este compromiso de pago?')) {
-                compromisos = compromisos.filter(c => c.id !== id);
-                localStorage.setItem('moto_compromisos', JSON.stringify(compromisos));
-                actualizarUI();
-            }
-        }
-
-        document.getElementById('form-movimiento').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const editId = document.getElementById('edit-id').value;
-            const monto = parseFloat(document.getElementById('reg-monto').value);
-            const cuenta = document.getElementById('reg-cuenta').value;
-            if(!monto) return;
-
-            let detalle = '';
-            let vinculadoId = null;
-
-            if(tipoRegistroActual === 'ingreso') {
-                detalle = document.getElementById('reg-origen').value;
-            } else {
-                detalle = document.getElementById('reg-categoria-gasto').value;
-                const vinculoSelect = document.getElementById('reg-compromiso-vinculado').value;
-                if(vinculoSelect) vinculadoId = parseInt(vinculoSelect);
-            }
-
-            if(editId) {
-                movimientos = movimientos.map(m => m.id == editId ? { ...m, tipo: tipoRegistroActual, monto, cuenta, detalle, vinculadoId } : m);
-            } else {
-                movimientos.unshift({ id: Date.now(), tipo: tipoRegistroActual, monto, cuenta, detalle, fecha: 'Hoy', vinculadoId });
-            }
-
-            localStorage.setItem('moto_movimientos', JSON.stringify(movimientos));
-            prepararNuevoMovimiento();
-            cambiarVista('home');
-        });
-
-        document.getElementById('form-compromiso').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const editCompId = document.getElementById('edit-comp-id').value;
-            const nombre = document.getElementById('comp-nombre').value;
-            const monto = parseFloat(document.getElementById('comp-monto').value);
-            const vto = document.getElementById('comp-vto').value;
-            const categoria = document.getElementById('comp-cat').value;
-
-            if(editCompId) {
-                compromisos = compromisos.map(c => c.id == editCompId ? { ...c, nombre, monto, vto, categoria } : c);
-            } else {
-                compromisos.push({ id: Date.now(), nombre, monto, categoria, vto, pagado: false });
-            }
-
-            localStorage.setItem('moto_compromisos', JSON.stringify(compromisos));
-            document.getElementById('form-compromiso').classList.add('hidden');
-            actualizarUI();
-        });
-
-        function togglePago(id) {
-            compromisos = compromisos.map(c => c.id === id ? { ...c, pagado: !c.pagado } : c);
-            localStorage.setItem('moto_compromisos', JSON.stringify(compromisos));
-            actualizarUI();
-        }
-
-        function actualizarUI() {
-            const ingresosHoy = movimientos.filter(m => m.tipo === 'ingreso').reduce((acc, m) => acc + m.monto, 0);
-            const gastosHoy = movimientos.filter(m => m.tipo !== 'ingreso').reduce((acc, m) => acc + m.monto, 0);
-            const netoHoy = ingresosHoy - gastosHoy;
-
-            document.getElementById('ingresos-hoy').innerText = '$' + ingresosHoy.toLocaleString();
-            document.getElementById('gastos-hoy').innerText = '$' + gastosHoy.toLocaleString();
-            document.getElementById('neto-hoy').innerText = '$' + netoHoy.toLocaleString();
-
-            const totalPend = compromisos.filter(c => !c.pagado).reduce((acc, c) => acc + c.monto, 0);
-            document.getElementById('total-pendientes').innerText = '$' + totalPend.toLocaleString();
-
-            // Calcular saldos por cuenta
-            let saldosCuentas = {};
-            LISTA_CUENTAS.forEach(c => saldosCuentas[c] = 0);
-            movimientos.forEach(m => {
-                let cta = m.cuenta || 'Efectivo';
-                if(saldosCuentas[cta] !== undefined) {
-                    if(m.tipo === 'ingreso') {
-                        saldosCuentas[cta] += m.monto;
-                    } else {
-                        saldosCuentas[cta] -= m.monto;
-                    }
-                }
-            });
-
-            // Renderizar Cuentas
-            document.getElementById('lista-saldos-cuentas').innerHTML = LISTA_CUENTAS.map(cta => {
-                let saldo = saldosCuentas[cta];
-                let colorSaldo = saldo >= 0 ? 'text-emerald-400' : 'text-rose-400';
-                return `
-                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                        <p class="text-xs text-slate-400 font-medium">${cta}</p>
-                        <p class="text-base font-bold ${colorSaldo} mt-1">$${saldo.toLocaleString()}</p>
-                    </div>
-                `;
-            }).join('');
-
-            // Renderizar Movimientos
-            document.getElementById('lista-movimientos').innerHTML = movimientos.map(m => {
-                let badgeVinculo = '';
-                if(m.vinculadoId) {
-                    const compAsociado = compromisos.find(c => c.id == m.vinculadoId);
-                    if(compAsociado) {
-                        badgeVinculo = `<span class="block text-[9px] text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800/50 mt-1">Pago de: ${compAsociado.nombre}</span>`;
-                    }
-                }
-
-                return `
-                    <div class="bg-slate-900 p-3 rounded-xl flex justify-between items-center border border-slate-800">
-                        <div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">${m.cuenta || 'Efectivo'}</span>
-                            </div>
-                            <p class="font-semibold text-sm mt-1">${m.detalle}</p>
-                            ${badgeVinculo}
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="${m.tipo === 'ingreso' ? 'text-emerald-400' : 'text-rose-400'} font-bold">
-                                ${m.tipo === 'ingreso' ? '+' : '-'} $${m.monto.toLocaleString()}
-                            </span>
-                            <div class="flex gap-1 border-l border-slate-800 pl-2">
-                                <button onclick="editarMovimiento(${m.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-md cursor-pointer" title="Editar">✏️</button>
-                                <button onclick="eliminarMovimiento(${m.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-rose-400 px-2 py-1 rounded-md cursor-pointer" title="Eliminar">🗑️</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // Renderizar Compromisos
-            document.getElementById('lista-compromisos').innerHTML = compromisos.map(c => `
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 text-amber-300 border border-slate-700">${c.categoria}</span>
-                            <span class="text-xs text-slate-400">Vto: ${c.vto}</span>
-                        </div>
-                        <p class="font-semibold text-sm mt-1">${c.nombre}</p>
-                    </div>
-                    <div class="text-right flex items-center gap-2">
-                        <div>
-                            <p class="font-bold text-rose-400">$${c.monto.toLocaleString()}</p>
-                            <span class="text-[10px] text-slate-500">${c.pagado ? 'Pagado' : 'Pendiente'}</span>
-                        </div>
-                        <button onclick="togglePago(${c.id})" class="text-xs px-2.5 py-1.5 rounded-lg border ${c.pagado ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : 'bg-slate-800 text-slate-300 border-slate-700'} cursor-pointer" title="Marcar pagado">
-                            ${c.pagado ? '✓' : 'Pago'}
-                        </button>
-                        <div class="flex gap-1 border-l border-slate-800 pl-2">
-                            <button onclick="editarCompromiso(${c.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-md cursor-pointer" title="Editar">✏️</button>
-                            <button onclick="eliminarCompromiso(${c.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-rose-400 px-2 py-1 rounded-md cursor-pointer" title="Eliminar">🗑️</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-
-            document.getElementById('Analisismes-ingresos').innerText = '$' + ingresosHoy.toLocaleString();
-            document.getElementById('Analisismes-gastos').innerText = '$' + gastosHoy.toLocaleString();
-            document.getElementById('fondo-diario').innerText = '$' + Math.round(totalPend / 30).toLocaleString();
-        }
-
-        actualizarUI();
-    </script>
-</body>
-</html>
+                    <div class="form-group">
+                        <label for="tx-amount">Monto ($)</label>
+                        <input type="number" id="tx-
+                        
