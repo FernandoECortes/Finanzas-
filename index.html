@@ -204,6 +204,12 @@
             margin-bottom: 16px;
         }
 
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
         label {
             display: block;
             font-size: 0.85rem;
@@ -695,6 +701,18 @@
                         <input type="text" id="tx-description" placeholder="Ej: Supermercado, Uber Moto..." required>
                     </div>
 
+                    <!-- Fila para Fecha y Hora -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tx-date">Fecha</label>
+                            <input type="date" id="tx-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tx-time">Hora</label>
+                            <input type="time" id="tx-time" required>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="tx-category">Categoría Principal</label>
                         <select id="tx-category" required></select>
@@ -882,11 +900,24 @@
         let currentFilter = 'week'; // week, month, year
 
         document.addEventListener('DOMContentLoaded', () => {
+            setDefaultDateTime();
             updateCategories();
             updateAccountSelects();
             renderAll();
             setupEventListeners();
         });
+
+        function setDefaultDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+
+            document.getElementById('tx-date').value = `${year}-${month}-${day}`;
+            document.getElementById('tx-time').value = `${hours}:${minutes}`;
+        }
 
         function setupEventListeners() {
             document.getElementById('btn-expense').addEventListener('click', () => setTxType('expense'));
@@ -969,20 +1000,25 @@
             const editId = document.getElementById('tx-edit-id').value;
             const amount = parseFloat(document.getElementById('tx-amount').value);
             const description = document.getElementById('tx-description').value;
+            const dateInput = document.getElementById('tx-date').value; // Formato YYYY-MM-DD
+            const timeInput = document.getElementById('tx-time').value; // Formato HH:MM
             const category = document.getElementById('tx-category').value;
             const subcategory = document.getElementById('tx-subcategory').value;
             const account = document.getElementById('tx-account').value;
 
             if (isNaN(amount) || amount <= 0) return;
 
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('es-AR');
-            const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+            // Convertir fecha de YYYY-MM-DD a DD/MM/YYYY para mantener compatibilidad con el resto del sistema
+            let dateStr = '';
+            if (dateInput) {
+                const [y, m, d] = dateInput.split('-');
+                dateStr = `${d}/${m}/${y}`;
+            }
 
             if (editId) {
                 transactions = transactions.map(t => {
                     if (t.id == editId) {
-                        return { ...t, type: currentType, amount, description, category, subcategory, account };
+                        return { ...t, type: currentType, amount, description, category, subcategory, account, date: dateStr, time: timeInput };
                     }
                     return t;
                 });
@@ -997,11 +1033,12 @@
                     subcategory,
                     account,
                     date: dateStr,
-                    time: timeStr
+                    time: timeInput
                 };
                 transactions.unshift(newTx);
                 document.getElementById('tx-amount').value = '';
                 document.getElementById('tx-description').value = '';
+                setDefaultDateTime();
             }
             saveAndRender();
         }
@@ -1016,6 +1053,14 @@
             document.getElementById('tx-edit-id').value = t.id;
             document.getElementById('tx-amount').value = t.amount.toFixed(2);
             document.getElementById('tx-description').value = t.description;
+
+            // Convertir fecha de DD/MM/YYYY a YYYY-MM-DD para el input type="date"
+            if (t.date && t.date.includes('/')) {
+                const [d, m, y] = t.date.split('/');
+                document.getElementById('tx-date').value = `${y}-${m}-${d}`;
+            }
+
+            document.getElementById('tx-time').value = t.time || '12:00';
             document.getElementById('tx-category').value = t.category;
             updateSubcategories();
             document.getElementById('tx-subcategory').value = t.subcategory;
@@ -1030,6 +1075,7 @@
         function cancelEditTx() {
             document.getElementById('tx-edit-id').value = '';
             document.getElementById('tx-form').reset();
+            setDefaultDateTime();
             setTxType('expense');
             document.getElementById('form-section-title').textContent = "Nuevo Movimiento";
             document.getElementById('tx-submit-btn').textContent = "Registrar Movimiento";
@@ -1262,7 +1308,6 @@
         function renderTransactions() {
             const list = document.getElementById('transaction-list');
             
-            // Filtrar transacciones según Semana, Mes o Año
             const now = new Date();
             const filteredTransactions = transactions.filter(t => {
                 const parts = t.date.split('/');
@@ -1270,7 +1315,6 @@
                 const tDate = new Date(parts[2], parts[1] - 1, parts[0]);
 
                 if (currentFilter === 'week') {
-                    // Últimos 7 días
                     const diffTime = Math.abs(now - tDate);
                     const diffDays = diffTime / (1000 * 60 * 60 * 24);
                     return diffDays <= 7;
@@ -1304,7 +1348,7 @@
                                 <div class="item-meta">
                                     <span class="badge">${t.account}</span>
                                     <span>• ${t.category}</span>
-                                    <span>• ${t.date}</span>
+                                    <span>• ${t.date} ${t.time ? 'at ' + t.time : ''}</span>
                                 </div>
                             </div>
                         </div>
