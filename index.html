@@ -302,14 +302,14 @@
             margin-top: 8px;
         }
 
-        /* Filter Selector for Timeline */
+        /* Filter Selector & Navigation for Timeline */
         .filter-tabs {
             display: flex;
             background: var(--card-bg);
             border: 1px solid var(--border);
             padding: 4px;
             border-radius: 12px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             box-shadow: var(--shadow);
         }
 
@@ -330,6 +330,40 @@
             background: var(--primary);
             color: white;
             box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+        }
+
+        .timeline-navigator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow);
+        }
+
+        .timeline-navigator button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .timeline-navigator button:hover {
+            background: #f1f5f9;
+        }
+
+        .timeline-label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            text-transform: capitalize;
         }
 
         /* Lists & Items */
@@ -739,6 +773,13 @@
                 <button type="button" class="filter-tab" data-filter="month">Meses</button>
                 <button type="button" class="filter-tab" data-filter="year">Años</button>
             </div>
+            
+            <div class="timeline-navigator">
+                <button type="button" onclick="navigateTimeline(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <span id="timeline-label" class="timeline-label">Semana Actual</span>
+                <button type="button" onclick="navigateTimeline(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+
             <div id="transaction-list" class="list-container"></div>
         </div>
 
@@ -902,7 +943,10 @@
 
         let currentType = 'expense';
         let currentFilter = 'week';
+        let timelineOffset = 0; // 0 = actual, -1 = anterior, 1 = siguiente, etc.
         let expenseChartInstance = null;
+
+        const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
         document.addEventListener('DOMContentLoaded', () => {
             setDefaultDateTime();
@@ -937,6 +981,7 @@
                     document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
                     e.target.classList.add('active');
                     currentFilter = e.target.getAttribute('data-filter');
+                    timelineOffset = 0; // Resetear desplazamiento al cambiar de tipo de filtro
                     renderTransactions();
                 });
             });
@@ -947,6 +992,11 @@
                     switchView(target, item);
                 });
             });
+        }
+
+        function navigateTimeline(direction) {
+            timelineOffset += direction;
+            renderTransactions();
         }
 
         function setTxType(type) {
@@ -1310,24 +1360,57 @@
 
         function renderTransactions() {
             const list = document.getElementById('transaction-list');
+            const labelEl = document.getElementById('timeline-label');
             
-            const now = new Date();
+            const baseDate = new Date();
+            let labelText = '';
+
             const filteredTransactions = transactions.filter(t => {
                 const parts = t.date.split('/');
                 if (parts.length !== 3) return true;
                 const tDate = new Date(parts[2], parts[1] - 1, parts[0]);
 
                 if (currentFilter === 'week') {
-                    const diffTime = Math.abs(now - tDate);
-                    const diffDays = diffTime / (1000 * 60 * 60 * 24);
-                    return diffDays <= 7;
+                    // Calculamos el inicio de la semana de referencia aplicando el offset de 7 días
+                    const targetWeekDate = new Date(baseDate.getTime());
+                    targetWeekDate.setDate(baseDate.getDate() + (timelineOffset * 7));
+                    
+                    // Encontrar el inicio de esa semana (lunes)
+                    const day = targetWeekDate.getDay();
+                    const diffToMonday = targetWeekDate.getDate() - day + (day === 0 ? -6 : 1);
+                    const weekStart = new Date(targetWeekDate.setDate(diffToMonday));
+                    weekStart.setHours(0, 0, 0, 0);
+
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekStart.getDate() + 6);
+                    weekEnd.setHours(23, 59, 59, 999);
+
+                    const startStr = `${String(weekStart.getDate()).padStart(2, '0')}/${String(weekStart.getMonth() + 1).padStart(2, '0')}`;
+                    const endStr = `${String(weekEnd.getDate()).padStart(2, '0')}/${String(weekEnd.getMonth() + 1).padStart(2, '0')}`;
+                    labelText = `Semana del ${startStr} al ${endStr}`;
+
+                    return tDate >= weekStart && tDate <= weekEnd;
+
                 } else if (currentFilter === 'month') {
-                    return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
+                    const targetMonthDate = new Date(baseDate.getFullYear(), baseDate.getMonth() + timelineOffset, 1);
+                    const targetMonth = targetMonthDate.getMonth();
+                    const targetYear = targetMonthDate.getFullYear();
+
+                    labelText = `${monthNames[targetMonth]} de ${targetYear}`;
+
+                    return tDate.getMonth() === targetMonth && tDate.getFullYear() === targetYear;
+
                 } else if (currentFilter === 'year') {
-                    return tDate.getFullYear() === now.getFullYear();
+                    const targetYear = baseDate.getFullYear() + timelineOffset;
+
+                    labelText = `Año ${targetYear}`;
+
+                    return tDate.getFullYear() === targetYear;
                 }
                 return true;
             });
+
+            labelEl.textContent = labelText;
 
             if (filteredTransactions.length === 0) {
                 list.innerHTML = `<div class="empty-state">No hay movimientos registrados para este período.</div>`;
@@ -1538,7 +1621,6 @@
                     }
                 });
             } else {
-                // Render empty dataset placeholder if no data
                 expenseChartInstance = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
