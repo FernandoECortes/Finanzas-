@@ -32,7 +32,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
 
         header {
@@ -196,7 +196,7 @@
         }
 
         .type-btn {
-            padding: 10px;
+            padding: 12px;
             border: 1px solid var(--border);
             background: #fff;
             border-radius: 8px;
@@ -222,7 +222,7 @@
 
         .btn-primary {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: var(--primary);
             color: white;
             border: none;
@@ -293,8 +293,8 @@
             border: none;
             color: #cbd5e1;
             cursor: pointer;
-            padding: 4px;
-            font-size: 0.9rem;
+            padding: 8px;
+            font-size: 1rem;
             transition: color 0.2s;
         }
 
@@ -313,8 +313,8 @@
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
-            box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.03);
-            z-index: 100;
+            box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05);
+            z-index: 1000;
         }
 
         .nav-item {
@@ -328,6 +328,7 @@
             font-size: 0.75rem;
             cursor: pointer;
             flex: 1;
+            padding: 4px;
         }
 
         .nav-item i {
@@ -367,7 +368,7 @@
     <header>
         <div class="header-top">
             <h1><i class="fa-solid fa-wallet"></i> Mis Finanzas</h1>
-            <button onclick="resetData()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+            <button id="reset-btn" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-rotate-right"></i> Reset</button>
         </div>
         <div class="balance-card">
             <p>Patrimonio Total</p>
@@ -387,16 +388,307 @@
 
     <div class="container">
 
+        <!-- VISTA 1: REGISTRAR Y MOVIMIENTOS -->
         <div id="view-home" class="view-section active">
             <div class="section-title">Nuevo Movimiento</div>
             <div class="card">
-                <form id="tx-form" onsubmit="addTransaction(event)">
+                <form id="tx-form">
                     <div class="type-selector">
-                        <button type="button" class="type-btn expense active" id="btn-expense" onclick="setTxType('expense')">Gasto</button>
-                        <button type="button" class="type-btn income" id="btn-income" onclick="setTxType('income')">Ingreso</button>
+                        <button type="button" class="type-btn expense active" id="btn-expense">Gasto</button>
+                        <button type="button" class="type-btn income" id="btn-income">Ingreso</button>
                     </div>
 
                     <div class="form-group">
                         <label for="tx-amount">Monto ($)</label>
-                        <input type="number" id="tx-
-                        
+                        <input type="number" id="tx-amount" step="0.01" placeholder="0.00" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tx-description">Descripción / Detalle</label>
+                        <input type="text" id="tx-description" placeholder="Ej: Supermercado, Nafta, Sueldo..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tx-category">Categoría</label>
+                        <select id="tx-category" required></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tx-account">Cuenta / Billetera</label>
+                        <select id="tx-account" required>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Astropay">Astropay</option>
+                            <option value="BBVA">BBVA</option>
+                            <option value="Brubank">Brubank</option>
+                            <option value="Carrefour">Carrefour</option>
+                            <option value="Claro Pay">Claro Pay</option>
+                            <option value="Cocos">Cocos</option>
+                            <option value="IOL">IOL</option>
+                            <option value="Lemon Cash">Lemon Cash</option>
+                            <option value="Mercado Pago">Mercado Pago</option>
+                            <option value="Naranja X">Naranja X</option>
+                            <option value="Personal Pay">Personal Pay</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Registrar Movimiento</button>
+                </form>
+            </div>
+
+            <div class="section-title">Últimos Movimientos</div>
+            <div id="transaction-list" class="transaction-list"></div>
+        </div>
+
+        <!-- VISTA 2: CUENTAS Y SALDOS -->
+        <div id="view-accounts" class="view-section">
+            <div class="section-title">Tus Cuentas y Billeteras</div>
+            <div id="accounts-grid" class="accounts-grid"></div>
+        </div>
+
+    </div>
+
+    <!-- Barra de Navegación Inferior -->
+    <nav class="nav-bar">
+        <button class="nav-item active" id="nav-home" data-target="home">
+            <i class="fa-solid fa-house"></i>
+            <span>Inicio</span>
+        </button>
+        <button class="nav-item" id="nav-accounts" data-target="accounts">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Cuentas</span>
+        </button>
+    </nav>
+
+    <script>
+        const expenseCategories = [
+            "Vivienda (Alquiler, Servicios, Expensas)",
+            "Supermercado y Almacén",
+            "Verdulería y Carnicería",
+            "Comidas fuera / Restaurantes",
+            "Delivery y Apps",
+            "Combustible",
+            "Transporte (Colectivo, Subte, Tren)",
+            "Apps de Movilidad (Uber, Cabify) y Taxis",
+            "Estacionamiento y Peajes",
+            "Mantenimiento Vehicular (Service, Repuestos)",
+            "Seguro y Patente",
+            "Salud y Farmacia (Prepaga, Remedios)",
+            "Gimnasio y Deportes",
+            "Streaming y Ocio (Netflix, Spotify, etc.)",
+            "Salidas y Espectáculos",
+            "Educación y Cursos",
+            "Indumentaria y Ropa",
+            "Cuidado Personal y Peluquería",
+            "Mascotas",
+            "Inversiones y Ahorro",
+            "Tarjetas de Crédito y Deudas",
+            "Otros Gastos"
+        ];
+
+        const incomeCategories = [
+            "Sueldo y Empleo Formal",
+            "Trabajos Independientes / Freelance",
+            "Rendimientos Financieros / CEDEARs",
+            "App de Transporte y Reparto",
+            "Ventas y Emprendimiento",
+            "Ayudas, Subsidios o Regalos",
+            "Otros Ingresos"
+        ];
+
+        const accountsList = [
+            "Efectivo", "Astropay", "BBVA", "Brubank", "Carrefour", 
+            "Claro Pay", "Cocos", "IOL", "Lemon Cash", "Mercado Pago", 
+            "Naranja X", "Personal Pay"
+        ];
+
+        let currentType = 'expense';
+        let transactions = JSON.parse(localStorage.getItem('fin_transactions')) || [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCategories();
+            renderAll();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Botones de Gasto / Ingreso
+            document.getElementById('btn-expense').addEventListener('click', () => setTxType('expense'));
+            document.getElementById('btn-income').addEventListener('click', () => setTxType('income'));
+
+            // Envío del formulario
+            document.getElementById('tx-form').addEventListener('submit', addTransaction);
+
+            // Botón de Reset
+            document.getElementById('reset-btn').addEventListener('click', resetData);
+
+            // Navegación inferior
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const target = item.getAttribute('data-target');
+                    switchView(target, item);
+                });
+            });
+        }
+
+        function setTxType(type) {
+            currentType = type;
+            document.getElementById('btn-expense').classList.toggle('active', type === 'expense');
+            document.getElementById('btn-income').classList.toggle('active', type === 'income');
+            updateCategories();
+        }
+
+        function updateCategories() {
+            const select = document.getElementById('tx-category');
+            select.innerHTML = '';
+            const cats = currentType === 'expense' ? expenseCategories : incomeCategories;
+            cats.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                select.appendChild(opt);
+            });
+        }
+
+        function addTransaction(e) {
+            e.preventDefault();
+            const amountInput = document.getElementById('tx-amount');
+            const descInput = document.getElementById('tx-description');
+            
+            const amount = parseFloat(amountInput.value);
+            const description = descInput.value;
+            const category = document.getElementById('tx-category').value;
+            const account = document.getElementById('tx-account').value;
+
+            if (isNaN(amount) || amount <= 0) return;
+
+            const newTx = {
+                id: Date.now(),
+                type: currentType,
+                amount: amount,
+                description: description,
+                category: category,
+                account: account,
+                date: new Date().toLocaleDateString('es-AR')
+            };
+
+            transactions.unshift(newTx);
+            saveAndRender();
+
+            amountInput.value = '';
+            descInput.value = '';
+            amountInput.focus();
+        }
+
+        function deleteTransaction(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            saveAndRender();
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('fin_transactions', JSON.stringify(transactions));
+            renderAll();
+        }
+
+        function renderAll() {
+            renderDashboard();
+            renderAccounts();
+            renderTransactions();
+        }
+
+        function renderDashboard() {
+            let total = 0;
+            let mIncome = 0;
+            let mExpense = 0;
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+
+            const accountBalances = {};
+            accountsList.forEach(acc => accountBalances[acc] = 0);
+
+            transactions.forEach(t => {
+                const val = t.type === 'income' ? t.amount : -t.amount;
+                if (accountBalances[t.account] !== undefined) {
+                    accountBalances[t.account] += val;
+                }
+                total += val;
+
+                const parts = t.date.split('/');
+                if(parts.length === 3) {
+                    const tDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    if(tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear) {
+                        if(t.type === 'income') mIncome += t.amount;
+                        if(t.type === 'expense') mExpense += t.amount;
+                    }
+                }
+            });
+
+            document.getElementById('total-balance').textContent = formatMoney(total);
+            document.getElementById('monthly-income').textContent = formatMoney(mIncome);
+            document.getElementById('monthly-expense').textContent = formatMoney(mExpense);
+            window.accountBalances = accountBalances;
+        }
+
+        function renderAccounts() {
+            const grid = document.getElementById('accounts-grid');
+            grid.innerHTML = '';
+            accountsList.forEach(acc => {
+                const bal = window.accountBalances ? window.accountBalances[acc] || 0 : 0;
+                grid.innerHTML += `
+                    <div class="account-chip">
+                        <span class="account-name">${acc}</span>
+                        <span class="account-balance" style="color: ${bal >= 0 ? 'var(--text-main)' : 'var(--danger)'}">${formatMoney(bal)}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function renderTransactions() {
+            const list = document.getElementById('transaction-list');
+            if (transactions.length === 0) {
+                list.innerHTML = `<div class="empty-state">No hay movimientos registrados aún.</div>`;
+                return;
+            }
+
+            list.innerHTML = '';
+            transactions.forEach(t => {
+                const isInc = t.type === 'income';
+                list.innerHTML += `
+                    <div class="transaction-item">
+                        <div class="tx-info">
+                            <span class="tx-title">${t.description}</span>
+                            <div class="tx-details">
+                                <span class="badge">${t.account}</span>
+                                <span>• ${t.category}</span>
+                                <span>• ${t.date}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="tx-amount ${t.type}">${isInc ? '+' : '-'}${formatMoney(t.amount)}</span>
+                            <button class="delete-btn" onclick="deleteTransaction(${t.id})" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function formatMoney(amount) {
+            return '$ ' + amount.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function switchView(viewName, btn) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            document.getElementById('view-' + viewName).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function resetData() {
+            if(confirm('¿Estás seguro de borrar todos los registros?')) {
+                transactions = [];
+                saveAndRender();
+            }
+        }
+    </script>
+</body>
+</html>
