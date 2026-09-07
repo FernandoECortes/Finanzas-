@@ -1,181 +1,390 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Gastos</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- FontAwesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Gastos - Fer</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    /* Filtros temporales */
+    .filtros-temporales {
+      display: flex;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .filtros-temporales button {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filtros-temporales button.activo {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* Resumen calendario / período */
+    .calendario-resumen {
+      background: var(--card-bg);
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .calendario-resumen h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .calendario-resumen p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Lista de movimientos */
+    .lista-movimientos {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item-movimiento {
+      background: var(--card-bg);
+      padding: 14px 16px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.1s, background 0.2s;
+    }
+
+    .item-movimiento:hover {
+      background: #273548;
+      transform: translateY(-1px);
+    }
+
+    .item-movimiento div {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .item-movimiento strong {
+      font-size: 0.95rem;
+    }
+
+    .item-movimiento small {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .gasto {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .ingreso {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    /* Modal de detalle */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    .modal-contenido {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 400px;
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .modal-contenido h3 {
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .monto-modal {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .detalles-lista {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+
+    .detalles-lista li {
+      display: flex;
+      justify-content: border-box;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      color: var(--text-muted);
+    }
+
+    .detalles-lista li strong {
+      color: var(--text-main);
+    }
+
+    .acciones-modal {
+      display: flex;
+      gap: 10px;
+    }
+
+    .acciones-modal button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-rojo {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-secundario {
+      background: var(--border);
+      color: var(--text-main);
+    }
+
+    .btn-primario {
+      background: var(--accent);
+      color: white;
+    }
+  </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+<body>
 
-    <div class="max-w-md mx-auto p-4 pb-24">
-        <!-- Cabecera -->
-        <header class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-2xl font-bold">Control de Gastos</h1>
-                <p class="text-xs text-slate-400">Finanzas personales</p>
-            </div>
-            <button onclick="abrirModalMovimiento()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-2 rounded-xl shadow-lg transition flex items-center gap-2">
-                <i class="fa-solid fa-plus"></i> Nuevo
-            </button>
-        </header>
+  <div class="container">
+    <h1>Mis Finanzas</h1>
+    
+    <!-- Aquí se inyecta toda la pantalla de inicio con filtros y lista -->
+    <div id="inicio-app"></div>
+  </div>
 
-        <!-- Filtros Temporales (Semana, Mes, Año) -->
-        <div class="bg-slate-800 p-1.5 rounded-2xl flex justify-between mb-4 border border-slate-700">
-            <button onclick="cambiarFiltroTemporal('semana')" id="btn-semana" class="flex-1 py-1.5 text-xs font-semibold rounded-xl transition text-slate-400">Semana</button>
-            <button onclick="cambiarFiltroTemporal('mes')" id="btn-mes" class="flex-1 py-1.5 text-xs font-semibold rounded-xl transition bg-emerald-500 text-slate-950 shadow">Mes</button>
-            <button onclick="cambiarFiltroTemporal('anio')" id="btn-anio" class="flex-1 py-1.5 text-xs font-semibold rounded-xl transition text-slate-400">Año</button>
+  <!-- Contenedor para el Modal de Detalle -->
+  <div id="contenedor-modal" class="modal-overlay"></div>
+
+  <script>
+    // Base de datos simulada de movimientos con hora y subcategoría
+    let movimientos = [
+      {
+        id: 1,
+        tipo: "gasto",
+        monto: 7038.00,
+        categoria: "Transporte",
+        subcategoria: "Combustible",
+        fecha: "2026-09-04",
+        hora: "21:09",
+        cuenta: "Puma Pris",
+        nota: "Carga de combustible"
+      },
+      {
+        id: 2,
+        tipo: "gasto",
+        monto: 5657.00,
+        categoria: "Transporte",
+        subcategoria: "Uber / Remís",
+        fecha: "2026-09-05",
+        hora: "01:21",
+        cuenta: "Mercado Pago",
+        nota: "Viaje nocturno"
+      },
+      {
+        id: 3,
+        tipo: "ingreso",
+        monto: 45000.00,
+        categoria: "Trabajo",
+        subcategoria: "Viajes / Apps",
+        fecha: "2026-09-01",
+        hora: "14:30",
+        cuenta: "Mercado Pago",
+        nota: "Ganancias semanales"
+      }
+    ];
+
+    let filtroSeleccionado = 'mes'; // Por defecto vista mensual
+    let fechaReferencia = new Date();
+
+    function cambiarFiltro(tipo) {
+      filtroSeleccionado = tipo;
+      renderizarPantallaInicio();
+    }
+
+    function filtrarMovimientosPorTiempo(lista) {
+      return lista.filter(mov => {
+        const fechaMov = new Date(mov.fecha + 'T00:00:00');
+        
+        if (filtroSeleccionado === 'semana') {
+          return esMismaSemana(fechaMov, fechaReferencia);
+        } else if (filtroSeleccionado === 'mes') {
+          return fechaMov.getMonth() === fechaReferencia.getMonth() && 
+                 fechaMov.getFullYear() === fechaReferencia.getFullYear();
+        } else if (filtroSeleccionado === 'anio') {
+          return fechaMov.getFullYear() === fechaReferencia.getFullYear();
+        }
+        return true;
+      });
+    }
+
+    function esMismaSemana(fecha1, fecha2) {
+      const inicioSemana = new Date(fecha2);
+      inicioSemana.setDate(fecha2.getDate() - fecha2.getDay());
+      const finSemana = new Date(inicioSemana);
+      finSemana.setDate(inicioSemana.getDate() + 6);
+      return fecha1 >= inicioSemana && fecha1 <= finSemana;
+    }
+
+    function renderizarPantallaInicio() {
+      const movimientosFiltrados = filtrarMovimientosPorTiempo(movimientos);
+      
+      const contenedorInicio = document.getElementById('inicio-app');
+      contenedorInicio.innerHTML = `
+        <div class="filtros-temporales">
+          <button class="${filtroSeleccionado === 'semana' ? 'activo' : ''}" onclick="cambiarFiltro('semana')">Semana</button>
+          <button class="${filtroSeleccionado === 'mes' ? 'activo' : ''}" onclick="cambiarFiltro('mes')">Mes</button>
+          <button class="${filtroSeleccionado === 'anio' ? 'activo' : ''}" onclick="cambiarFiltro('anio')">Año</button>
         </div>
 
-        <!-- Tarjeta de Resumen del Periodo -->
-        <div class="bg-gradient-to-br from-slate-800 to-slate-800/80 p-5 rounded-3xl border border-slate-700 mb-6 shadow-xl">
-            <div class="flex justify-between items-center mb-2">
-                <span id="label-periodo-actual" class="text-xs font-medium uppercase tracking-wider text-emerald-400">Septiembre 2026</span>
-                <div class="flex gap-1">
-                    <button onclick="navegarPeriodo(-1)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 flex items-center justify-center text-xs"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button onclick="navegarPeriodo(1)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 flex items-center justify-center text-xs"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-            </div>
-            <div class="text-3xl font-extrabold mb-4" id="total-periodo">$0.00</div>
-            
-            <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-700/60">
-                <div>
-                    <span class="text-[10px] text-slate-400 uppercase tracking-wide">Ingresos</span>
-                    <p class="text-sm font-bold text-emerald-400" id="ingresos-periodo">$0.00</p>
-                </div>
-                <div>
-                    <span class="text-[10px] text-slate-400 uppercase tracking-wide">Gastos</span>
-                    <p class="text-sm font-bold text-rose-400" id="gastos-periodo">$0.00</p>
-                </div>
-            </div>
+        <div class="calendario-resumen">
+          <h3>Resumen por ${filtroSeleccionado.toUpperCase()}</h3>
+          <p>Mostrando ${movimientosFiltrados.length} movimiento(s) en este período</p>
         </div>
 
-        <!-- Vista de Calendario / Selector de Días -->
-        <div class="bg-slate-800/60 rounded-2xl p-4 border border-slate-700 mb-6">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-sm font-bold text-slate-300"><i class="fa-regular fa-calendar mr-1.5"></i> Calendario de Actividad</h3>
-                <span id="filtro-fecha-activo" class="text-xs text-emerald-400 cursor-pointer hover:underline" onclick="limpiarFiltroFecha()">Ver todo</span>
+        <div class="lista-movimientos">
+          ${movimientosFiltrados.length === 0 ? '<p style="text-align:center; color:var(--text-muted); padding: 20px;">No hay movimientos en este período.</p>' : ''}
+          ${movimientosFiltrados.map(m => `
+            <div class="item-movimiento" onclick="verDetalleMovimiento(${m.id})">
+              <div>
+                <strong>${m.categoria} <span style="color:var(--text-muted); font-weight:normal;">(${m.subcategoria})</span></strong>
+                <small>${m.fecha} - ${m.hora} hs</small>
+              </div>
+              <span class="${m.tipo}">${m.tipo === 'gasto' ? '-' : '+'}$ ${m.monto.toLocaleString('es-AR')}</span>
             </div>
-            <!-- Cuadrícula del Calendario mensual -->
-            <div class="grid grid-cols-7 gap-1 text-center text-xs mb-2 text-slate-400 font-semibold">
-                <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span>
-            </div>
-            <div id="grid-calendario" class="grid grid-cols-7 gap-1 text-center text-xs">
-                <!-- Se llena dinámicamente con JS -->
-            </div>
+          `).join('')}
         </div>
+      `;
+    }
 
-        <!-- Lista de Movimientos -->
-        <div>
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-sm font-bold text-slate-300">Movimientos</h3>
-                <span id="contador-movimientos" class="text-xs text-slate-400">0 registros</span>
-            </div>
-            <div id="lista-movimientos" class="space-y-2.5">
-                <!-- Los movimientos se inyectan aquí -->
-            </div>
+    function verDetalleMovimiento(id) {
+      const mov = movimientos.find(m => m.id === id);
+      if (!mov) return;
+
+      const modalHTML = `
+        <div class="modal-contenido" onclick="event.stopPropagation()">
+          <h3>Detalle del Movimiento</h3>
+          <p class="monto-modal ${mov.tipo}">${mov.tipo === 'gasto' ? '-' : '+'}$ ${mov.monto.toLocaleString('es-AR')}</p>
+          
+          <ul class="detalles-lista">
+            <li><span>Categoría</span> <strong>${mov.categoria}</strong></li>
+            <li><span>Subcategoría</span> <strong>${mov.subcategoria}</strong></li>
+            <li><span>Fecha</span> <strong>${mov.fecha}</strong></li>
+            <li><span>Hora exacta</span> <strong>${mov.hora} hs</strong></li>
+            <li><span>Cuenta / Medio</span> <strong>${mov.cuenta}</strong></li>
+            <li><span>Nota</span> <strong>${mov.nota || 'Sin notas'}</strong></li>
+          </ul>
+
+          <div class="acciones-modal">
+            <button onclick="cerrarModal()" class="btn-secundario">Cerrar</button>
+            <button onclick="eliminarMovimiento(${mov.id})" class="btn-rojo">Eliminar</button>
+          </div>
         </div>
-    </div>
+      `;
 
-    <!-- Modal para Agregar / Editar Movimiento -->
-    <div id="modal-movimiento" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl border border-slate-700 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h3 id="titulo-modal" class="text-lg font-bold">Nuevo Movimiento</h3>
-                <button onclick="cerrarModalMovimiento()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            
-            <form id="form-movimiento" onsubmit="guardarMovimiento(event)" class="space-y-4">
-                <input type="hidden" id="movimiento-id">
-                
-                <!-- Tipo (Gasto / Ingreso) -->
-                <div class="grid grid-cols-2 gap-2 bg-slate-800 p-1 rounded-xl">
-                    <button type="button" id="tipo-gasto" onclick="setTipo('gasto')" class="py-2 rounded-lg text-xs font-bold transition bg-rose-500 text-white">Gasto</button>
-                    <button type="button" id="tipo-ingreso" onclick="setTipo('ingreso')" class="py-2 rounded-lg text-xs font-bold transition text-slate-400">Ingreso</button>
-                </div>
+      const modalContainer = document.getElementById('contenedor-modal');
+      modalContainer.innerHTML = modalHTML;
+      modalContainer.style.display = 'flex';
+    }
 
-                <!-- Monto -->
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Monto ($)</label>
-                    <input type="number" step="0.01" id="monto" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-lg font-bold focus:outline-none focus:border-emerald-500" placeholder="0.00">
-                </div>
+    function cerrarModal() {
+      document.getElementById('contenedor-modal').style.display = 'none';
+    }
 
-                <!-- Categoría y Subcategoría -->
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Categoría</label>
-                        <select id="categoria" onchange="actualizarSubcategorias()" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                            <option value="Alimentación">Alimentación</option>
-                            <option value="Transporte">Transporte</option>
-                            <option value="Vivienda">Vivienda</option>
-                            <option value="Ocio">Ocio</option>
-                            <option value="Otros">Otros</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Subcategoría</label>
-                        <select id="subcategoria" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                            <!-- Dinámico -->
-                        </select>
-                    </div>
-                </div>
+    function eliminarMovimiento(id) {
+      movimientos = movimientos.filter(m => m.id !== id);
+      cerrarModal();
+      renderizarPantallaInicio();
+    }
 
-                <!-- Fecha y Hora -->
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Fecha y Hora</label>
-                    <input type="datetime-local" id="fecha-hora" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                </div>
+    // Cerrar modal haciendo clic fuera de la tarjeta
+    document.getElementById('contenedor-modal').addEventListener('click', cerrarModal);
 
-                <!-- Nota -->
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Nota (Opcional)</label>
-                    <input type="text" id="nota" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500" placeholder="Ej. Compra en almacén">
-                </div>
-
-                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition shadow-lg mt-2">Guardar Movimiento</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal de Detalle Completo del Movimiento -->
-    <div id="modal-detalle" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 w-full max-w-sm rounded-3xl border border-slate-700 p-6 shadow-2xl relative">
-            <button onclick="cerrarModalDetalle()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            
-            <div class="text-center mb-5 pt-2">
-                <span id="det-tipo-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Gasto</span>
-                <div id="det-monto" class="text-3xl font-extrabold mt-2">$0.00</div>
-            </div>
-
-            <div class="space-y-3 bg-slate-800/50 p-4 rounded-2xl border border-slate-700/60 mb-5 text-sm">
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Categoría:</span>
-                    <span id="det-categoria" class="font-semibold">Alimentación</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Subcategoría:</span>
-                    <span id="det-subcategoria" class="font-semibold text-emerald-400">Supermercado</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Fecha y Hora:</span>
-                    <span id="det-fecha" class="font-medium">06/09/2026, 19:42</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Nota:</span>
-                    <span id="det-nota" class="font-medium text-slate-300">-</span>
-                </div>
-            </div>
-
-            <div class="flex gap-2">
-                <button onclick="editarMovimientoDesdeDetalle()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-pen text-xs"></i> Editar
-                </button>
-                <button onclick="eliminarMovimientoActual()" class="flex-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-semibold py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-trash text-xs"></i> Eliminar
-                </button>
-            </div>
-        </div>
-    </div>
+    // Inicializar la app al cargar
+    renderizarPantallaInicio();
+  </script>
+</body>
+</html>
