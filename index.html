@@ -22,6 +22,27 @@
             --border: #e2e8f0;
             --radius: 16px;
             --shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.04), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+            --header-gradient: linear-gradient(135deg, #312e81, #4f46e5);
+            --input-bg: #f8fafc;
+            --nav-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --success: #34d399;
+            --danger: #fb7185;
+            --warning: #fbbf24;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+            --header-gradient: linear-gradient(135deg, #1e1b4b, #312e81);
+            --input-bg: #0f172a;
+            --nav-bg: rgba(30, 41, 59, 0.95);
         }
 
         * {
@@ -30,6 +51,7 @@
             padding: 0;
             font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
 
         body {
@@ -39,7 +61,7 @@
         }
 
         header {
-            background: linear-gradient(135deg, #312e81, #4f46e5);
+            background: var(--header-gradient);
             color: white;
             padding: 24px 20px;
             border-bottom-left-radius: 28px;
@@ -61,6 +83,26 @@
             align-items: center;
             gap: 10px;
             letter-spacing: -0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .header-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .balance-card {
@@ -179,6 +221,11 @@
             font-size: 0.9rem;
         }
 
+        [data-theme="dark"] .account-icon {
+            background: #312e81;
+            color: #818cf8;
+        }
+
         .account-name {
             font-size: 0.88rem;
             color: var(--text-muted);
@@ -225,7 +272,7 @@
             border: 1px solid var(--border);
             border-radius: 10px;
             font-size: 0.95rem;
-            background: #f8fafc;
+            background: var(--input-bg);
             color: var(--text-main);
             outline: none;
             transition: border-color 0.2s, background 0.2s;
@@ -233,7 +280,6 @@
 
         input:focus, select:focus {
             border-color: var(--primary);
-            background: #fff;
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
@@ -247,7 +293,7 @@
         .type-btn {
             padding: 14px;
             border: 1px solid var(--border);
-            background: #f8fafc;
+            background: var(--input-bg);
             border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
@@ -291,7 +337,7 @@
         }
 
         .btn-secondary {
-            background: #f1f5f9;
+            background: var(--input-bg);
             color: var(--text-main);
             border: 1px solid var(--border);
             padding: 12px;
@@ -356,7 +402,7 @@
         }
 
         .timeline-navigator button:hover {
-            background: #f1f5f9;
+            background: var(--border);
         }
 
         .timeline-label {
@@ -387,7 +433,7 @@
         }
 
         .item-card:active {
-            background: #f8fafc;
+            background: var(--input-bg);
             transform: scale(0.99);
         }
 
@@ -401,7 +447,7 @@
             width: 40px;
             height: 40px;
             border-radius: 10px;
-            background: #f1f5f9;
+            background: var(--input-bg);
             color: var(--primary);
             display: flex;
             align-items: center;
@@ -456,7 +502,7 @@
         .icon-btn {
             background: none;
             border: none;
-            color: #cbd5e1;
+            color: var(--text-muted);
             cursor: pointer;
             padding: 6px;
             font-size: 0.9rem;
@@ -473,7 +519,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.5);
+            background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
             display: flex;
             justify-content: center;
@@ -548,7 +594,7 @@
         /* Progress Bar */
         .goal-progress-box {
             width: 100%;
-            background: #e2e8f0;
+            background: var(--border);
             border-radius: 6px;
             height: 8px;
             margin-top: 10px;
@@ -610,10 +656,22 @@
             box-shadow: var(--shadow);
         }
 
+        [data-theme="dark"] .recommendation-card {
+            background: linear-gradient(135deg, #064e3b, #022c22);
+            border: 1px solid #065f46;
+            color: #6ee7b7;
+        }
+
         .recommendation-card.alert {
             background: linear-gradient(135deg, #fef2f2, #fee2e2);
             border: 1px solid #fecaca;
             color: #991b1b;
+        }
+
+        [data-theme="dark"] .recommendation-card.alert {
+            background: linear-gradient(135deg, #7f1d1d, #450a0a);
+            border: 1px solid #991b1b;
+            color: #fca5a5;
         }
 
         .recommendation-card i {
@@ -627,7 +685,7 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--nav-bg);
             backdrop-filter: blur(10px);
             border-top: 1px solid var(--border);
             display: flex;
@@ -681,7 +739,7 @@
         }
 
         .badge {
-            background: #f1f5f9;
+            background: var(--input-bg);
             color: var(--text-main);
             padding: 3px 8px;
             border-radius: 6px;
@@ -696,7 +754,10 @@
     <header>
         <div class="header-top">
             <h1 id="app-main-title"><i class="fa-solid fa-wallet"></i> Mis Finanzas</h1>
-            <button id="reset-btn" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:8px; font-size:0.75rem; font-weight:600; cursor:pointer;"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+            <div class="header-actions">
+                <button id="theme-btn" class="header-btn" title="Cambiar Tema"><i class="fa-solid fa-moon"></i></button>
+                <button id="reset-btn" class="header-btn"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+            </div>
         </div>
         <div class="balance-card">
             <p>Patrimonio Total</p>
@@ -940,21 +1001,47 @@
         let accountsList = JSON.parse(localStorage.getItem('fin_accounts')) || defaultAccounts;
         let transactions = JSON.parse(localStorage.getItem('fin_transactions')) || [];
         let goals = JSON.parse(localStorage.getItem('fin_goals')) || [];
+        let currentTheme = localStorage.getItem('fin_theme') || 'light';
 
         let currentType = 'expense';
         let currentFilter = 'week';
-        let timelineOffset = 0; // 0 = actual, -1 = anterior, 1 = siguiente, etc.
+        let timelineOffset = 0;
         let expenseChartInstance = null;
 
         const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
         document.addEventListener('DOMContentLoaded', () => {
+            applyTheme(currentTheme);
             setDefaultDateTime();
             updateCategories();
             updateAccountSelects();
             renderAll();
             setupEventListeners();
         });
+
+        function applyTheme(theme) {
+            currentTheme = theme;
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('fin_theme', theme);
+            const btn = document.getElementById('theme-btn');
+            if (theme === 'dark') {
+                btn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            }
+            // Re-render chart if active to adapt colors if needed
+            if (expenseChartInstance) {
+                renderAnalytics();
+            }
+        }
+
+        function toggleTheme() {
+            if (currentTheme === 'light') {
+                applyTheme('dark');
+            } else {
+                applyTheme('light');
+            }
+        }
 
         function setDefaultDateTime() {
             const now = new Date();
@@ -975,13 +1062,14 @@
             document.getElementById('tx-form').addEventListener('submit', handleTransactionSubmit);
             document.getElementById('goal-form').addEventListener('submit', handleGoalSubmit);
             document.getElementById('reset-btn').addEventListener('click', resetData);
+            document.getElementById('theme-btn').addEventListener('click', toggleTheme);
 
             document.querySelectorAll('.filter-tab').forEach(tab => {
                 tab.addEventListener('click', (e) => {
                     document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
                     e.target.classList.add('active');
                     currentFilter = e.target.getAttribute('data-filter');
-                    timelineOffset = 0; // Resetear desplazamiento al cambiar de tipo de filtro
+                    timelineOffset = 0;
                     renderTransactions();
                 });
             });
@@ -1185,7 +1273,7 @@
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
                     <button type="button" class="btn-secondary" onclick="editTransaction(${t.id}, event)"><i class="fa-solid fa-pen"></i> Editar</button>
-                    <button type="button" class="btn-secondary" style="background: #fee2e2; color: var(--danger); border-color: #fecaca;" onclick="deleteTransaction(${t.id}, event)"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
+                    <button type="button" class="btn-secondary" style="background: var(--input-bg); color: var(--danger); border-color: var(--border);" onclick="deleteTransaction(${t.id}, event)"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
                 </div>
             `;
             document.getElementById('tx-modal').classList.add('active');
@@ -1371,11 +1459,9 @@
                 const tDate = new Date(parts[2], parts[1] - 1, parts[0]);
 
                 if (currentFilter === 'week') {
-                    // Calculamos el inicio de la semana de referencia aplicando el offset de 7 días
                     const targetWeekDate = new Date(baseDate.getTime());
                     targetWeekDate.setDate(baseDate.getDate() + (timelineOffset * 7));
                     
-                    // Encontrar el inicio de esa semana (lunes)
                     const day = targetWeekDate.getDay();
                     const diffToMonday = targetWeekDate.getDate() - day + (day === 0 ? -6 : 1);
                     const weekStart = new Date(targetWeekDate.setDate(diffToMonday));
@@ -1426,7 +1512,7 @@
                 list.innerHTML += `
                     <div class="item-card" onclick="showTxDetail(${t.id})">
                         <div class="item-info">
-                            <div class="item-icon-box" style="color: ${isInc ? 'var(--success)' : 'var(--danger)'}; background: ${isInc ? '#dcfce7' : '#fee2e2'};">
+                            <div class="item-icon-box" style="color: ${isInc ? 'var(--success)' : 'var(--danger)'}; background: ${isInc ? (currentTheme === 'dark' ? '#064e3b' : '#dcfce7') : (currentTheme === 'dark' ? '#7f1d1d' : '#fee2e2')};">
                                 <i class="fa-solid ${iconClass}"></i>
                             </div>
                             <div class="item-details-flex">
@@ -1484,7 +1570,7 @@
                     <div class="item-card" style="flex-direction: column; align-items: stretch; gap: 8px; cursor: default;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <div class="item-info">
-                                <div class="item-icon-box" style="color: var(--warning); background: #fef3c7;">
+                                <div class="item-icon-box" style="color: var(--warning); background: ${currentTheme === 'dark' ? '#78350f' : '#fef3c7'};">
                                     <i class="fa-solid fa-bullseye"></i>
                                 </div>
                                 <div class="item-details-flex">
@@ -1591,6 +1677,8 @@
                 expenseChartInstance.destroy();
             }
 
+            const textColor = currentTheme === 'dark' ? '#f8fafc' : '#0f172a';
+
             if (categoriesLabels.length > 0) {
                 expenseChartInstance = new Chart(ctx, {
                     type: 'doughnut',
@@ -1600,7 +1688,7 @@
                             data: categoriesValues,
                             backgroundColor: backgroundColors.slice(0, categoriesLabels.length),
                             borderWidth: 2,
-                            borderColor: '#ffffff'
+                            borderColor: currentTheme === 'dark' ? '#1e293b' : '#ffffff'
                         }]
                     },
                     options: {
@@ -1611,6 +1699,7 @@
                                 position: 'bottom',
                                 labels: {
                                     boxWidth: 12,
+                                    color: textColor,
                                     font: {
                                         family: 'Plus Jakarta Sans',
                                         size: 11
@@ -1627,14 +1716,16 @@
                         labels: ['Sin datos'],
                         datasets: [{
                             data: [1],
-                            backgroundColor: ['#e2e8f0']
+                            backgroundColor: [currentTheme === 'dark' ? '#334155' : '#e2e8f0']
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { display: false }
+                            legend: {
+                                labels: { color: textColor }
+                            }
                         }
                     }
                 });
@@ -1654,7 +1745,7 @@
                     catContainer.innerHTML += `
                         <div class="item-card" style="cursor: default;">
                             <div class="item-info">
-                                <div class="item-icon-box" style="color: var(--danger); background: #fee2e2;">
+                                <div class="item-icon-box" style="color: var(--danger); background: ${currentTheme === 'dark' ? '#7f1d1d' : '#fee2e2'};">
                                     <i class="fa-solid ${iconClass}"></i>
                                 </div>
                                 <div class="item-details-flex">
