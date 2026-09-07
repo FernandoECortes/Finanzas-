@@ -1,390 +1,171 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control de Gastos - Fer</title>
-  <style>
-    :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent: #3b82f6;
-      --danger: #ef4444;
-      --success: #22c55e;
-      --border: #334155;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 480px;
-    }
-
-    h1 {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    /* Filtros temporales */
-    .filtros-temporales {
-      display: flex;
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 4px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border);
-    }
-
-    .filtros-temporales button {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 8px;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .filtros-temporales button.activo {
-      background: var(--accent);
-      color: white;
-    }
-
-    /* Resumen calendario / período */
-    .calendario-resumen {
-      background: var(--card-bg);
-      padding: 16px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      border: 1px solid var(--border);
-      text-align: center;
-    }
-
-    .calendario-resumen h3 {
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-    }
-
-    .calendario-resumen p {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-
-    /* Lista de movimientos */
-    .lista-movimientos {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .item-movimiento {
-      background: var(--card-bg);
-      padding: 14px 16px;
-      border-radius: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: transform 0.1s, background 0.2s;
-    }
-
-    .item-movimiento:hover {
-      background: #273548;
-      transform: translateY(-1px);
-    }
-
-    .item-movimiento div {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .item-movimiento strong {
-      font-size: 0.95rem;
-    }
-
-    .item-movimiento small {
-      color: var(--text-muted);
-      font-size: 0.8rem;
-    }
-
-    .gasto {
-      color: var(--danger);
-      font-weight: 600;
-    }
-
-    .ingreso {
-      color: var(--success);
-      font-weight: 600;
-    }
-
-    /* Modal de detalle */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      z-index: 1000;
-    }
-
-    .modal-contenido {
-      background: var(--card-bg);
-      width: 100%;
-      max-width: 400px;
-      border-radius: 16px;
-      padding: 24px;
-      border: 1px solid var(--border);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    }
-
-    .modal-contenido h3 {
-      margin-bottom: 12px;
-      text-align: center;
-    }
-
-    .monto-modal {
-      text-align: center;
-      font-size: 1.8rem;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-
-    .detalles-lista {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 24px;
-      font-size: 0.95rem;
-    }
-
-    .detalles-lista li {
-      display: flex;
-      justify-content: border-box;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 6px;
-      color: var(--text-muted);
-    }
-
-    .detalles-lista li strong {
-      color: var(--text-main);
-    }
-
-    .acciones-modal {
-      display: flex;
-      gap: 10px;
-    }
-
-    .acciones-modal button {
-      flex: 1;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .btn-rojo {
-      background: var(--danger);
-      color: white;
-    }
-
-    .btn-secundario {
-      background: var(--border);
-      color: var(--text-main);
-    }
-
-    .btn-primario {
-      background: var(--accent);
-      color: white;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <h1>Mis Finanzas</h1>
-    
-    <!-- Aquí se inyecta toda la pantalla de inicio con filtros y lista -->
-    <div id="inicio-app"></div>
-  </div>
-
-  <!-- Contenedor para el Modal de Detalle -->
-  <div id="contenedor-modal" class="modal-overlay"></div>
-
-  <script>
-    // Base de datos simulada de movimientos con hora y subcategoría
-    let movimientos = [
-      {
-        id: 1,
-        tipo: "gasto",
-        monto: 7038.00,
-        categoria: "Transporte",
-        subcategoria: "Combustible",
-        fecha: "2026-09-04",
-        hora: "21:09",
-        cuenta: "Puma Pris",
-        nota: "Carga de combustible"
-      },
-      {
-        id: 2,
-        tipo: "gasto",
-        monto: 5657.00,
-        categoria: "Transporte",
-        subcategoria: "Uber / Remís",
-        fecha: "2026-09-05",
-        hora: "01:21",
-        cuenta: "Mercado Pago",
-        nota: "Viaje nocturno"
-      },
-      {
-        id: 3,
-        tipo: "ingreso",
-        monto: 45000.00,
-        categoria: "Trabajo",
-        subcategoria: "Viajes / Apps",
-        fecha: "2026-09-01",
-        hora: "14:30",
-        cuenta: "Mercado Pago",
-        nota: "Ganancias semanales"
-      }
-    ];
-
-    let filtroSeleccionado = 'mes'; // Por defecto vista mensual
-    let fechaReferencia = new Date();
-
-    function cambiarFiltro(tipo) {
-      filtroSeleccionado = tipo;
-      renderizarPantallaInicio();
-    }
-
-    function filtrarMovimientosPorTiempo(lista) {
-      return lista.filter(mov => {
-        const fechaMov = new Date(mov.fecha + 'T00:00:00');
-        
-        if (filtroSeleccionado === 'semana') {
-          return esMismaSemana(fechaMov, fechaReferencia);
-        } else if (filtroSeleccionado === 'mes') {
-          return fechaMov.getMonth() === fechaReferencia.getMonth() && 
-                 fechaMov.getFullYear() === fechaReferencia.getFullYear();
-        } else if (filtroSeleccionado === 'anio') {
-          return fechaMov.getFullYear() === fechaReferencia.getFullYear();
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Financiero Personal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --success: #10b981;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 16px;
+            --shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.04), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
         }
-        return true;
-      });
-    }
 
-    function esMismaSemana(fecha1, fecha2) {
-      const inicioSemana = new Date(fecha2);
-      inicioSemana.setDate(fecha2.getDate() - fecha2.getDay());
-      const finSemana = new Date(inicioSemana);
-      finSemana.setDate(inicioSemana.getDate() + 6);
-      return fecha1 >= inicioSemana && fecha1 <= finSemana;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    function renderizarPantallaInicio() {
-      const movimientosFiltrados = filtrarMovimientosPorTiempo(movimientos);
-      
-      const contenedorInicio = document.getElementById('inicio-app');
-      contenedorInicio.innerHTML = `
-        <div class="filtros-temporales">
-          <button class="${filtroSeleccionado === 'semana' ? 'activo' : ''}" onclick="cambiarFiltro('semana')">Semana</button>
-          <button class="${filtroSeleccionado === 'mes' ? 'activo' : ''}" onclick="cambiarFiltro('mes')">Mes</button>
-          <button class="${filtroSeleccionado === 'anio' ? 'activo' : ''}" onclick="cambiarFiltro('anio')">Año</button>
-        </div>
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 100px;
+        }
 
-        <div class="calendario-resumen">
-          <h3>Resumen por ${filtroSeleccionado.toUpperCase()}</h3>
-          <p>Mostrando ${movimientosFiltrados.length} movimiento(s) en este período</p>
-        </div>
+        header {
+            background: linear-gradient(135deg, #312e81, #4f46e5);
+            color: white;
+            padding: 24px 20px;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);
+        }
 
-        <div class="lista-movimientos">
-          ${movimientosFiltrados.length === 0 ? '<p style="text-align:center; color:var(--text-muted); padding: 20px;">No hay movimientos en este período.</p>' : ''}
-          ${movimientosFiltrados.map(m => `
-            <div class="item-movimiento" onclick="verDetalleMovimiento(${m.id})">
-              <div>
-                <strong>${m.categoria} <span style="color:var(--text-muted); font-weight:normal;">(${m.subcategoria})</span></strong>
-                <small>${m.fecha} - ${m.hora} hs</small>
-              </div>
-              <span class="${m.tipo}">${m.tipo === 'gasto' ? '-' : '+'}$ ${m.monto.toLocaleString('es-AR')}</span>
-            </div>
-          `).join('')}
-        </div>
-      `;
-    }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
 
-    function verDetalleMovimiento(id) {
-      const mov = movimientos.find(m => m.id === id);
-      if (!mov) return;
+        .header-top h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
 
-      const modalHTML = `
-        <div class="modal-contenido" onclick="event.stopPropagation()">
-          <h3>Detalle del Movimiento</h3>
-          <p class="monto-modal ${mov.tipo}">${mov.tipo === 'gasto' ? '-' : '+'}$ ${mov.monto.toLocaleString('es-AR')}</p>
-          
-          <ul class="detalles-lista">
-            <li><span>Categoría</span> <strong>${mov.categoria}</strong></li>
-            <li><span>Subcategoría</span> <strong>${mov.subcategoria}</strong></li>
-            <li><span>Fecha</span> <strong>${mov.fecha}</strong></li>
-            <li><span>Hora exacta</span> <strong>${mov.hora} hs</strong></li>
-            <li><span>Cuenta / Medio</span> <strong>${mov.cuenta}</strong></li>
-            <li><span>Nota</span> <strong>${mov.nota || 'Sin notas'}</strong></li>
-          </ul>
+        .balance-card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 18px;
+            border-radius: var(--radius);
+            text-align: center;
+        }
 
-          <div class="acciones-modal">
-            <button onclick="cerrarModal()" class="btn-secundario">Cerrar</button>
-            <button onclick="eliminarMovimiento(${mov.id})" class="btn-rojo">Eliminar</button>
-          </div>
-        </div>
-      `;
+        .balance-card p {
+            font-size: 0.8rem;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
 
-      const modalContainer = document.getElementById('contenedor-modal');
-      modalContainer.innerHTML = modalHTML;
-      modalContainer.style.display = 'flex';
-    }
+        .balance-card h2 {
+            font-size: 2.1rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
 
-    function cerrarModal() {
-      document.getElementById('contenedor-modal').style.display = 'none';
-    }
+        .summary-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
 
-    function eliminarMovimiento(id) {
-      movimientos = movimientos.filter(m => m.id !== id);
-      cerrarModal();
-      renderizarPantallaInicio();
-    }
+        .stat-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+        }
 
-    // Cerrar modal haciendo clic fuera de la tarjeta
-    document.getElementById('contenedor-modal').addEventListener('click', cerrarModal);
+        .stat-item span {
+            font-size: 0.72rem;
+            display: block;
+            opacity: 0.85;
+            margin-bottom: 2px;
+        }
 
-    // Inicializar la app al cargar
-    renderizarPantallaInicio();
-  </script>
-</body>
-</html>
+        .stat-item strong {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 24px 0 14px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-main);
+            letter-spacing: -0.3px;
+        }
+
+        /* Accounts Grid */
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .account-chip {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .account-chip:active {
+            transform: scale(0.98);
+        }
+
+        .account-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .account-info-flex {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .account-icon {
+            width: 32px;
+            height:
