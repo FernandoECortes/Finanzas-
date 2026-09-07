@@ -13,6 +13,7 @@
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
+            --purple: #8b5cf6;
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #1e293b;
@@ -257,7 +258,7 @@
             margin-top: 6px;
         }
 
-        /* Transactions & Goals Lists */
+        /* Lists & Cards */
         .list-container {
             display: flex;
             flex-direction: column;
@@ -323,7 +324,7 @@
         .icon-btn:hover { color: var(--primary); }
         .icon-btn.delete:hover { color: var(--danger); }
 
-        /* Progress Bar for Goals */
+        /* Progress Bar */
         .goal-progress-box {
             width: 100%;
             background: #e2e8f0;
@@ -338,6 +339,61 @@
             height: 100%;
             width: 0%;
             transition: width 0.3s;
+        }
+
+        /* Analytics Specific Styles */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .analytics-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 14px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .analytics-box span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .analytics-box strong {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .recommendation-card {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 14px;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .recommendation-card.alert {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .recommendation-card i {
+            font-size: 1.1rem;
+            margin-top: 2px;
         }
 
         /* Navigation Bar */
@@ -488,7 +544,7 @@
             <div id="accounts-grid" class="accounts-grid"></div>
         </div>
 
-        <!-- VISTA 3: OBJETIVOS Y COMPROMISOS DE PAGO -->
+        <!-- VISTA 3: OBJETIVOS Y COMPROMISOS -->
         <div id="view-goals" class="view-section">
             <div class="section-title" id="goal-form-title">Nuevo Compromiso o Meta</div>
             <div class="card">
@@ -515,6 +571,31 @@
             <div id="goals-list" class="list-container"></div>
         </div>
 
+        <!-- VISTA 4: ANÁLISIS Y TOMA DE DECISIONES -->
+        <div id="view-analytics" class="view-section">
+            <div class="section-title">Indicadores Financieros (Mes Actual)</div>
+            <div class="analytics-grid">
+                <div class="analytics-box">
+                    <span>Tasa de Ahorro</span>
+                    <strong id="analytics-saving-rate" style="color: var(--success);">0%</strong>
+                </div>
+                <div class="analytics-box">
+                    <span>Flujo Neto Mensual</span>
+                    <strong id="analytics-net-flow">$0.00</strong>
+                </div>
+            </div>
+
+            <div class="section-title">Recomendaciones para Decisiones</div>
+            <div id="analytics-recommendations">
+                <!-- Se llena dinámicamente -->
+            </div>
+
+            <div class="section-title">Gastos por Categoría Principal</div>
+            <div id="analytics-categories" class="list-container">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+
     </div>
 
     <!-- Barra de Navegación Inferior -->
@@ -530,6 +611,10 @@
         <button class="nav-item" data-target="goals">
             <i class="fa-solid fa-bullseye"></i>
             <span>Objetivos</span>
+        </button>
+        <button class="nav-item" data-target="analytics">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Análisis</span>
         </button>
     </nav>
 
@@ -647,7 +732,6 @@
             if (isNaN(amount) || amount <= 0) return;
 
             if (editId) {
-                // Editar existente
                 transactions = transactions.map(t => {
                     if (t.id == editId) {
                         return { ...t, type: currentType, amount, description, category, subcategory, account };
@@ -656,7 +740,6 @@
                 });
                 cancelEditTx();
             } else {
-                // Crear nuevo
                 const newTx = {
                     id: Date.now(),
                     type: currentType,
@@ -728,7 +811,6 @@
             if (newName && newName.trim() !== '' && !accountsList.includes(newName.trim())) {
                 const updated = newName.trim();
                 accountsList = accountsList.map(acc => acc === oldName ? updated : acc);
-                // Actualizar transacciones asociadas
                 transactions = transactions.map(t => t.account === oldName ? { ...t, account: updated } : t);
                 goals = goals.map(g => g.account === oldName ? { ...g, account: updated } : g);
                 saveAndRenderAccounts();
@@ -762,12 +844,7 @@
                 goals = goals.map(g => g.id == editId ? { ...g, title, amount, account } : g);
                 cancelEditGoal();
             } else {
-                const newGoal = {
-                    id: Date.now(),
-                    title,
-                    amount,
-                    account
-                };
+                const newGoal = { id: Date.now(), title, amount, account };
                 goals.push(newGoal);
                 document.getElementById('goal-form').reset();
             }
@@ -819,6 +896,7 @@
             renderAccounts();
             renderTransactions();
             renderGoals();
+            renderAnalytics();
         }
 
         function renderDashboard() {
@@ -852,6 +930,8 @@
             document.getElementById('monthly-income').textContent = formatMoney(mIncome);
             document.getElementById('monthly-expense').textContent = formatMoney(mExpense);
             window.accountBalances = accountBalances;
+            window.currentMonthIncome = mIncome;
+            window.currentMonthExpense = mExpense;
         }
 
         function renderAccounts() {
@@ -915,7 +995,6 @@
 
             list.innerHTML = '';
             goals.forEach(g => {
-                // Si la meta está ligada a una cuenta específica, toma el saldo de esa cuenta; si no, toma el patrimonio total o ingresos netos según prefieras. Aquí usamos el saldo de la cuenta o el total general.
                 let currentProgress = 0;
                 if (g.account && window.accountBalances) {
                     currentProgress = window.accountBalances[g.account] || 0;
@@ -926,7 +1005,7 @@
                 const missing = g.amount - currentProgress;
                 const percentage = Math.min(Math.max((currentProgress / g.amount) * 100, 0), 100);
 
-                list.innerHTML = `
+                list.innerHTML += `
                     <div class="item-card" style="flex-direction: column; align-items: stretch; gap: 8px;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <div class="item-info">
@@ -953,8 +1032,97 @@
                             </div>
                         </div>
                     </div>
-                ` + list.innerHTML;
+                `;
             });
+        }
+
+        function renderAnalytics() {
+            const inc = window.currentMonthIncome || 0;
+            const exp = window.currentMonthExpense || 0;
+            const netFlow = inc - exp;
+            
+            // Tasa de ahorro
+            let savingRate = 0;
+            if (inc > 0) {
+                savingRate = Math.max(((inc - exp) / inc) * 100, 0);
+            }
+
+            document.getElementById('analytics-saving-rate').textContent = savingRate.toFixed(1) + '%';
+            const netFlowEl = document.getElementById('analytics-net-flow');
+            netFlowEl.textContent = formatMoney(netFlow);
+            netFlowEl.style.color = netFlow >= 0 ? 'var(--success)' : 'var(--danger)';
+
+            // Generar recomendaciones automáticas para toma de decisiones
+            const recContainer = document.getElementById('analytics-recommendations');
+            recContainer.innerHTML = '';
+
+            if (inc === 0 && exp === 0) {
+                recContainer.innerHTML = `<div class="empty-state">Registrá ingresos y gastos del mes actual para ver recomendaciones analíticas.</div>`;
+            } else {
+                if (exp > inc) {
+                    recContainer.innerHTML += `
+                        <div class="recommendation-card alert">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <div><strong>Alerta de déficit:</strong> Tus gastos mensuales superan a tus ingresos. Necesitas aumentar tus horas en apps de transporte o recortar gastos prescindibles.</div>
+                        </div>
+                    `;
+                } else if (savingRate >= 20) {
+                    recContainer.innerHTML += `
+                        <div class="recommendation-card">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <div><strong>Excelente capacidad de ahorro:</strong> Estás guardando más del 20% de tus ingresos. Es un buen momento para evaluar destinar parte de este excedente a CEDEARs o instrumentos de inversión.</div>
+                        </div>
+                    `;
+                } else {
+                    recContainer.innerHTML += `
+                        <div class="recommendation-card">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <div><strong>Margen ajustado:</strong> Tus ingresos cubren tus gastos, pero tu tasa de ahorro es menor al 20%. Intentá optimizar tus costos de movilidad diarios para acumular más colchón financiero.</div>
+                        </div>
+                    `;
+                }
+            }
+
+            // Gastos por categoría principal (mes actual)
+            const catContainer = document.getElementById('analytics-categories');
+            catContainer.innerHTML = '';
+
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const categoryTotals = {};
+
+            transactions.forEach(t => {
+                if (t.type === 'expense') {
+                    const parts = t.date.split('/');
+                    if (parts.length === 3) {
+                        const tDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                        if (tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear) {
+                            categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+                        }
+                    }
+                }
+            });
+
+            const sortedCategories = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+
+            if (sortedCategories.length === 0) {
+                catContainer.innerHTML = `<div class="empty-state">No hay gastos registrados en este mes.</div>`;
+            } else {
+                sortedCategories.forEach(([cat, amount]) => {
+                    const percentage = exp > 0 ? ((amount / exp) * 100).toFixed(1) : 0;
+                    catContainer.innerHTML += `
+                        <div class="item-card">
+                            <div class="item-info">
+                                <span class="item-title">${cat}</span>
+                                <div class="item-details">
+                                    <span>Representa el <strong>${percentage}%</strong> de tus gastos</span>
+                                </div>
+                            </div>
+                            <span class="item-amount expense">${formatMoney(amount)}</span>
+                        </div>
+                    `;
+                });
+            }
         }
 
         function formatMoney(amount) {
