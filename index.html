@@ -6,6 +6,7 @@
     <title>Control Financiero Personal</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #4f46e5;
@@ -799,6 +800,11 @@
             <div class="section-title">Recomendaciones para Decisiones</div>
             <div id="analytics-recommendations"></div>
 
+            <div class="section-title">Gráfico de Distribución de Gastos</div>
+            <div class="card" style="position: relative; height: 300px; display: flex; justify-content: center; align-items: center;">
+                <canvas id="expense-chart"></canvas>
+            </div>
+
             <div class="section-title">Gastos por Categoría Principal</div>
             <div id="analytics-categories" class="list-container"></div>
         </div>
@@ -896,6 +902,7 @@
 
         let currentType = 'expense';
         let currentFilter = 'week';
+        let expenseChartInstance = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             setDefaultDateTime();
@@ -1471,9 +1478,6 @@
                 }
             }
 
-            const catContainer = document.getElementById('analytics-categories');
-            catContainer.innerHTML = '';
-
             const currentMonth = new Date().getMonth();
             const currentYear = new Date().getFullYear();
             const categoryTotals = {};
@@ -1489,6 +1493,73 @@
                     }
                 }
             });
+
+            // Render Chart.js
+            const ctx = document.getElementById('expense-chart').getContext('2d');
+            const categoriesLabels = Object.keys(categoryTotals);
+            const categoriesValues = Object.values(categoryTotals);
+
+            const backgroundColors = [
+                '#4f46e5', '#10b981', '#f59e0b', '#f43f5e', 
+                '#06b6d4', '#8b5cf6', '#ec4899', '#64748b'
+            ];
+
+            if (expenseChartInstance) {
+                expenseChartInstance.destroy();
+            }
+
+            if (categoriesLabels.length > 0) {
+                expenseChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: categoriesLabels,
+                        datasets: [{
+                            data: categoriesValues,
+                            backgroundColor: backgroundColors.slice(0, categoriesLabels.length),
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 12,
+                                    font: {
+                                        family: 'Plus Jakarta Sans',
+                                        size: 11
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Render empty dataset placeholder if no data
+                expenseChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Sin datos'],
+                        datasets: [{
+                            data: [1],
+                            backgroundColor: ['#e2e8f0']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+
+            const catContainer = document.getElementById('analytics-categories');
+            catContainer.innerHTML = '';
 
             const sortedCategories = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
 
