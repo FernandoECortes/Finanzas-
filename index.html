@@ -271,6 +271,7 @@
             font-size: 0.75rem;
             color: var(--text-muted);
             display: flex;
+            flex-wrap: wrap;
             gap: 6px;
             align-items: center;
         }
@@ -409,8 +410,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="tx-category">Categoría</label>
+                        <label for="tx-category">Categoría Principal</label>
                         <select id="tx-category" required></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tx-subcategory">Subcategoría</label>
+                        <select id="tx-subcategory" required></select>
                     </div>
 
                     <div class="form-group">
@@ -460,40 +466,88 @@
     </nav>
 
     <script>
-        const expenseCategories = [
-            "Vivienda (Alquiler, Servicios, Expensas)",
-            "Supermercado y Almacén",
-            "Verdulería y Carnicería",
-            "Comidas fuera / Restaurantes",
-            "Delivery y Apps",
-            "Combustible",
-            "Transporte (Colectivo, Subte, Tren)",
-            "Apps de Movilidad (Uber, Cabify) y Taxis",
-            "Estacionamiento y Peajes",
-            "Mantenimiento Vehicular (Service, Repuestos)",
-            "Seguro y Patente",
-            "Salud y Farmacia (Prepaga, Remedios)",
-            "Gimnasio y Deportes",
-            "Streaming y Ocio (Netflix, Spotify, etc.)",
-            "Salidas y Espectáculos",
-            "Educación y Cursos",
-            "Indumentaria y Ropa",
-            "Cuidado Personal y Peluquería",
-            "Mascotas",
-            "Inversiones y Ahorro",
-            "Tarjetas de Crédito y Deudas",
-            "Otros Gastos"
-        ];
+        // Estructura con categorías y sus respectivas subcategorías
+        const expenseData = {
+            "Vivienda": [
+                "Alquiler o hipoteca",
+                "Impuestos inmobiliarios y tasas municipales",
+                "Servicios públicos (luz, gas, agua)",
+                "Expensas o mantenimiento de edificio",
+                "Mantenimiento y reparaciones del hogar",
+                "Internet, telefonía fija y televisión"
+            ],
+            "Alimentación": [
+                "Supermercado y almacén",
+                "Verdulería y carnicería",
+                "Comidas fuera de casa (restaurantes, bares)",
+                "Delivery y aplicaciones de pedidos"
+            ],
+            "Transporte y Movilidad": [
+                "Combustible",
+                "Transporte público (subte, colectivo, tren)",
+                "Apps de transporte (Uber, Cabify) y taxis",
+                "Estacionamiento y peajes",
+                "Mantenimiento vehicular (service, repuestos, lavado)",
+                "Seguro del auto y patente"
+            ],
+            "Salud y Bienestar": [
+                "Prepaga u obra social",
+                "Medicamentos y farmacia",
+                "Consultas médicas, odontológicas y oftalmológicas",
+                "Gimnasio y actividades deportivas"
+            ],
+            "Entretenimiento y Ocio": [
+                "Plataformas de streaming (Netflix, Spotify, etc.)",
+                "Salidas culturales (cine, teatro, conciertos)",
+                "Viajes y vacaciones",
+                "Hobbies y tecnología personal"
+            ],
+            "Educación y Desarrollo": [
+                "Cuotas escolares, universitarias o de posgrado",
+                "Cursos, talleres y certificaciones",
+                "Libros y material de estudio"
+            ],
+            "Gastos Personales y Ropa": [
+                "Indumentaria y calzado",
+                "Cuidado personal (peluquería, cosmética, perfumería)",
+                "Mascotas (alimento, veterinaria, accesorios)"
+            ],
+            "Finanzas y Obligaciones": [
+                "Ahorro e inversión",
+                "Pago de deudas y tarjetas de crédito",
+                "Seguros (vida, hogar)",
+                "Comisiones bancarias"
+            ]
+        };
 
-        const incomeCategories = [
-            "Sueldo y Empleo Formal",
-            "Trabajos Independientes / Freelance",
-            "Rendimientos Financieros / CEDEARs",
-            "App de Transporte y Reparto",
-            "Ventas y Emprendimiento",
-            "Ayudas, Subsidios o Regalos",
-            "Otros Ingresos"
-        ];
+        const incomeData = {
+            "Sueldo y Empleo Formal": [
+                "Sueldo básico o salario mensual",
+                "Horas extra y comisiones",
+                "Bonos por desempeño y aguinaldo",
+                "Premios, viáticos o asignaciones"
+            ],
+            "Trabajos Independientes y Freelance": [
+                "Honorarios profesionales y servicios",
+                "Trabajos puntuales (changas y proyectos)",
+                "Venta de productos (emprendimientos, e-commerce)"
+            ],
+            "Rendimientos Financieros e Inversiones": [
+                "Dividendos de acciones y CEDEARs",
+                "Rentas de plazos fijos o cauciones",
+                "Intereses de cuentas remuneradas y billeteras",
+                "Rentas por alquiler de inmuebles"
+            ],
+            "Actividades de Transporte y Reparto": [
+                "Ganancias por apps de movilidad (Uber, Cabify, motos)",
+                "Ingresos por delivery y mensajería"
+            ],
+            "Ayudas, Subsidios y Transferencias": [
+                "Asignaciones familiares y estatales",
+                "Pensiones, jubilaciones o rentas vitalicias",
+                "Ayuda económica familiar o remesas"
+            ]
+        };
 
         const accountsList = [
             "Efectivo", "Astropay", "BBVA", "Brubank", "Carrefour", 
@@ -511,19 +565,14 @@
         });
 
         function setupEventListeners() {
-            // Botones de Gasto / Ingreso
             document.getElementById('btn-expense').addEventListener('click', () => setTxType('expense'));
             document.getElementById('btn-income').addEventListener('click', () => setTxType('income'));
-
-            // Envío del formulario
+            document.getElementById('tx-category').addEventListener('change', updateSubcategories);
             document.getElementById('tx-form').addEventListener('submit', addTransaction);
-
-            // Botón de Reset
             document.getElementById('reset-btn').addEventListener('click', resetData);
 
-            // Navegación inferior
             document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', (e) => {
+                item.addEventListener('click', () => {
                     const target = item.getAttribute('data-target');
                     switchView(target, item);
                 });
@@ -538,14 +587,33 @@
         }
 
         function updateCategories() {
-            const select = document.getElementById('tx-category');
-            select.innerHTML = '';
-            const cats = currentType === 'expense' ? expenseCategories : incomeCategories;
-            cats.forEach(cat => {
+            const catSelect = document.getElementById('tx-category');
+            catSelect.innerHTML = '';
+            const data = currentType === 'expense' ? expenseData : incomeData;
+            
+            Object.keys(data).forEach(cat => {
                 const opt = document.createElement('option');
                 opt.value = cat;
                 opt.textContent = cat;
-                select.appendChild(opt);
+                catSelect.appendChild(opt);
+            });
+            updateSubcategories();
+        }
+
+        function updateSubcategories() {
+            const catSelect = document.getElementById('tx-category');
+            const subSelect = document.getElementById('tx-subcategory');
+            subSelect.innerHTML = '';
+            
+            const data = currentType === 'expense' ? expenseData : incomeData;
+            const selectedCat = catSelect.value;
+            const subcategories = data[selectedCat] || [];
+
+            subcategories.forEach(sub => {
+                const opt = document.createElement('option');
+                opt.value = sub;
+                opt.textContent = sub;
+                subSelect.appendChild(opt);
             });
         }
 
@@ -557,6 +625,7 @@
             const amount = parseFloat(amountInput.value);
             const description = descInput.value;
             const category = document.getElementById('tx-category').value;
+            const subcategory = document.getElementById('tx-subcategory').value;
             const account = document.getElementById('tx-account').value;
 
             if (isNaN(amount) || amount <= 0) return;
@@ -567,6 +636,7 @@
                 amount: amount,
                 description: description,
                 category: category,
+                subcategory: subcategory,
                 account: account,
                 date: new Date().toLocaleDateString('es-AR')
             };
@@ -658,7 +728,7 @@
                             <span class="tx-title">${t.description}</span>
                             <div class="tx-details">
                                 <span class="badge">${t.account}</span>
-                                <span>• ${t.category}</span>
+                                <span>• ${t.category} (${t.subcategory})</span>
                                 <span>• ${t.date}</span>
                             </div>
                         </div>
