@@ -4,73 +4,141 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MotoFinanzas 🏍️</title>
-    <!-- Tailwind CSS desde CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between pb-20">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between pb-24">
 
     <!-- HEADER -->
     <header class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center sticky top-0 z-50">
-        <h1 class="text-base font-bold text-amber-400">MotoFinanzas 🏍️</h1>
+        <div>
+            <h1 class="text-base font-bold text-amber-400">MotoFinanzas 🏍️</h1>
+            <p class="text-[10px] text-slate-400">Control diario para Uber Moto</p>
+        </div>
         <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-full text-slate-300 border border-slate-700">Córdoba</span>
     </header>
 
     <!-- CONTENEDOR DE PANTALLAS -->
-    <main class="p-4 flex-1 max-w-md mx-auto w-full">
+    <main class="p-4 flex-1 max-w-md mx-auto w-full space-y-4">
         
         <!-- PANTALLA 1: INICIO -->
         <section id="view-home" class="space-y-4">
             <div class="bg-gradient-to-br from-amber-500 to-amber-700 p-5 rounded-2xl shadow-lg text-slate-950">
-                <p class="text-xs font-semibold uppercase tracking-wider opacity-80">Recaudado Hoy</p>
-                <h2 id="total-hoy" class="text-3xl font-extrabold mt-1">$0</h2>
-                <div class="mt-4 pt-3 border-t border-amber-600/40 flex justify-between text-xs font-medium">
-                    <span>Compromisos pendientes:</span>
-                    <span id="total-pendientes" class="font-bold">$0</span>
+                <p class="text-xs font-semibold uppercase tracking-wider opacity-80">Libre Neto de Hoy</p>
+                <h2 id="neto-hoy" class="text-3xl font-extrabold mt-1">$0</h2>
+                <div class="mt-4 pt-3 border-t border-amber-600/40 grid grid-cols-2 gap-2 text-xs font-medium">
+                    <div>
+                        <span class="opacity-80 block">Ingresos:</span>
+                        <span id="ingresos-hoy" class="font-bold text-slate-950">$0</span>
+                    </div>
+                    <div>
+                        <span class="opacity-80 block">Gastos Moto:</span>
+                        <span id="gastos-hoy" class="font-bold text-rose-950">$0</span>
+                    </div>
                 </div>
+            </div>
+
+            <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-slate-400">Compromisos pendientes del mes</p>
+                    <p id="total-pendientes" class="text-lg font-bold text-rose-400">$0</p>
+                </div>
+                <button onclick="cambiarVista('compromisos')" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 px-3 py-2 rounded-xl border border-slate-700 cursor-pointer font-medium">Ver pagos</button>
             </div>
 
             <div>
-                <h3 class="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wide">Últimos Registros</h3>
-                <div id="lista-ingresos" class="space-y-2">
-                    <!-- Se cargan dinámicamente -->
+                <h3 class="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wide">Movimientos de Hoy</h3>
+                <div id="lista-movimientos" class="space-y-2">
+                    <!-- Dinámico -->
                 </div>
             </div>
         </section>
 
-        <!-- PANTALLA 2: CARGAR -->
+        <!-- PANTALLA 2: CARGAR (REGISTRO RÁPIDO) -->
         <section id="view-add" class="space-y-4 hidden">
-            <h2 class="text-lg font-bold text-white">Cargar Ingreso Rápido</h2>
-            <form id="form-ingreso" class="space-y-4">
+            <h2 class="text-lg font-bold text-white">Registrar Movimiento</h2>
+            
+            <!-- Selector de tipo -->
+            <div class="grid grid-cols-3 gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+                <button type="button" onclick="setTipoRegistro('ingreso')" id="tab-ingreso" class="py-2 text-xs font-bold rounded-lg bg-amber-400 text-slate-950 cursor-pointer">Ingreso</button>
+                <button type="button" onclick="setTipoRegistro('gastomoto')" id="tab-gastomoto" class="py-2 text-xs font-bold rounded-lg text-slate-400 cursor-pointer">Gasto Moto</button>
+                <button type="button" onclick="setTipoRegistro('gastopersonal')" id="tab-gastopersonal" class="py-2 text-xs font-bold rounded-lg text-slate-400 cursor-pointer">Personal</button>
+            </div>
+
+            <form id="form-movimiento" class="space-y-4 bg-slate-900 p-4 rounded-2xl border border-slate-800">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Monto en Pesos ($)</label>
-                    <input 
-                        type="number" 
-                        id="input-monto" 
-                        placeholder="Ej: 15000"
-                        class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-lg focus:outline-none focus:border-amber-400"
-                        required
-                    >
+                    <label class="block text-xs text-slate-400 mb-1">Monto ($)</label>
+                    <input type="number" id="reg-monto" placeholder="Ej: 15000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-lg focus:outline-none focus:border-amber-400" required>
                 </div>
 
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Origen</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button type="button" id="btn-uber" class="p-3 rounded-xl text-xs font-semibold border bg-amber-400 text-slate-950 border-amber-400 cursor-pointer">Uber Moto</button>
-                        <button type="button" id="btn-part" class="p-3 rounded-xl text-xs font-semibold border bg-slate-900 text-slate-300 border-slate-800 cursor-pointer">Particular</button>
-                    </div>
+                <div id="container-origen">
+                    <label class="block text-xs text-slate-400 mb-1">Origen del Ingreso</label>
+                    <select id="reg-origen" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
+                        <option value="Uber Moto">Uber Moto</option>
+                        <option value="Efectivo / Particular">Efectivo / Particular</option>
+                        <option value="Otro Ingreso">Otro Ingreso</option>
+                    </select>
                 </div>
 
-                <button type="submit" class="w-full bg-amber-400 text-slate-950 font-bold p-3 rounded-xl mt-4 cursor-pointer">
-                    Guardar Ingreso
-                </button>
+                <div id="container-categoria-gasto" class="hidden">
+                    <label class="block text-xs text-slate-400 mb-1">Categoría de Gasto</label>
+                    <select id="reg-categoria-gasto" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
+                        <option value="Nafta (Puma)">Nafta (Puma)</option>
+                        <option value="Service / Repuestos">Service / Repuestos</option>
+                        <option value="Gomería">Gomería</option>
+                        <option value="Comida / Varios">Comida / Varios</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full bg-amber-400 text-slate-950 font-bold p-3 rounded-xl cursor-pointer">Guardar Registro</button>
             </form>
         </section>
 
-        <!-- PANTALLA 3: COMPROMISOS -->
+        <!-- PANTALLA 3: COMPROMISOS DE PAGOS -->
         <section id="view-compromisos" class="space-y-4 hidden">
-            <h2 class="text-lg font-bold text-white">Compromisos de Pago</h2>
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-bold text-white">Compromisos de Pago</h2>
+                <button onclick="toggleFormCompromiso()" class="text-xs bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded-xl cursor-pointer">+ Nuevo Pago</button>
+            </div>
+
+            <!-- Formulario oculto para agregar compromiso -->
+            <form id="form-compromiso" class="space-y-3 bg-slate-900 p-4 rounded-2xl border border-slate-800 hidden">
+                <h3 class="text-sm font-semibold text-amber-400">Agregar Obligación</h3>
+                <input type="text" id="comp-nombre" placeholder="Nombre (Ej: Seguro Moto, Alquiler)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs" required>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="number" id="comp-monto" placeholder="Monto ($)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs" required>
+                    <input type="text" id="comp-vto" placeholder="Vencimiento (Ej: 10/09)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs" required>
+                </div>
+                <select id="comp-cat" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs">
+                    <option value="Movilidad / Moto">Movilidad / Moto</option>
+                    <option value="Esencial">Esencial (Alquiler, Luz)</option>
+                    <option value="Deudas / Financiero">Deudas / Financiero</option>
+                </select>
+                <button type="submit" class="w-full bg-amber-400 text-slate-950 font-bold p-2 rounded-xl text-xs cursor-pointer">Guardar Compromiso</button>
+            </form>
+
             <div id="lista-compromisos" class="space-y-2">
-                <!-- Se cargan por JS -->
+                <!-- Dinámico -->
+            </div>
+        </section>
+
+        <!-- PANTALLA 4: ANÁLISIS -->
+        <section id="view-analisis" class="space-y-4 hidden">
+            <h2 class="text-lg font-bold text-white">Análisis Financiero</h2>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
+                    <p class="text-[10px] text-slate-400 uppercase">Total Ingresos Mes</p>
+                    <p id="Analisismes-ingresos" class="text-lg font-bold text-emerald-400 mt-1">$0</p>
+                </div>
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
+                    <p class="text-[10px] text-slate-400 uppercase">Total Gastos Moto</p>
+                    <p id="Analisismes-gastos" class="text-lg font-bold text-rose-400 mt-1">$0</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-2">
+                <h3 class="text-xs font-semibold text-amber-400 uppercase">Fondo Diario Necesario</h3>
+                <p class="text-xs text-slate-300">Para cubrir todos tus compromisos pendientes, deberías separar por día:</p>
+                <p id="fondo-diario" class="text-2xl font-extrabold text-white">$0 <span class="text-xs font-normal text-slate-400">/ día</span></p>
             </div>
         </section>
 
@@ -78,92 +146,135 @@
 
     <!-- BARRA DE NAVEGACIÓN INFERIOR -->
     <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 flex justify-around p-3 z-50">
-        <button id="nav-home" class="text-xs font-medium text-amber-400 cursor-pointer">🏠 Inicio</button>
-        <button id="nav-add" class="bg-amber-400 text-slate-950 px-5 py-1.5 rounded-full font-bold text-sm shadow-md cursor-pointer">➕ Cargar</button>
-        <button id="nav-compromisos" class="text-xs font-medium text-slate-400 cursor-pointer">📅 Pagos</button>
+        <button id="nav-home" class="text-xs font-medium text-amber-400 cursor-pointer flex flex-col items-center">🏠 <span>Inicio</span></button>
+        <button id="nav-add" class="bg-amber-400 text-slate-950 px-4 py-1.5 rounded-full font-bold text-xs shadow-md cursor-pointer flex items-center gap-1">➕ <span>Cargar</span></button>
+        <button id="nav-compromisos" class="text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center">📅 <span>Pagos</span></button>
+        <button id="nav-analisis" class="text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center">📊 <span>Análisis</span></button>
     </nav>
 
     <!-- JAVASCRIPT -->
     <script>
-        let origenSeleccionado = 'Uber Moto';
-        
-        let ingresos = JSON.parse(localStorage.getItem('moto_ingresos')) || [
-            { id: 1, monto: 18500, origen: 'Uber Moto', fecha: 'Hoy' }
+        let tipoRegistroActual = 'ingreso';
+
+        let movimientos = JSON.parse(localStorage.getItem('moto_movimientos')) || [
+            { id: 1, tipo: 'ingreso', monto: 22000, detalle: 'Uber Moto', fecha: 'Hoy' },
+            { id: 2, tipo: 'gastomoto', monto: 4500, detalle: 'Nafta (Puma)', fecha: 'Hoy' }
         ];
-        
+
         let compromisos = JSON.parse(localStorage.getItem('moto_compromisos')) || [
-            { id: 1, nombre: 'Seguro Moto', monto: 25000, categoria: 'Movilidad', vto: '10/09', pagado: false },
+            { id: 1, nombre: 'Seguro Moto', monto: 25000, categoria: 'Movilidad / Moto', vto: '10/09', pagado: false },
             { id: 2, nombre: 'Alquiler', monto: 180000, categoria: 'Esencial', vto: '15/09', pagado: false }
         ];
 
         function cambiarVista(vista) {
-            document.getElementById('view-home').classList.add('hidden');
-            document.getElementById('view-add').classList.add('hidden');
-            document.getElementById('view-compromisos').classList.add('hidden');
-            
-            document.getElementById('nav-home').className = "text-xs font-medium text-slate-400 cursor-pointer";
-            document.getElementById('nav-compromisos').className = "text-xs font-medium text-slate-400 cursor-pointer";
+            ['home', 'add', 'compromisos', 'analisis'].forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+                const nav = document.getElementById('nav-' + v);
+                if(nav) nav.className = "text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center";
+            });
 
             document.getElementById('view-' + vista).classList.remove('hidden');
-            
-            if(vista === 'home') {
-                document.getElementById('nav-home').className = "text-xs font-medium text-amber-400 cursor-pointer";
-            } else if(vista === 'compromisos') {
-                document.getElementById('nav-compromisos').className = "text-xs font-medium text-amber-400 cursor-pointer";
+            const activeNav = document.getElementById('nav-' + vista);
+            if(activeNav && vista !== 'add') {
+                activeNav.className = "text-xs font-medium text-amber-400 cursor-pointer flex flex-col items-center";
             }
             actualizarUI();
         }
 
-        // Asignar eventos de navegación de forma segura
-        document.getElementById('nav-home').addEventListener('click', () => cambiarVista('home'));
-        document.getElementById('nav-add').addEventListener('click', () => cambiarVista('add'));
-        document.getElementById('nav-compromisos').addEventListener('click', () => cambiarVista('compromisos'));
-
-        // Selector de origen
-        document.getElementById('btn-uber').addEventListener('click', () => {
-            origenSeleccionado = 'Uber Moto';
-            document.getElementById('btn-uber').className = "p-3 rounded-xl text-xs font-semibold border bg-amber-400 text-slate-950 border-amber-400 cursor-pointer";
-            document.getElementById('btn-part').className = "p-3 rounded-xl text-xs font-semibold border bg-slate-900 text-slate-300 border-slate-800 cursor-pointer";
+        ['home', 'add', 'compromisos', 'analisis'].forEach(v => {
+            document.getElementById('nav-' + v).addEventListener('click', () => cambiarVista(v));
         });
 
-        document.getElementById('btn-part').addEventListener('click', () => {
-            origenSeleccionado = 'Efectivo / Particular';
-            document.getElementById('btn-part').className = "p-3 rounded-xl text-xs font-semibold border bg-amber-400 text-slate-950 border-amber-400 cursor-pointer";
-            document.getElementById('btn-uber').className = "p-3 rounded-xl text-xs font-semibold border bg-slate-900 text-slate-300 border-slate-800 cursor-pointer";
-        });
+        function setTipoRegistro(tipo) {
+            tipoRegistroActual = tipo;
+            ['ingreso', 'gastomoto', 'gastopersonal'].forEach(t => {
+                const btn = document.getElementById('tab-' + t);
+                btn.className = "py-2 text-xs font-bold rounded-lg text-slate-400 cursor-pointer";
+            });
+            document.getElementById('tab-' + tipo).className = "py-2 text-xs font-bold rounded-lg bg-amber-400 text-slate-950 cursor-pointer";
 
-        // Formulario de ingreso
-        document.getElementById('form-ingreso').addEventListener('submit', function(e) {
+            if(tipo === 'ingreso') {
+                document.getElementById('container-origen').classList.remove('hidden');
+                document.getElementById('container-categoria-gasto').classList.add('hidden');
+            } else {
+                document.getElementById('container-origen').classList.add('hidden');
+                document.getElementById('container-categoria-gasto').classList.remove('hidden');
+            }
+        }
+
+        function toggleFormCompromiso() {
+            const form = document.getElementById('form-compromiso');
+            form.classList.toggle('hidden');
+        }
+
+        document.getElementById('form-movimiento').addEventListener('submit', function(e) {
             e.preventDefault();
-            const montoInput = document.getElementById('input-monto');
-            const monto = parseFloat(montoInput.value);
+            const monto = parseFloat(document.getElementById('reg-monto').value);
             if(!monto) return;
 
-            const nuevo = { id: Date.now(), monto: monto, origen: origenSeleccionado, fecha: 'Hoy' };
-            ingresos.unshift(nuevo);
-            localStorage.setItem('moto_ingresos', JSON.stringify(ingresos));
+            let detalle = '';
+            if(tipoRegistroActual === 'ingreso') {
+                detalle = document.getElementById('reg-origen').value;
+            } else {
+                detalle = document.getElementById('reg-categoria-gasto').value;
+            }
 
-            montoInput.value = '';
+            movimientos.unshift({ id: Date.now(), tipo: tipoRegistroActual, monto, detalle, fecha: 'Hoy' });
+            localStorage.setItem('moto_movimientos', JSON.stringify(movimientos));
+
+            document.getElementById('reg-monto').value = '';
             cambiarVista('home');
         });
 
-        function actualizarUI() {
-            const total = ingresos.reduce((acc, curr) => acc + curr.monto, 0);
-            document.getElementById('total-hoy').innerText = '$' + total.toLocaleString();
+        document.getElementById('form-compromiso').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('comp-nombre').value;
+            const monto = parseFloat(document.getElementById('comp-monto').value);
+            const vto = document.getElementById('comp-vto').value;
+            const categoria = document.getElementById('comp-cat').value;
 
-            const totalPend = compromisos.filter(c => !c.pagado).reduce((acc, curr) => acc + curr.monto, 0);
+            compromisos.push({ id: Date.now(), nombre, monto, categoria, vto, pagado: false });
+            localStorage.setItem('moto_compromisos', JSON.stringify(compromisos));
+
+            document.getElementById('comp-nombre').value = '';
+            document.getElementById('comp-monto').value = '';
+            document.getElementById('comp-vto').value = '';
+            toggleFormCompromiso();
+            actualizarUI();
+        });
+
+        function togglePago(id) {
+            compromisos = compromisos.map(c => c.id === id ? { ...c, pagado: !c.pagado } : c);
+            localStorage.setItem('moto_compromisos', JSON.stringify(compromisos));
+            actualizarUI();
+        }
+
+        function actualizarUI() {
+            const ingresosHoy = movimientos.filter(m => m.tipo === 'ingreso').reduce((acc, m) => acc + m.monto, 0);
+            const gastosHoy = movimientos.filter(m => m.tipo !== 'ingreso').reduce((acc, m) => acc + m.monto, 0);
+            const netoHoy = ingresosHoy - gastosHoy;
+
+            document.getElementById('ingresos-hoy').innerText = '$' + ingresosHoy.toLocaleString();
+            document.getElementById('gastos-hoy').innerText = '$' + gastosHoy.toLocaleString();
+            document.getElementById('neto-hoy').innerText = '$' + netoHoy.toLocaleString();
+
+            const totalPend = compromisos.filter(c => !c.pagado).reduce((acc, c) => acc + c.monto, 0);
             document.getElementById('total-pendientes').innerText = '$' + totalPend.toLocaleString();
 
-            document.getElementById('lista-ingresos').innerHTML = ingresos.map(item => `
+            // Lista movimientos
+            document.getElementById('lista-movimientos').innerHTML = movimientos.map(m => `
                 <div class="bg-slate-900 p-3 rounded-xl flex justify-between items-center border border-slate-800">
                     <div>
-                        <p class="font-semibold text-sm">${item.origen}</p>
-                        <span class="text-xs text-slate-400">${item.fecha}</span>
+                        <p class="font-semibold text-sm">${m.detalle}</p>
+                        <span class="text-[10px] text-slate-400">${m.fecha}</span>
                     </div>
-                    <span class="text-emerald-400 font-bold">+ $${item.monto.toLocaleString()}</span>
+                    <span class="${m.tipo === 'ingreso' ? 'text-emerald-400' : 'text-rose-400'} font-bold">
+                        ${m.tipo === 'ingreso' ? '+' : '-'} $${m.monto.toLocaleString()}
+                    </span>
                 </div>
             `).join('');
 
+            // Lista compromisos
             document.getElementById('lista-compromisos').innerHTML = compromisos.map(c => `
                 <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
                     <div>
@@ -173,15 +284,24 @@
                         </div>
                         <p class="font-semibold text-sm mt-1">${c.nombre}</p>
                     </div>
-                    <div class="text-right">
-                        <p class="font-bold text-rose-400">$${c.monto.toLocaleString()}</p>
-                        <span class="text-xs text-slate-500">${c.pagado ? 'Pagado' : 'Pendiente'}</span>
+                    <div class="text-right flex items-center gap-3">
+                        <div>
+                            <p class="font-bold text-rose-400">$${c.monto.toLocaleString()}</p>
+                            <span class="text-[10px] text-slate-500">${c.pagado ? 'Pagado' : 'Pendiente'}</span>
+                        </div>
+                        <button onclick="togglePago(${c.id})" class="text-xs px-2.5 py-1.5 rounded-lg border ${c.pagado ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : 'bg-slate-800 text-slate-300 border-slate-700'} cursor-pointer">
+                            ${c.pagado ? '✓' : 'Pago'}
+                        </button>
                     </div>
                 </div>
             `).join('');
+
+            // Análisis
+            document.getElementById('Analisismes-ingresos').innerText = '$' + ingresosHoy.toLocaleString();
+            document.getElementById('Analisismes-gastos').innerText = '$' + gastosHoy.toLocaleString();
+            document.getElementById('fondo-diario').innerText = '$' + Math.round(totalPend / 30).toLocaleString();
         }
 
-        // Cargar datos al iniciar
         actualizarUI();
     </script>
 </body>
