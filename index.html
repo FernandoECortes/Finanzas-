@@ -4,18 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MotoFinanzas 🏍️</title>
+    <!-- Tailwind CSS desde CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="manifest" href="manifest.json">
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between pb-20">
 
+    <!-- HEADER -->
     <header class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center sticky top-0 z-50">
         <h1 class="text-base font-bold text-amber-400">MotoFinanzas 🏍️</h1>
         <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-full text-slate-300 border border-slate-700">Córdoba</span>
     </header>
 
+    <!-- CONTENEDOR DE PANTALLAS -->
     <main class="p-4 flex-1 max-w-md mx-auto w-full">
         
+        <!-- PANTALLA 1: INICIO -->
         <section id="view-home" class="space-y-4">
             <div class="bg-gradient-to-br from-amber-500 to-amber-700 p-5 rounded-2xl shadow-lg text-slate-950">
                 <p class="text-xs font-semibold uppercase tracking-wider opacity-80">Recaudado Hoy</p>
@@ -29,10 +32,12 @@
             <div>
                 <h3 class="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wide">Últimos Registros</h3>
                 <div id="lista-ingresos" class="space-y-2">
-                    </div>
+                    <!-- Se cargan dinámicamente -->
+                </div>
             </div>
         </section>
 
+        <!-- PANTALLA 2: CARGAR -->
         <section id="view-add" class="space-y-4 hidden">
             <h2 class="text-lg font-bold text-white">Cargar Ingreso Rápido</h2>
             <form id="form-ingreso" class="space-y-4">
@@ -50,8 +55,8 @@
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Origen</label>
                     <div class="grid grid-cols-2 gap-2">
-                        <button type="button" onclick="setOrigen('Uber Moto')" id="btn-uber" class="origen-btn p-3 rounded-xl text-xs font-semibold border bg-amber-400 text-slate-950 border-amber-400">Uber Moto</button>
-                        <button type="button" onclick="setOrigen('Efectivo / Particular')" id="btn-part" class="origen-btn p-3 rounded-xl text-xs font-semibold border bg-slate-900 text-slate-300 border-slate-800">Particular</button>
+                        <button type="button" id="btn-uber" class="p-3 rounded-xl text-xs font-semibold border bg-amber-400 text-slate-950 border-amber-400 cursor-pointer">Uber Moto</button>
+                        <button type="button" id="btn-part" class="p-3 rounded-xl text-xs font-semibold border bg-slate-900 text-slate-300 border-slate-800 cursor-pointer">Particular</button>
                     </div>
                 </div>
 
@@ -61,24 +66,27 @@
             </form>
         </section>
 
+        <!-- PANTALLA 3: COMPROMISOS -->
         <section id="view-compromisos" class="space-y-4 hidden">
             <h2 class="text-lg font-bold text-white">Compromisos de Pago</h2>
             <div id="lista-compromisos" class="space-y-2">
-                </div>
+                <!-- Se cargan por JS -->
+            </div>
         </section>
 
     </main>
 
+    <!-- BARRA DE NAVEGACIÓN INFERIOR -->
     <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 flex justify-around p-3 z-50">
-        <button onclick="cambiarVista('home')" id="nav-home" class="text-xs font-medium text-amber-400">🏠 Inicio</button>
-        <button onclick="cambiarVista('add')" id="nav-add" class="bg-amber-400 text-slate-950 px-5 py-1.5 rounded-full font-bold text-sm shadow-md">➕ Cargar</button>
-        <button onclick="cambiarVista('compromisos')" id="nav-compromisos" class="text-xs font-medium text-slate-400">📅 Pagos</button>
+        <button id="nav-home" class="text-xs font-medium text-amber-400 cursor-pointer">🏠 Inicio</button>
+        <button id="nav-add" class="bg-amber-400 text-slate-950 px-5 py-1.5 rounded-full font-bold text-sm shadow-md cursor-pointer">➕ Cargar</button>
+        <button id="nav-compromisos" class="text-xs font-medium text-slate-400 cursor-pointer">📅 Pagos</button>
     </nav>
 
+    <!-- JAVASCRIPT -->
     <script>
         let origenSeleccionado = 'Uber Moto';
         
-        // Datos de ejemplo (guardados en la memoria del celu con localStorage)
         let ingresos = JSON.parse(localStorage.getItem('moto_ingresos')) || [
             { id: 1, monto: 18500, origen: 'Uber Moto', fecha: 'Hoy' }
         ];
@@ -93,18 +101,88 @@
             document.getElementById('view-add').classList.add('hidden');
             document.getElementById('view-compromisos').classList.add('hidden');
             
-            document.getElementById('nav-home').className = "text-xs font-medium text-slate-400";
-            document.getElementById('nav-compromisos').className = "text-xs font-medium text-slate-400";
+            document.getElementById('nav-home').className = "text-xs font-medium text-slate-400 cursor-pointer";
+            document.getElementById('nav-compromisos').className = "text-xs font-medium text-slate-400 cursor-pointer";
 
             document.getElementById('view-' + vista).classList.remove('hidden');
-            if(vista !== 'add') {
-                document.getElementById('nav-' + vista).className = "text-xs font-medium text-amber-400";
+            
+            if(vista === 'home') {
+                document.getElementById('nav-home').className = "text-xs font-medium text-amber-400 cursor-pointer";
+            } else if(vista === 'compromisos') {
+                document.getElementById('nav-compromisos').className = "text-xs font-medium text-amber-400 cursor-pointer";
             }
             actualizarUI();
         }
 
-        function setOrigen(origen) {
-            origenSeleccionado = origen;
-            if(origen === 'Uber Moto') {
-                document.getElementById('btn-uber').className = "origen-btn p-3 rounded-xl text-xs font-semibold border bg-amber-400 text-slate-950 border-amber-400";
-                document.getElementById('btn-part').
+        // Asignar eventos de navegación de forma segura
+        document.getElementById('nav-home').addEventListener('click', () => cambiarVista('home'));
+        document.getElementById('nav-add').addEventListener('click', () => cambiarVista('add'));
+        document.getElementById('nav-compromisos').addEventListener('click', () => cambiarVista('compromisos'));
+
+        // Selector de origen
+        document.getElementById('btn-uber').addEventListener('click', () => {
+            origenSeleccionado = 'Uber Moto';
+            document.getElementById('btn-uber').className = "p-3 rounded-xl text-xs font-semibold border bg-amber-400 text-slate-950 border-amber-400 cursor-pointer";
+            document.getElementById('btn-part').className = "p-3 rounded-xl text-xs font-semibold border bg-slate-900 text-slate-300 border-slate-800 cursor-pointer";
+        });
+
+        document.getElementById('btn-part').addEventListener('click', () => {
+            origenSeleccionado = 'Efectivo / Particular';
+            document.getElementById('btn-part').className = "p-3 rounded-xl text-xs font-semibold border bg-amber-400 text-slate-950 border-amber-400 cursor-pointer";
+            document.getElementById('btn-uber').className = "p-3 rounded-xl text-xs font-semibold border bg-slate-900 text-slate-300 border-slate-800 cursor-pointer";
+        });
+
+        // Formulario de ingreso
+        document.getElementById('form-ingreso').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const montoInput = document.getElementById('input-monto');
+            const monto = parseFloat(montoInput.value);
+            if(!monto) return;
+
+            const nuevo = { id: Date.now(), monto: monto, origen: origenSeleccionado, fecha: 'Hoy' };
+            ingresos.unshift(nuevo);
+            localStorage.setItem('moto_ingresos', JSON.stringify(ingresos));
+
+            montoInput.value = '';
+            cambiarVista('home');
+        });
+
+        function actualizarUI() {
+            const total = ingresos.reduce((acc, curr) => acc + curr.monto, 0);
+            document.getElementById('total-hoy').innerText = '$' + total.toLocaleString();
+
+            const totalPend = compromisos.filter(c => !c.pagado).reduce((acc, curr) => acc + curr.monto, 0);
+            document.getElementById('total-pendientes').innerText = '$' + totalPend.toLocaleString();
+
+            document.getElementById('lista-ingresos').innerHTML = ingresos.map(item => `
+                <div class="bg-slate-900 p-3 rounded-xl flex justify-between items-center border border-slate-800">
+                    <div>
+                        <p class="font-semibold text-sm">${item.origen}</p>
+                        <span class="text-xs text-slate-400">${item.fecha}</span>
+                    </div>
+                    <span class="text-emerald-400 font-bold">+ $${item.monto.toLocaleString()}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('lista-compromisos').innerHTML = compromisos.map(c => `
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 text-amber-300 border border-slate-700">${c.categoria}</span>
+                            <span class="text-xs text-slate-400">Vto: ${c.vto}</span>
+                        </div>
+                        <p class="font-semibold text-sm mt-1">${c.nombre}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-rose-400">$${c.monto.toLocaleString()}</p>
+                        <span class="text-xs text-slate-500">${c.pagado ? 'Pagado' : 'Pendiente'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cargar datos al iniciar
+        actualizarUI();
+    </script>
+</body>
+</html>
