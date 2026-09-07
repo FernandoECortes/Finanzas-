@@ -53,11 +53,11 @@
             </div>
         </section>
 
-        <!-- PANTALLA 2: CARGAR / EDITAR -->
+        <!-- PANTALLA 2: CARGAR / EDITAR MOVIMIENTO -->
         <section id="view-add" class="space-y-4 hidden">
             <div class="flex justify-between items-center">
                 <h2 id="form-titulo" class="text-lg font-bold text-white">Registrar Movimiento</h2>
-                <button type="button" onclick="cancelarEdicion()" id="btn-cancelar-edicion" class="text-xs text-slate-400 hover:text-white hidden cursor-pointer">Cancelar edición</button>
+                <button type="button" onclick="cancelarEdicionMov()" id="btn-cancelar-edicion" class="text-xs text-slate-400 hover:text-white hidden cursor-pointer">Cancelar</button>
             </div>
             
             <!-- Selector de tipo -->
@@ -89,7 +89,6 @@
                 <div id="container-categoria-gasto" class="hidden">
                     <label class="block text-xs text-slate-400 mb-1">Categoría de Gasto</label>
                     <select id="reg-categoria-gasto" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
-                        <!-- Gastos de Moto -->
                         <optgroup label="Movilidad / Moto">
                             <option value="Nafta (Puma / YPF)">Nafta (Puma / YPF)</option>
                             <option value="Service / Mantenimiento">Service / Mantenimiento</option>
@@ -97,7 +96,6 @@
                             <option value="Repuestos / Accesorios">Repuestos / Accesorios</option>
                             <option value="Seguro / Patente Moto">Seguro / Patente Moto</option>
                         </optgroup>
-                        <!-- Gastos Personales y Casa -->
                         <optgroup label="Personal / Casa">
                             <option value="Comida / Supermercado">Comida / Supermercado</option>
                             <option value="Fast Food / PedidosYa">Fast Food / PedidosYa</option>
@@ -119,25 +117,29 @@
         <!-- PANTALLA 3: COMPROMISOS DE PAGOS -->
         <section id="view-compromisos" class="space-y-4 hidden">
             <div class="flex justify-between items-center">
-                <h2 class="text-lg font-bold text-white">Compromisos de Pago</h2>
-                <button onclick="toggleFormCompromiso()" class="text-xs bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded-xl cursor-pointer">+ Nuevo Pago</button>
+                <h2 id="titulo-compromisos" class="text-lg font-bold text-white">Compromisos de Pago</h2>
+                <button onclick="toggleFormCompromiso()" id="btn-nuevo-comp" class="text-xs bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded-xl cursor-pointer">+ Nuevo Pago</button>
             </div>
 
-            <!-- Formulario oculto para agregar compromiso -->
+            <!-- Formulario para agregar o editar compromiso -->
             <form id="form-compromiso" class="space-y-3 bg-slate-900 p-4 rounded-2xl border border-slate-800 hidden">
-                <h3 class="text-sm font-semibold text-amber-400">Agregar Obligación</h3>
-                <input type="text" id="comp-nombre" placeholder="Nombre (Ej: Cuota Moto, Alquiler)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs" required>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="number" id="comp-monto" placeholder="Monto ($)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs" required>
-                    <input type="text" id="comp-vto" placeholder="Vencimiento (Ej: 10/09)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs" required>
+                <div class="flex justify-between items-center">
+                    <h3 id="form-comp-titulo" class="text-sm font-semibold text-amber-400">Agregar Obligación</h3>
+                    <button type="button" onclick="toggleFormCompromiso()" class="text-xs text-slate-400 hover:text-white">Cancelar</button>
                 </div>
-                <select id="comp-cat" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs">
+                <input type="hidden" id="edit-comp-id" value="">
+                <input type="text" id="comp-nombre" placeholder="Nombre (Ej: Cuota Moto, Alquiler)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs" required>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="number" id="comp-monto" placeholder="Monto ($)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs" required>
+                    <input type="text" id="comp-vto" placeholder="Vencimiento (Ej: 10/09)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs" required>
+                </div>
+                <select id="comp-cat" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs">
                     <option value="Movilidad / Moto">Movilidad / Moto (Cuota, Seguro)</option>
                     <option value="Esencial">Esencial (Alquiler, Luz, Internet)</option>
                     <option value="Deudas / Financiero">Deudas / Financiero (Tarjetas, Préstamos)</option>
                     <option value="Suscripciones / Varios">Suscripciones / Varios</option>
                 </select>
-                <button type="submit" class="w-full bg-amber-400 text-slate-950 font-bold p-2 rounded-xl text-xs cursor-pointer">Guardar Compromiso</button>
+                <button type="submit" id="btn-submit-comp" class="w-full bg-amber-400 text-slate-950 font-bold p-2.5 rounded-xl text-xs cursor-pointer">Guardar Compromiso</button>
             </form>
 
             <div id="lista-compromisos" class="space-y-2">
@@ -219,7 +221,7 @@
             cambiarVista('add');
         }
 
-        function cancelarEdicion() {
+        function cancelarEdicionMov() {
             prepararNuevoMovimiento();
             cambiarVista('home');
         }
@@ -272,7 +274,42 @@
 
         function toggleFormCompromiso() {
             const form = document.getElementById('form-compromiso');
-            form.classList.toggle('hidden');
+            if(form.classList.contains('hidden')) {
+                // Preparar para nuevo
+                document.getElementById('edit-comp-id').value = '';
+                document.getElementById('form-comp-titulo').innerText = 'Agregar Obligación';
+                document.getElementById('btn-submit-comp').innerText = 'Guardar Compromiso';
+                document.getElementById('comp-nombre').value = '';
+                document.getElementById('comp-monto').value = '';
+                document.getElementById('comp-vto').value = '';
+                form.classList.remove('hidden');
+            } else {
+                form.classList.add('hidden');
+            }
+        }
+
+        function editarCompromiso(id) {
+            const c = compromisos.find(item => item.id === id);
+            if(!c) return;
+
+            document.getElementById('edit-comp-id').value = c.id;
+            document.getElementById('form-comp-titulo').innerText = 'Editar Obligación';
+            document.getElementById('btn-submit-comp').innerText = 'Actualizar Compromiso';
+            document.getElementById('comp-nombre').value = c.nombre;
+            document.getElementById('comp-monto').value = c.monto;
+            document.getElementById('comp-vto').value = c.vto;
+            document.getElementById('comp-cat').value = c.categoria;
+
+            document.getElementById('form-compromiso').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function eliminarCompromiso(id) {
+            if(confirm('¿Seguro querés eliminar este compromiso de pago?')) {
+                compromisos = compromisos.filter(c => c.id !== id);
+                localStorage.setItem('moto_compromisos', JSON.stringify(compromisos));
+                actualizarUI();
+            }
         }
 
         document.getElementById('form-movimiento').addEventListener('submit', function(e) {
@@ -301,18 +338,20 @@
 
         document.getElementById('form-compromiso').addEventListener('submit', function(e) {
             e.preventDefault();
+            const editCompId = document.getElementById('edit-comp-id').value;
             const nombre = document.getElementById('comp-nombre').value;
             const monto = parseFloat(document.getElementById('comp-monto').value);
             const vto = document.getElementById('comp-vto').value;
             const categoria = document.getElementById('comp-cat').value;
 
-            compromisos.push({ id: Date.now(), nombre, monto, categoria, vto, pagado: false });
-            localStorage.setItem('moto_compromisos', JSON.stringify(compromisos));
+            if(editCompId) {
+                compromisos = compromisos.map(c => c.id == editCompId ? { ...c, nombre, monto, vto, categoria } : c);
+            } else {
+                compromisos.push({ id: Date.now(), nombre, monto, categoria, vto, pagado: false });
+            }
 
-            document.getElementById('comp-nombre').value = '';
-            document.getElementById('comp-monto').value = '';
-            document.getElementById('comp-vto').value = '';
-            toggleFormCompromiso();
+            localStorage.setItem('moto_compromisos', JSON.stringify(compromisos));
+            document.getElementById('form-compromiso').classList.add('hidden');
             actualizarUI();
         });
 
@@ -361,14 +400,18 @@
                         </div>
                         <p class="font-semibold text-sm mt-1">${c.nombre}</p>
                     </div>
-                    <div class="text-right flex items-center gap-3">
+                    <div class="text-right flex items-center gap-2">
                         <div>
                             <p class="font-bold text-rose-400">$${c.monto.toLocaleString()}</p>
                             <span class="text-[10px] text-slate-500">${c.pagado ? 'Pagado' : 'Pendiente'}</span>
                         </div>
-                        <button onclick="togglePago(${c.id})" class="text-xs px-2.5 py-1.5 rounded-lg border ${c.pagado ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : 'bg-slate-800 text-slate-300 border-slate-700'} cursor-pointer">
+                        <button onclick="togglePago(${c.id})" class="text-xs px-2.5 py-1.5 rounded-lg border ${c.pagado ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : 'bg-slate-800 text-slate-300 border-slate-700'} cursor-pointer" title="Marcar pagado">
                             ${c.pagado ? '✓' : 'Pago'}
                         </button>
+                        <div class="flex gap-1 border-l border-slate-800 pl-2">
+                            <button onclick="editarCompromiso(${c.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-md cursor-pointer" title="Editar">✏️</button>
+                            <button onclick="eliminarCompromiso(${c.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-rose-400 px-2 py-1 rounded-md cursor-pointer" title="Eliminar">🗑️</button>
+                        </div>
                     </div>
                 </div>
             `).join('');
