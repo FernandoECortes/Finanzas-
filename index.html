@@ -127,6 +127,11 @@
                             <option value="Repuestos / Accesorios">Moto: Repuestos / Accesorios / Casco</option>
                             <option value="Seguro / Patente Moto">Obligatorio: Seguro / Patente Moto</option>
                         </optgroup>
+                        <optgroup label="Financiero y Deudas (NUEVO)">
+                            <option value="Resumen Tarjeta de Crédito">Finanzas: Resumen Tarjeta de Crédito</option>
+                            <option value="Préstamos / Cuotas">Finanzas: Préstamos / Cuotas (Moto, etc.)</option>
+                            <option value="Inversión / Compra CEDEARs">Finanzas: Compra de CEDEARs / Inversión</option>
+                        </optgroup>
                         <optgroup label="Alimentación y Consumo">
                             <option value="Supermercado / Almacén">Comida: Supermercado / Almacén</option>
                             <option value="Verdulería / Carnicería">Comida: Verdulería / Carnicería / Omelettes</option>
@@ -155,7 +160,7 @@
                     <label class="block text-xs text-slate-400 mb-1">¿Destinado a pagar un compromiso? (Opcional)</label>
                     <select id="reg-compromiso-vinculado" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
                         <option value="">-- Ninguno / Gasto común --</option>
-                        <!-- Se llena dinámicamente con JS -->
+                        <!-- Dinámico -->
                     </select>
                 </div>
 
@@ -177,15 +182,15 @@
                     <button type="button" onclick="toggleFormCompromiso()" class="text-xs text-slate-400 hover:text-white">Cancelar</button>
                 </div>
                 <input type="hidden" id="edit-comp-id" value="">
-                <input type="text" id="comp-nombre" placeholder="Nombre (Ej: Cuota Moto, Alquiler)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs" required>
+                <input type="text" id="comp-nombre" placeholder="Nombre (Ej: Cuota Moto, Tarjeta BBVA)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs" required>
                 <div class="grid grid-cols-2 gap-2">
                     <input type="number" id="comp-monto" placeholder="Monto ($)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs" required>
                     <input type="text" id="comp-vto" placeholder="Vencimiento (Ej: 10/09)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs" required>
                 </div>
                 <select id="comp-cat" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs">
                     <option value="Movilidad / Moto">Movilidad / Moto (Cuota, Seguro)</option>
+                    <option value="Financiero / Tarjetas">Financiero / Tarjetas / Préstamos</option>
                     <option value="Esencial">Esencial (Alquiler, Luz, Internet)</option>
-                    <option value="Deudas / Financiero">Deudas / Financiero (Tarjetas, Préstamos)</option>
                     <option value="Suscripciones / Varios">Suscripciones / Varios</option>
                 </select>
                 <button type="submit" id="btn-submit-comp" class="w-full bg-amber-400 text-slate-950 font-bold p-2.5 rounded-xl text-xs cursor-pointer">Guardar Compromiso</button>
@@ -196,7 +201,16 @@
             </div>
         </section>
 
-        <!-- PANTALLA 4: ANÁLISIS -->
+        <!-- PANTALLA 4: CUENTAS Y BILLETERAS -->
+        <section id="view-cuentas" class="space-y-4 hidden">
+            <h2 class="text-lg font-bold text-white">Estado de Cuentas</h2>
+            <p class="text-xs text-slate-400">Dinero acumulado en cada billetera según tus ingresos y gastos registrados:</p>
+            <div id="lista-saldos-cuentas" class="grid grid-cols-2 gap-2">
+                <!-- Dinámico -->
+            </div>
+        </section>
+
+        <!-- PANTALLA 5: ANÁLISIS -->
         <section id="view-analisis" class="space-y-4 hidden">
             <h2 class="text-lg font-bold text-white">Análisis Financiero</h2>
             <div class="grid grid-cols-2 gap-3">
@@ -222,14 +236,21 @@
     <!-- BARRA DE NAVEGACIÓN INFERIOR -->
     <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 flex justify-around p-3 z-50">
         <button id="nav-home" class="text-xs font-medium text-amber-400 cursor-pointer flex flex-col items-center">🏠 <span>Inicio</span></button>
-        <button id="nav-add" onclick="prepararNuevoMovimiento()" class="bg-amber-400 text-slate-950 px-4 py-1.5 rounded-full font-bold text-xs shadow-md cursor-pointer flex items-center gap-1">➕ <span>Cargar</span></button>
+        <button id="nav-add" onclick="prepararNuevoMovimiento()" class="bg-amber-400 text-slate-950 px-3 py-1 rounded-full font-bold text-xs shadow-md cursor-pointer flex items-center gap-1">➕ <span>Cargar</span></button>
         <button id="nav-compromisos" class="text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center">📅 <span>Pagos</span></button>
+        <button id="nav-cuentas" class="text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center">💳 <span>Cuentas</span></button>
         <button id="nav-analisis" class="text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center">📊 <span>Análisis</span></button>
     </nav>
 
     <!-- JAVASCRIPT -->
     <script>
         let tipoRegistroActual = 'ingreso';
+
+        const LISTA_CUENTAS = [
+            'Efectivo', 'Mercado Pago', 'Brubank', 'BBVA', 
+            'Lemon Cash', 'Naranja X', 'Personal Pay', 'Astropay', 
+            'Carrefour', 'Cocos', 'IOL', 'Claro Pay'
+        ];
 
         let movimientos = JSON.parse(localStorage.getItem('moto_movimientos')) || [
             { id: 1, tipo: 'ingreso', monto: 22000, detalle: 'Uber Moto', cuenta: 'Mercado Pago', fecha: 'Hoy', vinculadoId: null },
@@ -242,7 +263,7 @@
         ];
 
         function cambiarVista(vista) {
-            ['home', 'add', 'compromisos', 'analisis'].forEach(v => {
+            ['home', 'add', 'compromisos', 'cuentas', 'analisis'].forEach(v => {
                 document.getElementById('view-' + v).classList.add('hidden');
                 const nav = document.getElementById('nav-' + v);
                 if(nav && v !== 'add') nav.className = "text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center";
@@ -256,7 +277,7 @@
             actualizarUI();
         }
 
-        ['home', 'compromisos', 'analisis'].forEach(v => {
+        ['home', 'compromisos', 'cuentas', 'analisis'].forEach(v => {
             document.getElementById('nav-' + v).addEventListener('click', () => cambiarVista(v));
         });
 
@@ -440,6 +461,33 @@
             const totalPend = compromisos.filter(c => !c.pagado).reduce((acc, c) => acc + c.monto, 0);
             document.getElementById('total-pendientes').innerText = '$' + totalPend.toLocaleString();
 
+            // Calcular saldos por cuenta
+            let saldosCuentas = {};
+            LISTA_CUENTAS.forEach(c => saldosCuentas[c] = 0);
+            movimientos.forEach(m => {
+                let cta = m.cuenta || 'Efectivo';
+                if(saldosCuentas[cta] !== undefined) {
+                    if(m.tipo === 'ingreso') {
+                        saldosCuentas[cta] += m.monto;
+                    } else {
+                        saldosCuentas[cta] -= m.monto;
+                    }
+                }
+            });
+
+            // Renderizar Cuentas
+            document.getElementById('lista-saldos-cuentas').innerHTML = LISTA_CUENTAS.map(cta => {
+                let saldo = saldosCuentas[cta];
+                let colorSaldo = saldo >= 0 ? 'text-emerald-400' : 'text-rose-400';
+                return `
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                        <p class="text-xs text-slate-400 font-medium">${cta}</p>
+                        <p class="text-base font-bold ${colorSaldo} mt-1">$${saldo.toLocaleString()}</p>
+                    </div>
+                `;
+            }).join('');
+
+            // Renderizar Movimientos
             document.getElementById('lista-movimientos').innerHTML = movimientos.map(m => {
                 let badgeVinculo = '';
                 if(m.vinculadoId) {
@@ -471,6 +519,7 @@
                 `;
             }).join('');
 
+            // Renderizar Compromisos
             document.getElementById('lista-compromisos').innerHTML = compromisos.map(c => `
                 <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
                     <div>
