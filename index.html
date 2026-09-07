@@ -12,6 +12,7 @@
             --primary-dark: #1d4ed8;
             --success: #10b981;
             --danger: #ef4444;
+            --warning: #f59e0b;
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #1e293b;
@@ -135,7 +136,13 @@
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
+        }
+
+        .account-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .account-name {
@@ -238,14 +245,26 @@
             background: var(--primary-dark);
         }
 
-        /* Transactions List */
-        .transaction-list {
+        .btn-secondary {
+            background: #e2e8f0;
+            color: var(--text-main);
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 6px;
+        }
+
+        /* Transactions & Goals Lists */
+        .list-container {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
-        .transaction-item {
+        .item-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
             padding: 12px;
@@ -256,18 +275,18 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
 
-        .tx-info {
+        .item-info {
             display: flex;
             flex-direction: column;
             gap: 2px;
         }
 
-        .tx-title {
+        .item-title {
             font-weight: 600;
             font-size: 0.95rem;
         }
 
-        .tx-details {
+        .item-details {
             font-size: 0.75rem;
             color: var(--text-muted);
             display: flex;
@@ -276,31 +295,49 @@
             align-items: center;
         }
 
-        .tx-amount {
+        .item-amount {
             font-weight: 700;
             font-size: 1rem;
         }
 
-        .tx-amount.income {
-            color: var(--success);
+        .item-amount.income { color: var(--success); }
+        .item-amount.expense { color: var(--danger); }
+        .item-amount.goal { color: var(--warning); }
+
+        .action-btns {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .tx-amount.expense {
-            color: var(--danger);
-        }
-
-        .delete-btn {
+        .icon-btn {
             background: none;
             border: none;
-            color: #cbd5e1;
+            color: #94a3b8;
             cursor: pointer;
-            padding: 8px;
-            font-size: 1rem;
+            padding: 6px;
+            font-size: 0.9rem;
             transition: color 0.2s;
         }
 
-        .delete-btn:hover {
-            color: var(--danger);
+        .icon-btn:hover { color: var(--primary); }
+        .icon-btn.delete:hover { color: var(--danger); }
+
+        /* Progress Bar for Goals */
+        .goal-progress-box {
+            width: 100%;
+            background: #e2e8f0;
+            border-radius: 4px;
+            height: 6px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .goal-progress-fill {
+            background: var(--warning);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
         }
 
         /* Navigation Bar */
@@ -368,7 +405,7 @@
 
     <header>
         <div class="header-top">
-            <h1><i class="fa-solid fa-wallet"></i> Mis Finanzas</h1>
+            <h1 id="app-main-title"><i class="fa-solid fa-wallet"></i> Mis Finanzas</h1>
             <button id="reset-btn" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-rotate-right"></i> Reset</button>
         </div>
         <div class="balance-card">
@@ -391,10 +428,11 @@
 
         <!-- VISTA 1: REGISTRAR Y MOVIMIENTOS -->
         <div id="view-home" class="view-section active">
-            <div class="section-title">Nuevo Movimiento</div>
+            <div class="section-title" id="form-section-title">Nuevo Movimiento</div>
             <div class="card">
                 <form id="tx-form">
-                    <div class="type-selector">
+                    <input type="hidden" id="tx-edit-id" value="">
+                    <div class="type-selector" id="type-selector-container">
                         <button type="button" class="type-btn expense active" id="btn-expense">Gasto</button>
                         <button type="button" class="type-btn income" id="btn-income">Ingreso</button>
                     </div>
@@ -406,7 +444,7 @@
 
                     <div class="form-group">
                         <label for="tx-description">Descripción / Detalle</label>
-                        <input type="text" id="tx-description" placeholder="Ej: Supermercado, Nafta, Sueldo..." required>
+                        <input type="text" id="tx-description" placeholder="Ej: Supermercado, Uber Moto..." required>
                     </div>
 
                     <div class="form-group">
@@ -421,145 +459,110 @@
 
                     <div class="form-group">
                         <label for="tx-account">Cuenta / Billetera</label>
-                        <select id="tx-account" required>
-                            <option value="Efectivo">Efectivo</option>
-                            <option value="Astropay">Astropay</option>
-                            <option value="BBVA">BBVA</option>
-                            <option value="Brubank">Brubank</option>
-                            <option value="Carrefour">Carrefour</option>
-                            <option value="Claro Pay">Claro Pay</option>
-                            <option value="Cocos">Cocos</option>
-                            <option value="IOL">IOL</option>
-                            <option value="Lemon Cash">Lemon Cash</option>
-                            <option value="Mercado Pago">Mercado Pago</option>
-                            <option value="Naranja X">Naranja X</option>
-                            <option value="Personal Pay">Personal Pay</option>
-                        </select>
+                        <select id="tx-account" required></select>
                     </div>
 
-                    <button type="submit" class="btn-primary">Registrar Movimiento</button>
+                    <button type="submit" class="btn-primary" id="tx-submit-btn">Registrar Movimiento</button>
+                    <button type="button" class="btn-secondary" id="tx-cancel-btn" style="display:none;" onclick="cancelEditTx()">Cancelar Edición</button>
                 </form>
             </div>
 
             <div class="section-title">Últimos Movimientos</div>
-            <div id="transaction-list" class="transaction-list"></div>
+            <div id="transaction-list" class="list-container"></div>
         </div>
 
-        <!-- VISTA 2: CUENTAS Y SALDOS -->
+        <!-- VISTA 2: CUENTAS Y BILLETAS -->
         <div id="view-accounts" class="view-section">
-            <div class="section-title">Tus Cuentas y Billeteras</div>
+            <div class="section-title">Agregar Nueva Cuenta</div>
+            <div class="card">
+                <form id="account-form" onsubmit="addAccount(event)">
+                    <div class="form-group">
+                        <label for="new-account-name">Nombre de la cuenta o billetera</label>
+                        <input type="text" id="new-account-name" placeholder="Ej: Cuenta DNI, Binance..." required>
+                    </div>
+                    <button type="submit" class="btn-primary">Añadir Cuenta</button>
+                </form>
+            </div>
+
+            <div class="section-title">Tus Cuentas y Saldos</div>
             <div id="accounts-grid" class="accounts-grid"></div>
+        </div>
+
+        <!-- VISTA 3: OBJETIVOS Y COMPROMISOS DE PAGO -->
+        <div id="view-goals" class="view-section">
+            <div class="section-title" id="goal-form-title">Nuevo Compromiso o Meta</div>
+            <div class="card">
+                <form id="goal-form">
+                    <input type="hidden" id="goal-edit-id" value="">
+                    <div class="form-group">
+                        <label for="goal-title">Nombre del Compromiso (Ej: Alquiler, Tarjeta)</label>
+                        <input type="text" id="goal-title" placeholder="Ej: Vencimiento tarjeta BBVA" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="goal-amount">Monto Objetivo ($)</label>
+                        <input type="number" id="goal-amount" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="goal-account">Cuenta Destino o Fondo Base (opcional)</label>
+                        <select id="goal-account"></select>
+                    </div>
+                    <button type="submit" class="btn-primary" id="goal-submit-btn">Guardar Compromiso</button>
+                    <button type="button" class="btn-secondary" id="goal-cancel-btn" style="display:none;" onclick="cancelEditGoal()">Cancelar Edición</button>
+                </form>
+            </div>
+
+            <div class="section-title">Seguimiento de Metas y Compromisos</div>
+            <div id="goals-list" class="list-container"></div>
         </div>
 
     </div>
 
     <!-- Barra de Navegación Inferior -->
     <nav class="nav-bar">
-        <button class="nav-item active" id="nav-home" data-target="home">
+        <button class="nav-item active" data-target="home">
             <i class="fa-solid fa-house"></i>
-            <span>Inicio</span>
+            <span>Movimientos</span>
         </button>
-        <button class="nav-item" id="nav-accounts" data-target="accounts">
+        <button class="nav-item" data-target="accounts">
             <i class="fa-solid fa-wallet"></i>
             <span>Cuentas</span>
+        </button>
+        <button class="nav-item" data-target="goals">
+            <i class="fa-solid fa-bullseye"></i>
+            <span>Objetivos</span>
         </button>
     </nav>
 
     <script>
-        // Estructura con categorías y sus respectivas subcategorías
         const expenseData = {
-            "Vivienda": [
-                "Alquiler o hipoteca",
-                "Impuestos inmobiliarios y tasas municipales",
-                "Servicios públicos (luz, gas, agua)",
-                "Expensas o mantenimiento de edificio",
-                "Mantenimiento y reparaciones del hogar",
-                "Internet, telefonía fija y televisión"
-            ],
-            "Alimentación": [
-                "Supermercado y almacén",
-                "Verdulería y carnicería",
-                "Comidas fuera de casa (restaurantes, bares)",
-                "Delivery y aplicaciones de pedidos"
-            ],
-            "Transporte y Movilidad": [
-                "Combustible",
-                "Transporte público (subte, colectivo, tren)",
-                "Apps de transporte (Uber, Cabify) y taxis",
-                "Estacionamiento y peajes",
-                "Mantenimiento vehicular (service, repuestos, lavado)",
-                "Seguro del auto y patente"
-            ],
-            "Salud y Bienestar": [
-                "Prepaga u obra social",
-                "Medicamentos y farmacia",
-                "Consultas médicas, odontológicas y oftalmológicas",
-                "Gimnasio y actividades deportivas"
-            ],
-            "Entretenimiento y Ocio": [
-                "Plataformas de streaming (Netflix, Spotify, etc.)",
-                "Salidas culturales (cine, teatro, conciertos)",
-                "Viajes y vacaciones",
-                "Hobbies y tecnología personal"
-            ],
-            "Educación y Desarrollo": [
-                "Cuotas escolares, universitarias o de posgrado",
-                "Cursos, talleres y certificaciones",
-                "Libros y material de estudio"
-            ],
-            "Gastos Personales y Ropa": [
-                "Indumentaria y calzado",
-                "Cuidado personal (peluquería, cosmética, perfumería)",
-                "Mascotas (alimento, veterinaria, accesorios)"
-            ],
-            "Finanzas y Obligaciones": [
-                "Ahorro e inversión",
-                "Pago de deudas y tarjetas de crédito",
-                "Seguros (vida, hogar)",
-                "Comisiones bancarias"
-            ]
+            "Vivienda": ["Alquiler o hipoteca", "Impuestos inmobiliarios y tasas municipales", "Servicios públicos (luz, gas, agua)", "Expensas o mantenimiento de edificio", "Mantenimiento y reparaciones del hogar", "Internet, telefonía fija y televisión"],
+            "Alimentación": ["Supermercado y almacén", "Verdulería y carnicería", "Comidas fuera de casa (restaurantes, bares)", "Delivery y aplicaciones de pedidos"],
+            "Transporte y Movilidad": ["Combustible", "Transporte público (subte, colectivo, tren)", "Apps de transporte (Uber, Cabify) y taxis", "Estacionamiento y peajes", "Mantenimiento vehicular (service, repuestos, lavado)", "Seguro del auto y patente"],
+            "Salud y Bienestar": ["Prepaga u obra social", "Medicamentos y farmacia", "Consultas médicas, odontológicas y oftalmológicas", "Gimnasio y actividades deportivas"],
+            "Entretenimiento y Ocio": ["Plataformas de streaming (Netflix, Spotify, etc.)", "Salidas culturales (cine, teatro, conciertos)", "Viajes y vacaciones", "Hobbies y tecnología personal"],
+            "Educación y Desarrollo": ["Cuotas escolares, universitarias o de posgrado", "Cursos, talleres y certificaciones", "Libros y material de estudio"],
+            "Gastos Personales y Ropa": ["Indumentaria y calzado", "Cuidado personal (peluquería, cosmética, perfumería)", "Mascotas (alimento, veterinaria, accesorios)"],
+            "Finanzas y Obligaciones": ["Ahorro e inversión", "Pago de deudas y tarjetas de crédito", "Seguros (vida, hogar)", "Comisiones bancarias"]
         };
 
         const incomeData = {
-            "Sueldo y Empleo Formal": [
-                "Sueldo básico o salario mensual",
-                "Horas extra y comisiones",
-                "Bonos por desempeño y aguinaldo",
-                "Premios, viáticos o asignaciones"
-            ],
-            "Trabajos Independientes y Freelance": [
-                "Honorarios profesionales y servicios",
-                "Trabajos puntuales (changas y proyectos)",
-                "Venta de productos (emprendimientos, e-commerce)"
-            ],
-            "Rendimientos Financieros e Inversiones": [
-                "Dividendos de acciones y CEDEARs",
-                "Rentas de plazos fijos o cauciones",
-                "Intereses de cuentas remuneradas y billeteras",
-                "Rentas por alquiler de inmuebles"
-            ],
-            "Actividades de Transporte y Reparto": [
-                "Ganancias por apps de movilidad (Uber, Cabify, motos)",
-                "Ingresos por delivery y mensajería"
-            ],
-            "Ayudas, Subsidios y Transferencias": [
-                "Asignaciones familiares y estatales",
-                "Pensiones, jubilaciones o rentas vitalicias",
-                "Ayuda económica familiar o remesas"
-            ]
+            "Sueldo y Empleo Formal": ["Sueldo básico o salario mensual", "Horas extra y comisiones", "Bonos por desempeño y aguinaldo", "Premios, viáticos o asignaciones"],
+            "Trabajos Independientes y Freelance": ["Honorarios profesionales y servicios", "Trabajos puntuales (changas y proyectos)", "Venta de productos (emprendimientos, e-commerce)"],
+            "Rendimientos Financieros e Inversiones": ["Dividendos de acciones y CEDEARs", "Rentas de plazos fijos o cauciones", "Intereses de cuentas remuneradas y billeteras", "Rentas por alquiler de inmuebles"],
+            "Actividades de Transporte y Reparto": ["Ganancias por apps de movilidad (Uber, Cabify, motos)", "Ingresos por delivery y mensajería"],
+            "Ayudas, Subsidios y Transferencias": ["Asignaciones familiares y estatales", "Pensiones, jubilaciones o rentas vitalicias", "Ayuda económica familiar o remesas"]
         };
 
-        const accountsList = [
-            "Efectivo", "Astropay", "BBVA", "Brubank", "Carrefour", 
-            "Claro Pay", "Cocos", "IOL", "Lemon Cash", "Mercado Pago", 
-            "Naranja X", "Personal Pay"
-        ];
+        let defaultAccounts = ["Efectivo", "Astropay", "BBVA", "Brubank", "Carrefour", "Claro Pay", "Cocos", "IOL", "Lemon Cash", "Mercado Pago", "Naranja X", "Personal Pay"];
+        let accountsList = JSON.parse(localStorage.getItem('fin_accounts')) || defaultAccounts;
+        let transactions = JSON.parse(localStorage.getItem('fin_transactions')) || [];
+        let goals = JSON.parse(localStorage.getItem('fin_goals')) || [];
 
         let currentType = 'expense';
-        let transactions = JSON.parse(localStorage.getItem('fin_transactions')) || [];
 
         document.addEventListener('DOMContentLoaded', () => {
             updateCategories();
+            updateAccountSelects();
             renderAll();
             setupEventListeners();
         });
@@ -568,7 +571,8 @@
             document.getElementById('btn-expense').addEventListener('click', () => setTxType('expense'));
             document.getElementById('btn-income').addEventListener('click', () => setTxType('income'));
             document.getElementById('tx-category').addEventListener('change', updateSubcategories);
-            document.getElementById('tx-form').addEventListener('submit', addTransaction);
+            document.getElementById('tx-form').addEventListener('submit', handleTransactionSubmit);
+            document.getElementById('goal-form').addEventListener('submit', handleGoalSubmit);
             document.getElementById('reset-btn').addEventListener('click', resetData);
 
             document.querySelectorAll('.nav-item').forEach(item => {
@@ -617,43 +621,194 @@
             });
         }
 
-        function addTransaction(e) {
-            e.preventDefault();
-            const amountInput = document.getElementById('tx-amount');
-            const descInput = document.getElementById('tx-description');
+        function updateAccountSelects() {
+            const txAccount = document.getElementById('tx-account');
+            const goalAccount = document.getElementById('goal-account');
             
-            const amount = parseFloat(amountInput.value);
-            const description = descInput.value;
+            txAccount.innerHTML = '';
+            goalAccount.innerHTML = '<option value="">(Ninguna / Total general)</option>';
+
+            accountsList.forEach(acc => {
+                txAccount.innerHTML += `<option value="${acc}">${acc}</option>`;
+                goalAccount.innerHTML += `<option value="${acc}">${acc}</option>`;
+            });
+        }
+
+        /* CRUD TRANSACCIONES */
+        function handleTransactionSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('tx-edit-id').value;
+            const amount = parseFloat(document.getElementById('tx-amount').value);
+            const description = document.getElementById('tx-description').value;
             const category = document.getElementById('tx-category').value;
             const subcategory = document.getElementById('tx-subcategory').value;
             const account = document.getElementById('tx-account').value;
 
             if (isNaN(amount) || amount <= 0) return;
 
-            const newTx = {
-                id: Date.now(),
-                type: currentType,
-                amount: amount,
-                description: description,
-                category: category,
-                subcategory: subcategory,
-                account: account,
-                date: new Date().toLocaleDateString('es-AR')
-            };
-
-            transactions.unshift(newTx);
+            if (editId) {
+                // Editar existente
+                transactions = transactions.map(t => {
+                    if (t.id == editId) {
+                        return { ...t, type: currentType, amount, description, category, subcategory, account };
+                    }
+                    return t;
+                });
+                cancelEditTx();
+            } else {
+                // Crear nuevo
+                const newTx = {
+                    id: Date.now(),
+                    type: currentType,
+                    amount,
+                    description,
+                    category,
+                    subcategory,
+                    account,
+                    date: new Date().toLocaleDateString('es-AR')
+                };
+                transactions.unshift(newTx);
+                document.getElementById('tx-amount').value = '';
+                document.getElementById('tx-description').value = '';
+            }
             saveAndRender();
+        }
 
-            amountInput.value = '';
-            descInput.value = '';
-            amountInput.focus();
+        function editTransaction(id) {
+            const t = transactions.find(item => item.id == id);
+            if (!t) return;
+
+            setTxType(t.type);
+            document.getElementById('tx-edit-id').value = t.id;
+            document.getElementById('tx-amount').value = t.amount;
+            document.getElementById('tx-description').value = t.description;
+            document.getElementById('tx-category').value = t.category;
+            updateSubcategories();
+            document.getElementById('tx-subcategory').value = t.subcategory;
+            document.getElementById('tx-account').value = t.account;
+
+            document.getElementById('form-section-title').textContent = "Editar Movimiento";
+            document.getElementById('tx-submit-btn').textContent = "Actualizar Movimiento";
+            document.getElementById('tx-cancel-btn').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelEditTx() {
+            document.getElementById('tx-edit-id').value = '';
+            document.getElementById('tx-form').reset();
+            setTxType('expense');
+            document.getElementById('form-section-title').textContent = "Nuevo Movimiento";
+            document.getElementById('tx-submit-btn').textContent = "Registrar Movimiento";
+            document.getElementById('tx-cancel-btn').style.display = "none";
         }
 
         function deleteTransaction(id) {
-            transactions = transactions.filter(t => t.id !== id);
-            saveAndRender();
+            if (confirm('¿Eliminar este movimiento?')) {
+                transactions = transactions.filter(t => t.id !== id);
+                saveAndRender();
+            }
         }
 
+        /* CRUD CUENTAS */
+        function addAccount(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('new-account-name');
+            const name = nameInput.value.trim();
+            if (name && !accountsList.includes(name)) {
+                accountsList.push(name);
+                nameInput.value = '';
+                saveAndRenderAccounts();
+            } else {
+                alert('La cuenta ya existe o el nombre es inválido.');
+            }
+        }
+
+        function editAccount(oldName) {
+            const newName = prompt('Modificar nombre de la cuenta:', oldName);
+            if (newName && newName.trim() !== '' && !accountsList.includes(newName.trim())) {
+                const updated = newName.trim();
+                accountsList = accountsList.map(acc => acc === oldName ? updated : acc);
+                // Actualizar transacciones asociadas
+                transactions = transactions.map(t => t.account === oldName ? { ...t, account: updated } : t);
+                goals = goals.map(g => g.account === oldName ? { ...g, account: updated } : g);
+                saveAndRenderAccounts();
+            }
+        }
+
+        function deleteAccount(accountName) {
+            if (confirm(`¿Eliminar la cuenta "${accountName}"? Las transacciones asociadas no se borrarán pero quedarán sin referencia de cuenta activa.`)) {
+                accountsList = accountsList.filter(acc => acc !== accountName);
+                saveAndRenderAccounts();
+            }
+        }
+
+        function saveAndRenderAccounts() {
+            localStorage.setItem('fin_accounts', JSON.stringify(accountsList));
+            updateAccountSelects();
+            renderAll();
+        }
+
+        /* CRUD OBJETIVOS Y COMPROMISOS */
+        function handleGoalSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('goal-edit-id').value;
+            const title = document.getElementById('goal-title').value;
+            const amount = parseFloat(document.getElementById('goal-amount').value);
+            const account = document.getElementById('goal-account').value;
+
+            if (isNaN(amount) || amount <= 0) return;
+
+            if (editId) {
+                goals = goals.map(g => g.id == editId ? { ...g, title, amount, account } : g);
+                cancelEditGoal();
+            } else {
+                const newGoal = {
+                    id: Date.now(),
+                    title,
+                    amount,
+                    account
+                };
+                goals.push(newGoal);
+                document.getElementById('goal-form').reset();
+            }
+            saveAndRenderGoals();
+        }
+
+        function editGoal(id) {
+            const g = goals.find(item => item.id == id);
+            if (!g) return;
+
+            document.getElementById('goal-edit-id').value = g.id;
+            document.getElementById('goal-title').value = g.title;
+            document.getElementById('goal-amount').value = g.amount;
+            document.getElementById('goal-account').value = g.account;
+
+            document.getElementById('goal-form-title').textContent = "Editar Compromiso";
+            document.getElementById('goal-submit-btn').textContent = "Actualizar Compromiso";
+            document.getElementById('goal-cancel-btn').style.display = "block";
+        }
+
+        function cancelEditGoal() {
+            document.getElementById('goal-edit-id').value = '';
+            document.getElementById('goal-form').reset();
+            document.getElementById('goal-form-title').textContent = "Nuevo Compromiso o Meta";
+            document.getElementById('goal-submit-btn').textContent = "Guardar Compromiso";
+            document.getElementById('goal-cancel-btn').style.display = "none";
+        }
+
+        function deleteGoal(id) {
+            if (confirm('¿Eliminar este objetivo?')) {
+                goals = goals.filter(g => g.id !== id);
+                saveAndRenderGoals();
+            }
+        }
+
+        function saveAndRenderGoals() {
+            localStorage.setItem('fin_goals', JSON.stringify(goals));
+            renderGoals();
+        }
+
+        /* GUARDAR GENERAL Y RENDERIZADO */
         function saveAndRender() {
             localStorage.setItem('fin_transactions', JSON.stringify(transactions));
             renderAll();
@@ -663,6 +818,7 @@
             renderDashboard();
             renderAccounts();
             renderTransactions();
+            renderGoals();
         }
 
         function renderDashboard() {
@@ -705,7 +861,13 @@
                 const bal = window.accountBalances ? window.accountBalances[acc] || 0 : 0;
                 grid.innerHTML += `
                     <div class="account-chip">
-                        <span class="account-name">${acc}</span>
+                        <div class="account-header-row">
+                            <span class="account-name">${acc}</span>
+                            <div class="action-btns">
+                                <button class="icon-btn" onclick="editAccount('${acc}')" title="Editar cuenta"><i class="fa-solid fa-pen"></i></button>
+                                <button class="icon-btn delete" onclick="deleteAccount('${acc}')" title="Eliminar cuenta"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </div>
                         <span class="account-balance" style="color: ${bal >= 0 ? 'var(--text-main)' : 'var(--danger)'}">${formatMoney(bal)}</span>
                     </div>
                 `;
@@ -723,21 +885,75 @@
             transactions.forEach(t => {
                 const isInc = t.type === 'income';
                 list.innerHTML += `
-                    <div class="transaction-item">
-                        <div class="tx-info">
-                            <span class="tx-title">${t.description}</span>
-                            <div class="tx-details">
+                    <div class="item-card">
+                        <div class="item-info">
+                            <span class="item-title">${t.description}</span>
+                            <div class="item-details">
                                 <span class="badge">${t.account}</span>
                                 <span>• ${t.category} (${t.subcategory})</span>
                                 <span>• ${t.date}</span>
                             </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="tx-amount ${t.type}">${isInc ? '+' : '-'}${formatMoney(t.amount)}</span>
-                            <button class="delete-btn" onclick="deleteTransaction(${t.id})" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span class="item-amount ${t.type}">${isInc ? '+' : '-'}${formatMoney(t.amount)}</span>
+                            <div class="action-btns">
+                                <button class="icon-btn" onclick="editTransaction(${t.id})" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                <button class="icon-btn delete" onclick="deleteTransaction(${t.id})" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
                         </div>
                     </div>
                 `;
+            });
+        }
+
+        function renderGoals() {
+            const list = document.getElementById('goals-list');
+            if (goals.length === 0) {
+                list.innerHTML = `<div class="empty-state">No hay compromisos o metas cargados. Agregá uno para medir cuánto te falta.</div>`;
+                return;
+            }
+
+            list.innerHTML = '';
+            goals.forEach(g => {
+                // Si la meta está ligada a una cuenta específica, toma el saldo de esa cuenta; si no, toma el patrimonio total o ingresos netos según prefieras. Aquí usamos el saldo de la cuenta o el total general.
+                let currentProgress = 0;
+                if (g.account && window.accountBalances) {
+                    currentProgress = window.accountBalances[g.account] || 0;
+                } else if (window.accountBalances) {
+                    currentProgress = Object.values(window.accountBalances).reduce((a, b) => a + b, 0);
+                }
+
+                const missing = g.amount - currentProgress;
+                const percentage = Math.min(Math.max((currentProgress / g.amount) * 100, 0), 100);
+
+                list.innerHTML = `
+                    <div class="item-card" style="flex-direction: column; align-items: stretch; gap: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div class="item-info">
+                                <span class="item-title">${g.title}</span>
+                                <div class="item-details">
+                                    <span class="badge">${g.account ? g.account : 'Patrimonio General'}</span>
+                                    <span>• Objetivo: <strong>${formatMoney(g.amount)}</strong></span>
+                                </div>
+                            </div>
+                            <div class="action-btns">
+                                <button class="icon-btn" onclick="editGoal(${g.id})" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                <button class="icon-btn delete" onclick="deleteGoal(${g.id})" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2px;">
+                                <span>Disponible: ${formatMoney(currentProgress)}</span>
+                                <span style="font-weight: 600; color: ${missing <= 0 ? 'var(--success)' : 'var(--danger)'};">
+                                    ${missing <= 0 ? '¡Meta cumplida!' : 'Falta: ' + formatMoney(missing)}
+                                </span>
+                            </div>
+                            <div class="goal-progress-box">
+                                <div class="goal-progress-fill" style="width: ${percentage}%; background: ${missing <= 0 ? 'var(--success)' : 'var(--warning)'};"></div>
+                            </div>
+                        </div>
+                    </div>
+                ` + list.innerHTML;
             });
         }
 
@@ -754,9 +970,12 @@
         }
 
         function resetData() {
-            if(confirm('¿Estás seguro de borrar todos los registros?')) {
+            if(confirm('¿Estás seguro de borrar absolutamente todos los datos, movimientos y metas?')) {
+                localStorage.clear();
                 transactions = [];
-                saveAndRender();
+                goals = [];
+                accountsList = [...defaultAccounts];
+                saveAndRenderAccounts();
             }
         }
     </script>
