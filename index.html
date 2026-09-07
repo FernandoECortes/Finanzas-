@@ -12,7 +12,7 @@
     <header class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center sticky top-0 z-50">
         <div>
             <h1 class="text-base font-bold text-amber-400">MotoFinanzas 🏍️</h1>
-            <p class="text-[10px] text-slate-400">Control diario para Uber Moto</p>
+            <p class="text-[10px] text-slate-400">Control total de finanzas</p>
         </div>
         <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-full text-slate-300 border border-slate-700">Córdoba</span>
     </header>
@@ -31,7 +31,7 @@
                         <span id="ingresos-hoy" class="font-bold text-slate-950">$0</span>
                     </div>
                     <div>
-                        <span class="opacity-80 block">Gastos Moto:</span>
+                        <span class="opacity-80 block">Gastos Totales:</span>
                         <span id="gastos-hoy" class="font-bold text-rose-950">$0</span>
                     </div>
                 </div>
@@ -53,28 +53,35 @@
             </div>
         </section>
 
-        <!-- PANTALLA 2: CARGAR (REGISTRO RÁPIDO) -->
+        <!-- PANTALLA 2: CARGAR / EDITAR -->
         <section id="view-add" class="space-y-4 hidden">
-            <h2 class="text-lg font-bold text-white">Registrar Movimiento</h2>
+            <div class="flex justify-between items-center">
+                <h2 id="form-titulo" class="text-lg font-bold text-white">Registrar Movimiento</h2>
+                <button type="button" onclick="cancelarEdicion()" id="btn-cancelar-edicion" class="text-xs text-slate-400 hover:text-white hidden cursor-pointer">Cancelar edición</button>
+            </div>
             
             <!-- Selector de tipo -->
-            <div class="grid grid-cols-3 gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+            <div id="selector-tipo-container" class="grid grid-cols-3 gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
                 <button type="button" onclick="setTipoRegistro('ingreso')" id="tab-ingreso" class="py-2 text-xs font-bold rounded-lg bg-amber-400 text-slate-950 cursor-pointer">Ingreso</button>
                 <button type="button" onclick="setTipoRegistro('gastomoto')" id="tab-gastomoto" class="py-2 text-xs font-bold rounded-lg text-slate-400 cursor-pointer">Gasto Moto</button>
                 <button type="button" onclick="setTipoRegistro('gastopersonal')" id="tab-gastopersonal" class="py-2 text-xs font-bold rounded-lg text-slate-400 cursor-pointer">Personal</button>
             </div>
 
             <form id="form-movimiento" class="space-y-4 bg-slate-900 p-4 rounded-2xl border border-slate-800">
+                <input type="hidden" id="edit-id" value="">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Monto ($)</label>
                     <input type="number" id="reg-monto" placeholder="Ej: 15000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-lg focus:outline-none focus:border-amber-400" required>
                 </div>
 
                 <div id="container-origen">
-                    <label class="block text-xs text-slate-400 mb-1">Origen del Ingreso</label>
+                    <label class="block text-xs text-slate-400 mb-1">Categoría de Ingreso</label>
                     <select id="reg-origen" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
                         <option value="Uber Moto">Uber Moto</option>
-                        <option value="Efectivo / Particular">Efectivo / Particular</option>
+                        <option value="Viaje Particular / Envíos">Viaje Particular / Envíos</option>
+                        <option value="Changas / Trabajos Extra">Changas / Trabajos Extra</option>
+                        <option value="Música / Producción">Música / Producción</option>
+                        <option value="Inversiones / CEDEARs">Inversiones / CEDEARs</option>
                         <option value="Otro Ingreso">Otro Ingreso</option>
                     </select>
                 </div>
@@ -82,14 +89,30 @@
                 <div id="container-categoria-gasto" class="hidden">
                     <label class="block text-xs text-slate-400 mb-1">Categoría de Gasto</label>
                     <select id="reg-categoria-gasto" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
-                        <option value="Nafta (Puma)">Nafta (Puma)</option>
-                        <option value="Service / Repuestos">Service / Repuestos</option>
-                        <option value="Gomería">Gomería</option>
-                        <option value="Comida / Varios">Comida / Varios</option>
+                        <!-- Gastos de Moto -->
+                        <optgroup label="Movilidad / Moto">
+                            <option value="Nafta (Puma / YPF)">Nafta (Puma / YPF)</option>
+                            <option value="Service / Mantenimiento">Service / Mantenimiento</option>
+                            <option value="Gomería / Cubiertas">Gomería / Cubiertas</option>
+                            <option value="Repuestos / Accesorios">Repuestos / Accesorios</option>
+                            <option value="Seguro / Patente Moto">Seguro / Patente Moto</option>
+                        </optgroup>
+                        <!-- Gastos Personales y Casa -->
+                        <optgroup label="Personal / Casa">
+                            <option value="Comida / Supermercado">Comida / Supermercado</option>
+                            <option value="Fast Food / PedidosYa">Fast Food / PedidosYa</option>
+                            <option value="Alquiler / Expensas">Alquiler / Expensas</option>
+                            <option value="Servicios (Luz, Internet)">Servicios (Luz, Internet)</option>
+                            <option value="Salidas / Entretenimiento">Salidas / Entretenimiento</option>
+                            <option value="Ropa / Cuidado Personal">Ropa / Cuidado Personal</option>
+                            <option value="Suscripciones (Apps)">Suscripciones (Apps)</option>
+                            <option value="Mascotas (Veterinaria/Comida)">Mascotas (Veterinaria/Comida)</option>
+                            <option value="Otro Gasto">Otro Gasto</option>
+                        </optgroup>
                     </select>
                 </div>
 
-                <button type="submit" class="w-full bg-amber-400 text-slate-950 font-bold p-3 rounded-xl cursor-pointer">Guardar Registro</button>
+                <button type="submit" id="btn-submit-mov" class="w-full bg-amber-400 text-slate-950 font-bold p-3 rounded-xl cursor-pointer">Guardar Registro</button>
             </form>
         </section>
 
@@ -103,15 +126,16 @@
             <!-- Formulario oculto para agregar compromiso -->
             <form id="form-compromiso" class="space-y-3 bg-slate-900 p-4 rounded-2xl border border-slate-800 hidden">
                 <h3 class="text-sm font-semibold text-amber-400">Agregar Obligación</h3>
-                <input type="text" id="comp-nombre" placeholder="Nombre (Ej: Seguro Moto, Alquiler)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs" required>
+                <input type="text" id="comp-nombre" placeholder="Nombre (Ej: Cuota Moto, Alquiler)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs" required>
                 <div class="grid grid-cols-2 gap-2">
                     <input type="number" id="comp-monto" placeholder="Monto ($)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs" required>
                     <input type="text" id="comp-vto" placeholder="Vencimiento (Ej: 10/09)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs" required>
                 </div>
                 <select id="comp-cat" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs">
-                    <option value="Movilidad / Moto">Movilidad / Moto</option>
-                    <option value="Esencial">Esencial (Alquiler, Luz)</option>
-                    <option value="Deudas / Financiero">Deudas / Financiero</option>
+                    <option value="Movilidad / Moto">Movilidad / Moto (Cuota, Seguro)</option>
+                    <option value="Esencial">Esencial (Alquiler, Luz, Internet)</option>
+                    <option value="Deudas / Financiero">Deudas / Financiero (Tarjetas, Préstamos)</option>
+                    <option value="Suscripciones / Varios">Suscripciones / Varios</option>
                 </select>
                 <button type="submit" class="w-full bg-amber-400 text-slate-950 font-bold p-2 rounded-xl text-xs cursor-pointer">Guardar Compromiso</button>
             </form>
@@ -130,7 +154,7 @@
                     <p id="Analisismes-ingresos" class="text-lg font-bold text-emerald-400 mt-1">$0</p>
                 </div>
                 <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
-                    <p class="text-[10px] text-slate-400 uppercase">Total Gastos Moto</p>
+                    <p class="text-[10px] text-slate-400 uppercase">Total Gastos Mes</p>
                     <p id="Analisismes-gastos" class="text-lg font-bold text-rose-400 mt-1">$0</p>
                 </div>
             </div>
@@ -147,7 +171,7 @@
     <!-- BARRA DE NAVEGACIÓN INFERIOR -->
     <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 flex justify-around p-3 z-50">
         <button id="nav-home" class="text-xs font-medium text-amber-400 cursor-pointer flex flex-col items-center">🏠 <span>Inicio</span></button>
-        <button id="nav-add" class="bg-amber-400 text-slate-950 px-4 py-1.5 rounded-full font-bold text-xs shadow-md cursor-pointer flex items-center gap-1">➕ <span>Cargar</span></button>
+        <button id="nav-add" onclick="prepararNuevoMovimiento()" class="bg-amber-400 text-slate-950 px-4 py-1.5 rounded-full font-bold text-xs shadow-md cursor-pointer flex items-center gap-1">➕ <span>Cargar</span></button>
         <button id="nav-compromisos" class="text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center">📅 <span>Pagos</span></button>
         <button id="nav-analisis" class="text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center">📊 <span>Análisis</span></button>
     </nav>
@@ -158,7 +182,7 @@
 
         let movimientos = JSON.parse(localStorage.getItem('moto_movimientos')) || [
             { id: 1, tipo: 'ingreso', monto: 22000, detalle: 'Uber Moto', fecha: 'Hoy' },
-            { id: 2, tipo: 'gastomoto', monto: 4500, detalle: 'Nafta (Puma)', fecha: 'Hoy' }
+            { id: 2, tipo: 'gastomoto', monto: 4500, detalle: 'Nafta (Puma / YPF)', fecha: 'Hoy' }
         ];
 
         let compromisos = JSON.parse(localStorage.getItem('moto_compromisos')) || [
@@ -170,7 +194,7 @@
             ['home', 'add', 'compromisos', 'analisis'].forEach(v => {
                 document.getElementById('view-' + v).classList.add('hidden');
                 const nav = document.getElementById('nav-' + v);
-                if(nav) nav.className = "text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center";
+                if(nav && v !== 'add') nav.className = "text-xs font-medium text-slate-400 cursor-pointer flex flex-col items-center";
             });
 
             document.getElementById('view-' + vista).classList.remove('hidden');
@@ -181,9 +205,24 @@
             actualizarUI();
         }
 
-        ['home', 'add', 'compromisos', 'analisis'].forEach(v => {
+        ['home', 'compromisos', 'analisis'].forEach(v => {
             document.getElementById('nav-' + v).addEventListener('click', () => cambiarVista(v));
         });
+
+        function prepararNuevoMovimiento() {
+            document.getElementById('edit-id').value = '';
+            document.getElementById('form-titulo').innerText = 'Registrar Movimiento';
+            document.getElementById('btn-submit-mov').innerText = 'Guardar Registro';
+            document.getElementById('btn-cancelar-edicion').classList.add('hidden');
+            document.getElementById('reg-monto').value = '';
+            setTipoRegistro('ingreso');
+            cambiarVista('add');
+        }
+
+        function cancelarEdicion() {
+            prepararNuevoMovimiento();
+            cambiarVista('home');
+        }
 
         function setTipoRegistro(tipo) {
             tipoRegistroActual = tipo;
@@ -202,6 +241,35 @@
             }
         }
 
+        function editarMovimiento(id) {
+            const m = movimientos.find(item => item.id === id);
+            if(!m) return;
+
+            document.getElementById('edit-id').value = m.id;
+            document.getElementById('form-titulo').innerText = 'Editar Movimiento';
+            document.getElementById('btn-submit-mov').innerText = 'Actualizar Registro';
+            document.getElementById('btn-cancelar-edicion').classList.remove('hidden');
+            document.getElementById('reg-monto').value = m.monto;
+
+            setTipoRegistro(m.tipo);
+
+            if(m.tipo === 'ingreso') {
+                document.getElementById('reg-origen').value = m.detalle;
+            } else {
+                document.getElementById('reg-categoria-gasto').value = m.detalle;
+            }
+
+            cambiarVista('add');
+        }
+
+        function eliminarMovimiento(id) {
+            if(confirm('¿Seguro querés eliminar este movimiento?')) {
+                movimientos = movimientos.filter(m => m.id !== id);
+                localStorage.setItem('moto_movimientos', JSON.stringify(movimientos));
+                actualizarUI();
+            }
+        }
+
         function toggleFormCompromiso() {
             const form = document.getElementById('form-compromiso');
             form.classList.toggle('hidden');
@@ -209,6 +277,7 @@
 
         document.getElementById('form-movimiento').addEventListener('submit', function(e) {
             e.preventDefault();
+            const editId = document.getElementById('edit-id').value;
             const monto = parseFloat(document.getElementById('reg-monto').value);
             if(!monto) return;
 
@@ -219,10 +288,14 @@
                 detalle = document.getElementById('reg-categoria-gasto').value;
             }
 
-            movimientos.unshift({ id: Date.now(), tipo: tipoRegistroActual, monto, detalle, fecha: 'Hoy' });
-            localStorage.setItem('moto_movimientos', JSON.stringify(movimientos));
+            if(editId) {
+                movimientos = movimientos.map(m => m.id == editId ? { ...m, tipo: tipoRegistroActual, monto, detalle } : m);
+            } else {
+                movimientos.unshift({ id: Date.now(), tipo: tipoRegistroActual, monto, detalle, fecha: 'Hoy' });
+            }
 
-            document.getElementById('reg-monto').value = '';
+            localStorage.setItem('moto_movimientos', JSON.stringify(movimientos));
+            prepararNuevoMovimiento();
             cambiarVista('home');
         });
 
@@ -261,20 +334,24 @@
             const totalPend = compromisos.filter(c => !c.pagado).reduce((acc, c) => acc + c.monto, 0);
             document.getElementById('total-pendientes').innerText = '$' + totalPend.toLocaleString();
 
-            // Lista movimientos
             document.getElementById('lista-movimientos').innerHTML = movimientos.map(m => `
                 <div class="bg-slate-900 p-3 rounded-xl flex justify-between items-center border border-slate-800">
                     <div>
                         <p class="font-semibold text-sm">${m.detalle}</p>
                         <span class="text-[10px] text-slate-400">${m.fecha}</span>
                     </div>
-                    <span class="${m.tipo === 'ingreso' ? 'text-emerald-400' : 'text-rose-400'} font-bold">
-                        ${m.tipo === 'ingreso' ? '+' : '-'} $${m.monto.toLocaleString()}
-                    </span>
+                    <div class="flex items-center gap-3">
+                        <span class="${m.tipo === 'ingreso' ? 'text-emerald-400' : 'text-rose-400'} font-bold">
+                            ${m.tipo === 'ingreso' ? '+' : '-'} $${m.monto.toLocaleString()}
+                        </span>
+                        <div class="flex gap-1 border-l border-slate-800 pl-2">
+                            <button onclick="editarMovimiento(${m.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-md cursor-pointer" title="Editar">✏️</button>
+                            <button onclick="eliminarMovimiento(${m.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-rose-400 px-2 py-1 rounded-md cursor-pointer" title="Eliminar">🗑️</button>
+                        </div>
+                    </div>
                 </div>
             `).join('');
 
-            // Lista compromisos
             document.getElementById('lista-compromisos').innerHTML = compromisos.map(c => `
                 <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
                     <div>
@@ -296,7 +373,6 @@
                 </div>
             `).join('');
 
-            // Análisis
             document.getElementById('Analisismes-ingresos').innerText = '$' + ingresosHoy.toLocaleString();
             document.getElementById('Analisismes-gastos').innerText = '$' + gastosHoy.toLocaleString();
             document.getElementById('fondo-diario').innerText = '$' + Math.round(totalPend / 30).toLocaleString();
