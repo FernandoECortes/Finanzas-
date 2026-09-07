@@ -701,7 +701,6 @@
                         <input type="text" id="tx-description" placeholder="Ej: Supermercado, Uber Moto..." required>
                     </div>
 
-                    <!-- Fila para Fecha y Hora -->
                     <div class="form-row">
                         <div class="form-group">
                             <label for="tx-date">Fecha</label>
@@ -897,7 +896,7 @@
         let goals = JSON.parse(localStorage.getItem('fin_goals')) || [];
 
         let currentType = 'expense';
-        let currentFilter = 'week'; // week, month, year
+        let currentFilter = 'week';
 
         document.addEventListener('DOMContentLoaded', () => {
             setDefaultDateTime();
@@ -1000,15 +999,14 @@
             const editId = document.getElementById('tx-edit-id').value;
             const amount = parseFloat(document.getElementById('tx-amount').value);
             const description = document.getElementById('tx-description').value;
-            const dateInput = document.getElementById('tx-date').value; // Formato YYYY-MM-DD
-            const timeInput = document.getElementById('tx-time').value; // Formato HH:MM
+            const dateInput = document.getElementById('tx-date').value;
+            const timeInput = document.getElementById('tx-time').value;
             const category = document.getElementById('tx-category').value;
             const subcategory = document.getElementById('tx-subcategory').value;
             const account = document.getElementById('tx-account').value;
 
             if (isNaN(amount) || amount <= 0) return;
 
-            // Convertir fecha de YYYY-MM-DD a DD/MM/YYYY para mantener compatibilidad con el resto del sistema
             let dateStr = '';
             if (dateInput) {
                 const [y, m, d] = dateInput.split('-');
@@ -1054,7 +1052,6 @@
             document.getElementById('tx-amount').value = t.amount.toFixed(2);
             document.getElementById('tx-description').value = t.description;
 
-            // Convertir fecha de DD/MM/YYYY a YYYY-MM-DD para el input type="date"
             if (t.date && t.date.includes('/')) {
                 const [d, m, y] = t.date.split('/');
                 document.getElementById('tx-date').value = `${y}-${m}-${d}`;
@@ -1372,16 +1369,31 @@
             }
 
             list.innerHTML = '';
+
+            // Agrupamos los fondos disponibles por cada cuenta (o global) para distribuir secuencialmente
+            // Creamos un mapa temporal con el dinero total disponible por selector de cuenta
+            let availablePools = {};
+            if (window.accountBalances) {
+                availablePools = { ...window.accountBalances };
+                let globalTotal = Object.values(window.accountBalances).reduce((a, b) => a + b, 0);
+                availablePools[""] = globalTotal; // Clave vacía representa el patrimonio general
+            }
+
             goals.forEach(g => {
-                let currentProgress = 0;
-                if (g.account && window.accountBalances) {
-                    currentProgress = window.accountBalances[g.account] || 0;
-                } else if (window.accountBalances) {
-                    currentProgress = Object.values(window.accountBalances).reduce((a, b) => a + b, 0);
+                let poolKey = g.account || "";
+                let totalPool = availablePools[poolKey] !== undefined ? availablePools[poolKey] : 0;
+
+                // Calculamos cuánto de este fondo va destinado exclusivamente a este objetivo en orden secuencial
+                let assignedToThisGoal = Math.min(Math.max(totalPool, 0), g.amount);
+
+                // Restamos lo asignado al fondo de esta cuenta para que el siguiente objetivo use solo el sobrante
+                if (availablePools[poolKey] !== undefined) {
+                    availablePools[poolKey] -= assignedToThisGoal;
                 }
 
-                const missing = g.amount - currentProgress;
-                const percentage = Math.min(Math.max((currentProgress / g.amount) * 100, 0), 100);
+                let currentProgress = assignedToThisGoal;
+                let missing = g.amount - currentProgress;
+                let percentage = Math.min(Math.max((currentProgress / g.amount) * 100, 0), 100);
 
                 list.innerHTML += `
                     <div class="item-card" style="flex-direction: column; align-items: stretch; gap: 8px; cursor: default;">
@@ -1451,7 +1463,7 @@
                     recContainer.innerHTML += `
                         <div class="recommendation-card">
                             <i class="fa-solid fa-circle-check"></i>
-                            <div><strong>Excelente capacidad de ahorro:</strong> Estás guardando más del 20% de tus ingresos. Es un buen momento para evaluar destinar parte de este excedente a CEDEARs u otros instrumentos de inversión.</div>
+                            <div><strong>Excelente capacidad de ahorro:</strong> Estás guardando más del 20% de ingresos. Es un buen momento para evaluar destinar parte de este excedente a CEDEARs u otros instrumentos de inversión.</div>
                         </div>
                     `;
                 } else {
@@ -1500,7 +1512,7 @@
                                 <div class="item-details-flex">
                                     <span class="item-title">${cat}</span>
                                     <div class="item-meta">
-                                        <span>Representa el <strong>${percentage}%</strong> de tus gastos</span>
+                                        <span>Representa el <strong>%${percentage}</strong> de tus gastos</span>
                                     </div>
                                 </div>
                             </div>
