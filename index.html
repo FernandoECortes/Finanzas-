@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MotoFinanzas 🏍️</title>
+    <title>MotoFinanzas Pro 🏍️</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between pb-24">
@@ -11,8 +11,8 @@
     <!-- HEADER -->
     <header class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center sticky top-0 z-50">
         <div>
-            <h1 class="text-base font-bold text-amber-400">MotoFinanzas 🏍️</h1>
-            <p class="text-[10px] text-slate-400">Control total de finanzas</p>
+            <h1 class="text-base font-bold text-amber-400">MotoFinanzas Pro 🏍️</h1>
+            <p class="text-[10px] text-slate-400">Control total financiero y multicuenta</p>
         </div>
         <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-full text-slate-300 border border-slate-700">Córdoba</span>
     </header>
@@ -69,44 +69,93 @@
 
             <form id="form-movimiento" class="space-y-4 bg-slate-900 p-4 rounded-2xl border border-slate-800">
                 <input type="hidden" id="edit-id" value="">
+                
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Monto ($)</label>
                     <input type="number" id="reg-monto" placeholder="Ej: 15000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-lg focus:outline-none focus:border-amber-400" required>
                 </div>
 
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Cuenta / Billetera / Efectivo</label>
+                    <select id="reg-cuenta" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
+                        <option value="Efectivo">💵 Efectivo</option>
+                        <option value="Mercado Pago">📱 Mercado Pago</option>
+                        <option value="Brubank">🟣 Brubank</option>
+                        <option value="BBVA">🔵 BBVA</option>
+                        <option value="Lemon Cash">🍋 Lemon Cash</option>
+                        <option value="Naranja X">🟠 Naranja X</option>
+                        <option value="Personal Pay">🟢 Personal Pay</option>
+                        <option value="Astropay">🔵 Astropay</option>
+                        <option value="Carrefour">🛒 Carrefour</option>
+                        <option value="Cocos">🥥 Cocos</option>
+                        <option value="IOL">📈 IOL</option>
+                        <option value="Claro Pay">🔴 Claro Pay</option>
+                    </select>
+                </div>
+
                 <div id="container-origen">
-                    <label class="block text-xs text-slate-400 mb-1">Categoría de Ingreso</label>
+                    <label class="block text-xs text-slate-400 mb-1">Categoría y Subcategoría de Ingreso</label>
                     <select id="reg-origen" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
-                        <option value="Uber Moto">Uber Moto</option>
-                        <option value="Viaje Particular / Envíos">Viaje Particular / Envíos</option>
-                        <option value="Changas / Trabajos Extra">Changas / Trabajos Extra</option>
-                        <option value="Música / Producción">Música / Producción</option>
-                        <option value="Inversiones / CEDEARs">Inversiones / CEDEARs</option>
-                        <option value="Otro Ingreso">Otro Ingreso</option>
+                        <optgroup label="Transporte y Logística">
+                            <option value="Uber Moto">Uber Moto (Viajes app)</option>
+                            <option value="Viajes Particulares">Viajes Particulares / Directos</option>
+                            <option value="Mandados y Envíos">Mandados y Envíos</option>
+                        </optgroup>
+                        <optgroup label="Música y Arte">
+                            <option value="Shows y Conciertos">Shows y Conciertos en vivo</option>
+                            <option value="Producción Musical">Producción Musical / Ableton</option>
+                            <option value="Clases de Guitarra">Clases de Guitarra</option>
+                        </optgroup>
+                        <optgroup label="Inversiones y Finanzas">
+                            <option value="Rendimientos / CEDEARs">Rendimientos / CEDEARs / Dividendos</option>
+                            <option value="Venta de Activos">Venta de Activos</option>
+                        </optgroup>
+                        <optgroup label="Otros">
+                            <option value="Changas / Trabajos Extra">Changas / Trabajos Extra</option>
+                            <option value="Otro Ingreso">Otro Ingreso General</option>
+                        </optgroup>
                     </select>
                 </div>
 
                 <div id="container-categoria-gasto" class="hidden">
-                    <label class="block text-xs text-slate-400 mb-1">Categoría de Gasto</label>
+                    <label class="block text-xs text-slate-400 mb-1">Categoría y Subcategoría de Gasto</label>
                     <select id="reg-categoria-gasto" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
-                        <optgroup label="Movilidad / Moto">
-                            <option value="Nafta (Puma / YPF)">Nafta (Puma / YPF)</option>
-                            <option value="Service / Mantenimiento">Service / Mantenimiento</option>
-                            <option value="Gomería / Cubiertas">Gomería / Cubiertas</option>
-                            <option value="Repuestos / Accesorios">Repuestos / Accesorios</option>
-                            <option value="Seguro / Patente Moto">Seguro / Patente Moto</option>
+                        <optgroup label="Movilidad y Moto">
+                            <option value="Nafta (Puma / YPF)">Combustible: Nafta (Puma / YPF)</option>
+                            <option value="Service / Mantenimiento">Moto: Service / Mantenimiento</option>
+                            <option value="Gomería / Cubiertas">Moto: Gomería / Cubiertas / Cámaras</option>
+                            <option value="Repuestos / Accesorios">Moto: Repuestos / Accesorios / Casco</option>
+                            <option value="Seguro / Patente Moto">Obligatorio: Seguro / Patente Moto</option>
                         </optgroup>
-                        <optgroup label="Personal / Casa">
-                            <option value="Comida / Supermercado">Comida / Supermercado</option>
-                            <option value="Fast Food / PedidosYa">Fast Food / PedidosYa</option>
-                            <option value="Alquiler / Expensas">Alquiler / Expensas</option>
-                            <option value="Servicios (Luz, Internet)">Servicios (Luz, Internet)</option>
-                            <option value="Salidas / Entretenimiento">Salidas / Entretenimiento</option>
-                            <option value="Ropa / Cuidado Personal">Ropa / Cuidado Personal</option>
-                            <option value="Suscripciones (Apps)">Suscripciones (Apps)</option>
-                            <option value="Mascotas (Veterinaria/Comida)">Mascotas (Veterinaria/Comida)</option>
-                            <option value="Otro Gasto">Otro Gasto</option>
+                        <optgroup label="Alimentación y Consumo">
+                            <option value="Supermercado / Almacén">Comida: Supermercado / Almacén</option>
+                            <option value="Verdulería / Carnicería">Comida: Verdulería / Carnicería / Omelettes</option>
+                            <option value="Fast Food / PedidosYa">Comida: Fast Food / PedidosYa / Burgers</option>
                         </optgroup>
+                        <optgroup label="Hogar y Servicios">
+                            <option value="Alquiler / Expensas">Casa: Alquiler / Expensas</option>
+                            <option value="Servicios (Luz, Internet)">Casa: Servicios (Luz, Internet, Agua)</option>
+                            <option value="Mantenimiento Hogar">Casa: Mantenimiento general</option>
+                        </optgroup>
+                        <optgroup label="Bienestar y Ocio">
+                            <option value="Gimnasio / Suplementos">Salud: Gimnasio / Creatina / Proteína</option>
+                            <option value="Salidas / Entretenimiento">Ocio: Salidas / Recitales / Birra</option>
+                            <option value="Ropa / Cuidado Personal">Personal: Ropa / Cuidado Personal</option>
+                            <option value="Mascotas (Veterinaria/Comida)">Mascotas: Perros / Gatos (Comida/Vet)</option>
+                        </optgroup>
+                        <optgroup label="Tecnología y Suscripciones">
+                            <option value="Suscripciones (Apps/Streaming)">Tecnología: Suscripciones (ChatGPT, CapCut, etc.)</option>
+                            <option value="Hardware / Celular / PC">Tecnología: Hardware / Celular / Accesorios</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- Selector opcional para vincular gasto a un compromiso -->
+                <div id="container-vincular-compromiso">
+                    <label class="block text-xs text-slate-400 mb-1">¿Destinado a pagar un compromiso? (Opcional)</label>
+                    <select id="reg-compromiso-vinculado" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
+                        <option value="">-- Ninguno / Gasto común --</option>
+                        <!-- Se llena dinámicamente con JS -->
                     </select>
                 </div>
 
@@ -183,8 +232,8 @@
         let tipoRegistroActual = 'ingreso';
 
         let movimientos = JSON.parse(localStorage.getItem('moto_movimientos')) || [
-            { id: 1, tipo: 'ingreso', monto: 22000, detalle: 'Uber Moto', fecha: 'Hoy' },
-            { id: 2, tipo: 'gastomoto', monto: 4500, detalle: 'Nafta (Puma / YPF)', fecha: 'Hoy' }
+            { id: 1, tipo: 'ingreso', monto: 22000, detalle: 'Uber Moto', cuenta: 'Mercado Pago', fecha: 'Hoy', vinculadoId: null },
+            { id: 2, tipo: 'gastomoto', monto: 4500, detalle: 'Nafta (Puma / YPF)', cuenta: 'Efectivo', fecha: 'Hoy', vinculadoId: null }
         ];
 
         let compromisos = JSON.parse(localStorage.getItem('moto_compromisos')) || [
@@ -211,6 +260,15 @@
             document.getElementById('nav-' + v).addEventListener('click', () => cambiarVista(v));
         });
 
+        function actualizarSelectCompromisosVinculados(seleccionado = null) {
+            const select = document.getElementById('reg-compromiso-vinculado');
+            let opciones = '<option value="">-- Ninguno / Gasto común --</option>';
+            compromisos.forEach(c => {
+                opciones += `<option value="${c.id}" ${seleccionado == c.id ? 'selected' : ''}>Destinado a: ${c.nombre} ($${c.monto.toLocaleString()})</option>`;
+            });
+            select.innerHTML = opciones;
+        }
+
         function prepararNuevoMovimiento() {
             document.getElementById('edit-id').value = '';
             document.getElementById('form-titulo').innerText = 'Registrar Movimiento';
@@ -218,6 +276,7 @@
             document.getElementById('btn-cancelar-edicion').classList.add('hidden');
             document.getElementById('reg-monto').value = '';
             setTipoRegistro('ingreso');
+            actualizarSelectCompromisosVinculados();
             cambiarVista('add');
         }
 
@@ -237,9 +296,11 @@
             if(tipo === 'ingreso') {
                 document.getElementById('container-origen').classList.remove('hidden');
                 document.getElementById('container-categoria-gasto').classList.add('hidden');
+                document.getElementById('container-vincular-compromiso').classList.add('hidden');
             } else {
                 document.getElementById('container-origen').classList.add('hidden');
                 document.getElementById('container-categoria-gasto').classList.remove('hidden');
+                document.getElementById('container-vincular-compromiso').classList.remove('hidden');
             }
         }
 
@@ -252,6 +313,7 @@
             document.getElementById('btn-submit-mov').innerText = 'Actualizar Registro';
             document.getElementById('btn-cancelar-edicion').classList.remove('hidden');
             document.getElementById('reg-monto').value = m.monto;
+            document.getElementById('reg-cuenta').value = m.cuenta || 'Efectivo';
 
             setTipoRegistro(m.tipo);
 
@@ -259,6 +321,7 @@
                 document.getElementById('reg-origen').value = m.detalle;
             } else {
                 document.getElementById('reg-categoria-gasto').value = m.detalle;
+                actualizarSelectCompromisosVinculados(m.vinculadoId);
             }
 
             cambiarVista('add');
@@ -275,7 +338,6 @@
         function toggleFormCompromiso() {
             const form = document.getElementById('form-compromiso');
             if(form.classList.contains('hidden')) {
-                // Preparar para nuevo
                 document.getElementById('edit-comp-id').value = '';
                 document.getElementById('form-comp-titulo').innerText = 'Agregar Obligación';
                 document.getElementById('btn-submit-comp').innerText = 'Guardar Compromiso';
@@ -316,19 +378,24 @@
             e.preventDefault();
             const editId = document.getElementById('edit-id').value;
             const monto = parseFloat(document.getElementById('reg-monto').value);
+            const cuenta = document.getElementById('reg-cuenta').value;
             if(!monto) return;
 
             let detalle = '';
+            let vinculadoId = null;
+
             if(tipoRegistroActual === 'ingreso') {
                 detalle = document.getElementById('reg-origen').value;
             } else {
                 detalle = document.getElementById('reg-categoria-gasto').value;
+                const vinculoSelect = document.getElementById('reg-compromiso-vinculado').value;
+                if(vinculoSelect) vinculadoId = parseInt(vinculoSelect);
             }
 
             if(editId) {
-                movimientos = movimientos.map(m => m.id == editId ? { ...m, tipo: tipoRegistroActual, monto, detalle } : m);
+                movimientos = movimientos.map(m => m.id == editId ? { ...m, tipo: tipoRegistroActual, monto, cuenta, detalle, vinculadoId } : m);
             } else {
-                movimientos.unshift({ id: Date.now(), tipo: tipoRegistroActual, monto, detalle, fecha: 'Hoy' });
+                movimientos.unshift({ id: Date.now(), tipo: tipoRegistroActual, monto, cuenta, detalle, fecha: 'Hoy', vinculadoId });
             }
 
             localStorage.setItem('moto_movimientos', JSON.stringify(movimientos));
@@ -373,23 +440,36 @@
             const totalPend = compromisos.filter(c => !c.pagado).reduce((acc, c) => acc + c.monto, 0);
             document.getElementById('total-pendientes').innerText = '$' + totalPend.toLocaleString();
 
-            document.getElementById('lista-movimientos').innerHTML = movimientos.map(m => `
-                <div class="bg-slate-900 p-3 rounded-xl flex justify-between items-center border border-slate-800">
-                    <div>
-                        <p class="font-semibold text-sm">${m.detalle}</p>
-                        <span class="text-[10px] text-slate-400">${m.fecha}</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="${m.tipo === 'ingreso' ? 'text-emerald-400' : 'text-rose-400'} font-bold">
-                            ${m.tipo === 'ingreso' ? '+' : '-'} $${m.monto.toLocaleString()}
-                        </span>
-                        <div class="flex gap-1 border-l border-slate-800 pl-2">
-                            <button onclick="editarMovimiento(${m.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-md cursor-pointer" title="Editar">✏️</button>
-                            <button onclick="eliminarMovimiento(${m.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-rose-400 px-2 py-1 rounded-md cursor-pointer" title="Eliminar">🗑️</button>
+            document.getElementById('lista-movimientos').innerHTML = movimientos.map(m => {
+                let badgeVinculo = '';
+                if(m.vinculadoId) {
+                    const compAsociado = compromisos.find(c => c.id == m.vinculadoId);
+                    if(compAsociado) {
+                        badgeVinculo = `<span class="block text-[9px] text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800/50 mt-1">Pago de: ${compAsociado.nombre}</span>`;
+                    }
+                }
+
+                return `
+                    <div class="bg-slate-900 p-3 rounded-xl flex justify-between items-center border border-slate-800">
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">${m.cuenta || 'Efectivo'}</span>
+                            </div>
+                            <p class="font-semibold text-sm mt-1">${m.detalle}</p>
+                            ${badgeVinculo}
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="${m.tipo === 'ingreso' ? 'text-emerald-400' : 'text-rose-400'} font-bold">
+                                ${m.tipo === 'ingreso' ? '+' : '-'} $${m.monto.toLocaleString()}
+                            </span>
+                            <div class="flex gap-1 border-l border-slate-800 pl-2">
+                                <button onclick="editarMovimiento(${m.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-md cursor-pointer" title="Editar">✏️</button>
+                                <button onclick="eliminarMovimiento(${m.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-rose-400 px-2 py-1 rounded-md cursor-pointer" title="Eliminar">🗑️</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             document.getElementById('lista-compromisos').innerHTML = compromisos.map(c => `
                 <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
